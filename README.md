@@ -1,0 +1,2 @@
+Thinktecture.IdentityManager
+============================
