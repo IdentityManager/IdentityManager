@@ -83,7 +83,7 @@ namespace MembershipReboot.IdentityServer.Admin
             Guid g;
             if (!Guid.TryParse(subject, out g))
             {
-                return new UserManagerResult<UserResult>("Invalid user.");
+                return new UserManagerResult<UserResult>("Invalid subject");
             }
 
             try
@@ -91,25 +91,17 @@ namespace MembershipReboot.IdentityServer.Admin
                 var acct = this.userAccountService.GetByID(g);
                 if (acct == null)
                 {
-                    return new UserManagerResult<UserResult>("Invalid user.");
+                    return new UserManagerResult<UserResult>("Invalid subject");
                 }
 
                 var user = new UserResult
                 {
                     Subject = subject,
-                    Username = acct.Username
+                    Username = acct.Username,
+                    Email = acct.Email,
+                    Phone = acct.MobilePhoneNumber,
                 };
                 var claims = new List<Thinktecture.IdentityServer.Admin.Core.UserClaim>();
-                if (!String.IsNullOrWhiteSpace(acct.Email) && !this.userAccountService.Configuration.EmailIsUsername)
-                {
-                    claims.Add(new Thinktecture.IdentityServer.Admin.Core.UserClaim { Type = Constants.ClaimTypes.Email, Value = acct.Email });
-                    claims.Add(new Thinktecture.IdentityServer.Admin.Core.UserClaim { Type = Constants.ClaimTypes.EmailVerified, Value = acct.IsAccountVerified ? "true" : "false" });
-                }
-                if (!String.IsNullOrWhiteSpace(acct.MobilePhoneNumber))
-                {
-                    claims.Add(new Thinktecture.IdentityServer.Admin.Core.UserClaim { Type = Constants.ClaimTypes.PhoneNumber, Value = acct.MobilePhoneNumber });
-                    claims.Add(new Thinktecture.IdentityServer.Admin.Core.UserClaim { Type = Constants.ClaimTypes.PhoneNumberVerified, Value = !String.IsNullOrWhiteSpace(acct.MobilePhoneNumber) ? "true" : "false" });
-                }
                 if (acct.Claims != null)
                 {
                     claims.AddRange(acct.Claims.Select(x => new Thinktecture.IdentityServer.Admin.Core.UserClaim { Type = x.Type, Value = x.Value }));
@@ -151,7 +143,7 @@ namespace MembershipReboot.IdentityServer.Admin
             Guid g;
             if (!Guid.TryParse(subject, out g))
             {
-                return Task.FromResult(new UserManagerResult("Invalid user."));
+                return Task.FromResult(new UserManagerResult("Invalid subject"));
             }
 
             try
@@ -166,12 +158,12 @@ namespace MembershipReboot.IdentityServer.Admin
             return Task.FromResult(new UserManagerResult());
         }
 
-        public async Task<UserManagerResult> SetPasswordAsync(string id, string password)
+        public async Task<UserManagerResult> SetPasswordAsync(string subject, string password)
         {
             Guid g;
-            if (!Guid.TryParse(id, out g))
+            if (!Guid.TryParse(subject, out g))
             {
-                return new UserManagerResult("Invalid id");
+                return new UserManagerResult("Invalid subject");
             }
 
             try
@@ -185,7 +177,47 @@ namespace MembershipReboot.IdentityServer.Admin
 
             return UserManagerResult.Success;
         }
-        
+
+        public async Task<UserManagerResult> SetEmailAsync(string subject, string email)
+        {
+            Guid id;
+            if (!Guid.TryParse(subject, out id))
+            {
+                return new UserManagerResult("Invalid subject");
+            }
+
+            try
+            {
+                this.userAccountService.SetConfirmedEmail(id, email);
+            }
+            catch (ValidationException ex)
+            {
+                return new UserManagerResult(ex.Message);
+            }
+
+            return UserManagerResult.Success;
+        }
+
+        public async Task<UserManagerResult> SetPhoneAsync(string subject, string phone)
+        {
+            Guid id;
+            if (!Guid.TryParse(subject, out id))
+            {
+                return new UserManagerResult("Invalid id");
+            }
+
+            try
+            {
+                this.userAccountService.SetConfirmedMobilePhone(id, phone);
+            }
+            catch (ValidationException ex)
+            {
+                return new UserManagerResult(ex.Message);
+            }
+
+            return UserManagerResult.Success;
+        }
+
         public Task<UserManagerResult> AddClaimAsync(string subject, string type, string value)
         {
             Guid g;

@@ -8,7 +8,6 @@ using Thinktecture.IdentityServer.UserAdmin.Api.Models;
 
 namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
 {
-    [Route("users")]
     public class UserController : ApiController
     {
         IUserManager userManager;
@@ -19,7 +18,9 @@ namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
             this.userManager = userManager;
         }
 
-        public async Task<IHttpActionResult> GetAsync(string filter = null, int start = 0, int count = 100)
+        [Route("users")]
+        [HttpGet]
+        public async Task<IHttpActionResult> GetUsersAsync(string filter = null, int start = 0, int count = 100)
         {
             var result = await userManager.QueryUsersAsync(filter, start, count);
             if (result.IsSuccess)
@@ -30,7 +31,8 @@ namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, result.Errors));
         }
 
-        public async Task<IHttpActionResult> GetAsync(string subject)
+        [Route("users")]
+        public async Task<IHttpActionResult> GetUserAsync(string subject)
         {
             var result = await this.userManager.GetUserAsync(subject);
             if (result.IsSuccess)
@@ -41,7 +43,9 @@ namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, result.Errors));
         }
 
-        public async Task<IHttpActionResult> PostAsync(CreateUser model)
+        [Route("users")]
+        [HttpPost]
+        public async Task<IHttpActionResult> Create(CreateUser model)
         {
             if (model == null)
             {
@@ -80,6 +84,136 @@ namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
                 if (result.IsSuccess)
                 {
                     return Ok();
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+            }
+
+            return BadRequest(ModelState.GetErrorMessage());
+        }
+
+        [Route("password")]
+        [HttpPost]
+        public async Task<IHttpActionResult> SetPassword(SetPassword model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Data required");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.SetPasswordAsync(model.Subject, model.Password);
+                if (result.IsSuccess)
+                {
+                    return Ok(UserManagerResult.Success);
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+            }
+
+            return BadRequest(ModelState.GetErrorMessage());
+        }
+
+        [Route("email")]
+        [HttpPost]
+        public async Task<IHttpActionResult> SetEmail(SetEmail model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Data required");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.SetEmailAsync(model.Subject, model.Email);
+                if (result.IsSuccess)
+                {
+                    return Ok(UserManagerResult.Success);
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+            }
+
+            return BadRequest(ModelState.GetErrorMessage());
+        }
+
+        [Route("phone")]
+        [HttpPost]
+        public async Task<IHttpActionResult> SetPhone(SetPhone model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Data required");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.SetPhoneAsync(model.Subject, model.Phone);
+                if (result.IsSuccess)
+                {
+                    return Ok(UserManagerResult.Success);
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+            }
+
+            return BadRequest(ModelState.GetErrorMessage());
+        }
+        
+        [Route("claims/add")]
+        [HttpPost]
+        public async Task<IHttpActionResult> AddClaim(Claim model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Data required");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.AddClaimAsync(model.Subject, model.Type, model.Value);
+                if (result.IsSuccess)
+                {
+                    return Ok(UserManagerResult.Success);
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+            }
+
+            return BadRequest(ModelState.GetErrorMessage());
+        }
+
+        [Route("claims/remove")]
+        [HttpPost]
+        public async Task<IHttpActionResult> RemoveClaim(Claim model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", "Data required");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.DeleteClaimAsync(model.Subject, model.Type, model.Value);
+                if (result.IsSuccess)
+                {
+                    return Ok(UserManagerResult.Success);
                 }
 
                 foreach (var error in result.Errors)

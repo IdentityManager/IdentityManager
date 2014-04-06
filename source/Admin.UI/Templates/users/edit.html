@@ -30,6 +30,34 @@
     </div>
 
     <div class="line">
+        <div class="row">
+            <form name="setEmailForm" class="form-inline" ng-submit="setEmail(model.user.subject, model.user.email)">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label for="email" class="column">Set Email</label>
+                        <input type="email" class="form-control" id="email" required placeholder="Email" ng-model="model.user.email">
+                    </div>
+                    <button type="submit" class="btn btn-primary" ng-disabled="setEmailForm.$invalid">Set</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="line">
+        <div class="row">
+            <form name="setPhoneForm" class="form-inline" ng-submit="setPhone(model.user.subject, model.user.phone)">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label for="phone" class="column">Set Phone</label>
+                        <input type="tel" class="form-control" id="phone" required placeholder="Phone" ng-model="model.user.phone">
+                    </div>
+                    <button type="submit" class="btn btn-primary" ng-disabled="setPhoneForm.$invalid">Set</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="line">
         <div class="row section">
             <div class="col-sm-12">
                 <form name="addClaimForm" class="form-inline" ng-submit="addClaim(model.user.subject, model.type, model.value)">

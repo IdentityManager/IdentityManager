@@ -5,7 +5,6 @@ using Thinktecture.IdentityServer.Admin.Core;
 
 namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
 {
-    [Route("meta")]
     public class MetaController : ApiController
     {
         IUserManager userManager;
@@ -16,9 +15,19 @@ namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
             this.userManager = userManager;
         }
 
+        [Route("meta")]
         public async Task<IHttpActionResult> GetAsync()
         {
             return Ok(await userManager.GetMetadataAsync());
+        }
+        
+        [Route("admin")]
+        public IHttpActionResult Get()
+        {
+            return Ok(new
+            {
+                username = "Admin Username"
+            });
         }
     }
 }

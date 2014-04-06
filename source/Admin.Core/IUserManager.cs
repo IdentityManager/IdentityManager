@@ -13,6 +13,9 @@ namespace Thinktecture.IdentityServer.Admin.Core
         Task<UserManagerResult<UserResult>> GetUserAsync(string subject);
 
         Task<UserManagerResult> SetPasswordAsync(string subject, string password);
+        Task<UserManagerResult> SetEmailAsync(string subject, string email);
+        Task<UserManagerResult> SetPhoneAsync(string subject, string phone);
+        
         Task<UserManagerResult> AddClaimAsync(string subject, string type, string value);
         Task<UserManagerResult> DeleteClaimAsync(string subject, string type, string value);
     }

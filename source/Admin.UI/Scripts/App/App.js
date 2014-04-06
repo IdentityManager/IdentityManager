@@ -99,6 +99,22 @@
                     throw (response.data && response.data.message || "Error Setting Password");
                 });
         };
+        this.setEmail = function (subject, email) {
+            return $http.post("api/email", { subject: subject, email: email })
+                .then(function () {
+                    return;
+                }, function (response) {
+                    throw (response.data && response.data.message || "Error Setting Email");
+                });
+        };
+        this.setPhone = function (subject, phone) {
+            return $http.post("api/phone", { subject: subject, phone: phone })
+                .then(function () {
+                    return;
+                }, function (response) {
+                    throw (response.data && response.data.message || "Error Setting Phone");
+                });
+        };
         this.addClaim = function (subject, type, value) {
             return $http.post("api/claims/add", { subject: subject, type: type, value: value })
                 .then(function () {
@@ -271,6 +287,26 @@
             else {
                 error("Password and Confirmation do not match");
             }
+        };
+
+        $scope.setEmail = function (subject, email) {
+            clear();
+            users.setEmail(subject, email)
+                .then(function () {
+                    success("Email Changed");
+                }, function (message) {
+                    error(message);
+                });
+        };
+
+        $scope.setPhone = function (subject, phone) {
+            clear();
+            users.setPhone(subject, phone)
+                .then(function () {
+                    success("Phone Changed");
+                }, function (message) {
+                    error(message);
+                });
         };
 
         $scope.addClaim = function (subject, type, value) {
