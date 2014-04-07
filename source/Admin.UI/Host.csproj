@@ -201,17 +201,17 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Admin.Core\Admin.Core.csproj">
+    <ProjectReference Include="..\Admin.Core\Core.csproj">
       <Project>{319e13dd-c16a-4936-b179-bbfba52c693b}</Project>
-      <Name>Admin.Core</Name>
+      <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MembershipReboot.Admin\MembershipReboot.Admin.csproj">
+    <ProjectReference Include="..\MembershipReboot.Admin\MembershipReboot.csproj">
       <Project>{ddce2a99-ee37-42e3-a84e-00957f770b52}</Project>
-      <Name>MembershipReboot.Admin</Name>
+      <Name>MembershipReboot</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UserAdmin.Api\UserAdmin.Api.csproj">
+    <ProjectReference Include="..\UserAdmin.Api\Api.csproj">
       <Project>{1aea243f-5a85-402d-89df-c178feb522d6}</Project>
-      <Name>UserAdmin.Api</Name>
+      <Name>Api</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

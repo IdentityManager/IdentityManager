@@ -5,11 +5,11 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host", "Admin.UI\Host.csproj", "{D1A280BE-52ED-4B41-BE67-BC933BA5D2B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserAdmin.Api", "UserAdmin.Api\UserAdmin.Api.csproj", "{1AEA243F-5A85-402D-89DF-C178FEB522D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "UserAdmin.Api\Api.csproj", "{1AEA243F-5A85-402D-89DF-C178FEB522D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admin.Core", "Admin.Core\Admin.Core.csproj", "{319E13DD-C16A-4936-B179-BBFBA52C693B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Admin.Core\Core.csproj", "{319E13DD-C16A-4936-B179-BBFBA52C693B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MembershipReboot.Admin", "MembershipReboot.Admin\MembershipReboot.Admin.csproj", "{DDCE2A99-EE37-42E3-A84E-00957F770B52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MembershipReboot", "MembershipReboot.Admin\MembershipReboot.csproj", "{DDCE2A99-EE37-42E3-A84E-00957F770B52}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{807F52C2-DD37-4AF0-BE34-CF7A32DC9644}"
 EndProject
