@@ -13,14 +13,15 @@ using Thinktecture.IdentityServer.Core;
 
 namespace Thinktecture.IdentityManager.MembershipReboot
 {
-    public class MembershipRebootUserManager : IUserManager, IDisposable
+    public class MembershipRebootUserManager<TAccount> : IUserManager, IDisposable
+        where TAccount : UserAccount
     {
-        UserAccountService userAccountService;
+        UserAccountService<TAccount> userAccountService;
         IUserAccountQuery query;
         IDisposable cleanup;
 
         public MembershipRebootUserManager(
-            UserAccountService userAccountService,
+            UserAccountService<TAccount> userAccountService,
             IUserAccountQuery query,
             IDisposable cleanup)
         {
@@ -61,7 +62,7 @@ namespace Thinktecture.IdentityManager.MembershipReboot
         public Task<UserManagerResult<QueryResult>> QueryUsersAsync(string filter, int start, int count)
         {
             int total;
-            var users = query.Query(filter, start, count, out total);
+            var users = query.Query(filter, start, count, out total).ToArray();
 
             var result = new QueryResult();
             result.Start = start;
@@ -73,13 +74,22 @@ namespace Thinktecture.IdentityManager.MembershipReboot
                 var user = new UserResult
                 {
                     Subject = x.ID.ToString("D"),
-                    Username = x.Username
+                    Username = x.Username,
+                    DisplayName = DisplayNameFromUserId(x.ID)
                 };
                 
                 return user;
             }).ToArray();
 
             return Task.FromResult(new UserManagerResult<QueryResult>(result));
+        }
+
+        string DisplayNameFromUserId(Guid id)
+        {
+            var acct = userAccountService.GetByID(id);
+            var name = acct.GetClaimValues(Constants.ClaimTypes.Name).FirstOrDefault();
+            if (name == null) name = acct.Username;
+            return name;
         }
 
         public async Task<UserManagerResult<UserResult>> GetUserAsync(string subject)
@@ -102,6 +112,7 @@ namespace Thinktecture.IdentityManager.MembershipReboot
                 {
                     Subject = subject,
                     Username = acct.Username,
+                    DisplayName = DisplayNameFromUserId(acct.ID),
                     Email = acct.Email,
                     Phone = acct.MobilePhoneNumber,
                 };
