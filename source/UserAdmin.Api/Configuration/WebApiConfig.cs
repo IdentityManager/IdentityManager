@@ -31,7 +31,7 @@ namespace Thinktecture.IdentityManager.Api.Configuration
             apiConfig.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
                 new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
-            apiConfig.Services.Add(typeof(IExceptionLogger), new UserAdminExceptionLogger());
+            //apiConfig.Services.Add(typeof(IExceptionLogger), new UserAdminExceptionLogger());
 
             app.UseWebApi(apiConfig);
         }
