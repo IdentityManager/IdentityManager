@@ -11,7 +11,7 @@ namespace Owin
 {
     public static class AppBuilderExtensions
     {
-        public static void UseIdentityServerUserAdmin(this IAppBuilder app, IdentityServerUserAdminConfiguration config)
+        public static void UseIdentityManager(this IAppBuilder app, IdentityManagerConfiguration config)
         {
             if (app == null) throw new ArgumentNullException("app");
             if (config == null) throw new ArgumentNullException("config");
@@ -28,7 +28,10 @@ namespace Owin
 
             //app.UseJsonWebToken();
             var resolver = AutofacConfig.Configure(config);
-            WebApiConfig.Configure(app, resolver, config);
+            app.Map("/api", apiConfig =>
+            {
+                WebApiConfig.Configure(apiConfig, resolver, config);
+            });
         }
     }
 }

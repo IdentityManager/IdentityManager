@@ -13,7 +13,7 @@ namespace Thinktecture.IdentityManager.Api.Configuration
 {
     class WebApiConfig
     {
-        public static void Configure(IAppBuilder app, IDependencyResolver resolver, IdentityServerUserAdminConfiguration config)
+        public static void Configure(IAppBuilder app, IDependencyResolver resolver, IdentityManagerConfiguration config)
         {
             if (app == null) throw new ArgumentNullException("app");
             if (resolver == null) throw new ArgumentNullException("resolver");

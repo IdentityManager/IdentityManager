@@ -95,7 +95,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
     <Compile Include="Configuration\AutofacConfig.cs" />
-    <Compile Include="Configuration\IdentityServerUserAdminConfiguration.cs" />
+    <Compile Include="Configuration\IdentityManagerConfiguration.cs" />
     <Compile Include="Configuration\WebApiConfig.cs" />
     <Compile Include="Controllers\MetaController.cs" />
     <Compile Include="Controllers\UserController.cs" />

@@ -13,14 +13,9 @@ namespace Thinktecture.IdentityManager.Host
     {
         public void Configuration(IAppBuilder app)
         {
-            app.Map("/api", api =>
+            app.UseIdentityManager(new IdentityManagerConfiguration()
             {
-                api.UseIdentityServerUserAdmin(new IdentityServerUserAdminConfiguration()
-                {
-                    //OAuthAuthorizationEndpoint = "/authorize",
-                    //AdminRoleName = "Foo",
-                    UserManagerFactory = MembershipRebootUserManagerFactory.Create
-                });
+                UserManagerFactory = MembershipRebootUserManagerFactory.Create
             });
         }
     }

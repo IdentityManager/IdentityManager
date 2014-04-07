@@ -12,7 +12,7 @@ namespace Thinktecture.IdentityManager.Api.Configuration
 {
     class AutofacConfig
     {
-        public static IDependencyResolver Configure(IdentityServerUserAdminConfiguration config)
+        public static IDependencyResolver Configure(IdentityManagerConfiguration config)
         {
             if (config == null) throw new ArgumentNullException("config");
 

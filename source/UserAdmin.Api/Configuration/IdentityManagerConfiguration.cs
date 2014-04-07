@@ -10,11 +10,11 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.Api.Configuration
 {
-    public class IdentityServerUserAdminConfiguration
+    public class IdentityManagerConfiguration
     {
-        public IdentityServerUserAdminConfiguration()
+        public IdentityManagerConfiguration()
         {
-            this.AdminRoleName = "UserManagerAdministrator";
+            this.AdminRoleName = "IdentityManagerAdministrator";
         }
 
         public Func<IUserManager> UserManagerFactory { get; set; }
