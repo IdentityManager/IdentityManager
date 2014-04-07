@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Thinktecture.IdentityServer.Admin.UI</RootNamespace>
-    <AssemblyName>Thinktecture.IdentityServer.Admin.UI</AssemblyName>
+    <RootNamespace>Thinktecture.IdentityManager.Host</RootNamespace>
+    <AssemblyName>Thinktecture.IdentityManager.Host</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -111,6 +111,9 @@
     </Content>
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Bootstrap.less" />
+    <Content Include="..\default.licenseheader">
+      <Link>default.licenseheader</Link>
+    </Content>
     <None Include="Content\Bundle.css.bundle" />
     <None Include="Content\Style.less" />
     <Content Include="Content\Style.css">

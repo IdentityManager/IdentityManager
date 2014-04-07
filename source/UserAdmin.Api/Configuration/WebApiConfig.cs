@@ -1,11 +1,15 @@
-﻿using Owin;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using Owin;
 using System;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Dependencies;
 using System.Web.Http.ExceptionHandling;
 
-namespace Thinktecture.IdentityServer.UserAdmin.Api.Configuration
+namespace Thinktecture.IdentityManager.Api.Configuration
 {
     class WebApiConfig
     {

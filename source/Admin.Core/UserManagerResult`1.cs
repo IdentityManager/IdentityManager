@@ -1,5 +1,9 @@
-﻿
-namespace Thinktecture.IdentityServer.Admin.Core
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+
+namespace Thinktecture.IdentityManager.Core
 {
     public class UserManagerResult<T> : UserManagerResult
     {

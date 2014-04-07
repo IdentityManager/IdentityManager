@@ -1,8 +1,12 @@
-﻿using BrockAllen.MembershipReboot;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using BrockAllen.MembershipReboot;
 using BrockAllen.MembershipReboot.Ef;
-using Thinktecture.IdentityServer.Admin.Core;
+using Thinktecture.IdentityManager.Core;
 
-namespace MembershipReboot.IdentityServer.Admin
+namespace Thinktecture.IdentityManager.MembershipReboot
 {
     public class MembershipRebootUserManagerFactory
     {

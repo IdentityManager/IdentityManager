@@ -1,13 +1,17 @@
-﻿using BrockAllen.MembershipReboot;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using BrockAllen.MembershipReboot;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Thinktecture.IdentityServer.Admin.Core;
+using Thinktecture.IdentityManager.Core;
 using Thinktecture.IdentityServer.Core;
 
-namespace MembershipReboot.IdentityServer.Admin
+namespace Thinktecture.IdentityManager.MembershipReboot
 {
     public class MembershipRebootUserManager : IUserManager, IDisposable
     {
@@ -101,10 +105,10 @@ namespace MembershipReboot.IdentityServer.Admin
                     Email = acct.Email,
                     Phone = acct.MobilePhoneNumber,
                 };
-                var claims = new List<Thinktecture.IdentityServer.Admin.Core.UserClaim>();
+                var claims = new List<Thinktecture.IdentityManager.Core.UserClaim>();
                 if (acct.Claims != null)
                 {
-                    claims.AddRange(acct.Claims.Select(x => new Thinktecture.IdentityServer.Admin.Core.UserClaim { Type = x.Type, Value = x.Value }));
+                    claims.AddRange(acct.Claims.Select(x => new Thinktecture.IdentityManager.Core.UserClaim { Type = x.Type, Value = x.Value }));
                 }
                 user.Claims = claims.ToArray();
                 

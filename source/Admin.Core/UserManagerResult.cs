@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Thinktecture.IdentityServer.Admin.Core
+namespace Thinktecture.IdentityManager.Core
 {
     public class UserManagerResult
     {

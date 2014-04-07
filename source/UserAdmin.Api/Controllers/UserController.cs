@@ -1,12 +1,15 @@
-﻿using System;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Thinktecture.IdentityServer.Admin.Core;
-using Thinktecture.IdentityServer.UserAdmin.Api.Models;
+using Thinktecture.IdentityManager.Core;
 
-namespace Thinktecture.IdentityServer.UserAdmin.Api.Controllers
+namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
     public class UserController : ApiController
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{1AEA243F-5A85-402D-89DF-C178FEB522D6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Thinktecture.IdentityServer.UserAdmin.Api</RootNamespace>
-    <AssemblyName>Thinktecture.IdentityServer.UserAdmin.Api</AssemblyName>
+    <RootNamespace>Thinktecture.IdentityManager.Api</RootNamespace>
+    <AssemblyName>Thinktecture.IdentityManager.Api</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

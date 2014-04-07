@@ -1,5 +1,10 @@
-﻿using System;
-using Thinktecture.IdentityServer.UserAdmin.Api.Configuration;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using System;
+using Thinktecture.IdentityManager.Api.Configuration;
+
 
 namespace Owin
 {

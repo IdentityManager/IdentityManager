@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using System.Linq;
 using System.Web.Http.ModelBinding;
 
 namespace System.Web.Http

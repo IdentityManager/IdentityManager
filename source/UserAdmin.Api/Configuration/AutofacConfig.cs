@@ -1,10 +1,14 @@
-﻿using Autofac;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using Autofac;
 using Autofac.Integration.WebApi;
 using System;
 using System.Web.Http.Dependencies;
-using Thinktecture.IdentityServer.Admin.Core;
+using Thinktecture.IdentityManager.Core;
 
-namespace Thinktecture.IdentityServer.UserAdmin.Api.Configuration
+namespace Thinktecture.IdentityManager.Api.Configuration
 {
     class AutofacConfig
     {

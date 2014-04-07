@@ -7,8 +7,8 @@
     <ProjectGuid>{319E13DD-C16A-4936-B179-BBFBA52C693B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Thinktecture.IdentityServer.Admin.Core</RootNamespace>
-    <AssemblyName>Thinktecture.IdentityServer.Admin.Core</AssemblyName>
+    <RootNamespace>Thinktecture.IdentityManager.Core</RootNamespace>
+    <AssemblyName>Thinktecture.IdentityManager.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -49,6 +49,11 @@
     <Compile Include="UserManagerResult`1.cs" />
     <Compile Include="UserManagerResult.cs" />
     <Compile Include="UserResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\default.licenseheader">
+      <Link>default.licenseheader</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

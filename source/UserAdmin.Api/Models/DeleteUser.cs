@@ -1,6 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/*
+ * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
+ * see license
+ */
+using System.ComponentModel.DataAnnotations;
 
-namespace Thinktecture.IdentityServer.UserAdmin.Api.Models
+namespace Thinktecture.IdentityManager.Api.Models
 {
     public class DeleteUser
     {

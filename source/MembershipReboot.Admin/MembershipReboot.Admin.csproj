@@ -7,8 +7,8 @@
     <ProjectGuid>{DDCE2A99-EE37-42E3-A84E-00957F770B52}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MembershipReboot.IdentityServer.Admin</RootNamespace>
-    <AssemblyName>MembershipReboot.IdentityServer.Admin</AssemblyName>
+    <RootNamespace>Thinktecture.IdentityManager.MembershipReboot</RootNamespace>
+    <AssemblyName>Thinktecture.IdentityManager.MembershipReboot</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -73,6 +73,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\default.licenseheader">
+      <Link>default.licenseheader</Link>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
