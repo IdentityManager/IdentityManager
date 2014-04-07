@@ -67,7 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Admin.Core\Core.csproj">
+    <ProjectReference Include="..\Core\Core.csproj">
       <Project>{319e13dd-c16a-4936-b179-bbfba52c693b}</Project>
       <Name>Core</Name>
     </ProjectReference>

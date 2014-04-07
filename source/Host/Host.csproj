@@ -93,11 +93,11 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Admin.Core\Core.csproj">
+    <ProjectReference Include="..\Core\Core.csproj">
       <Project>{319e13dd-c16a-4936-b179-bbfba52c693b}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MembershipReboot.Admin\MembershipReboot.csproj">
+    <ProjectReference Include="..\MembershipReboot\MembershipReboot.csproj">
       <Project>{ddce2a99-ee37-42e3-a84e-00957f770b52}</Project>
       <Name>MembershipReboot</Name>
     </ProjectReference>
