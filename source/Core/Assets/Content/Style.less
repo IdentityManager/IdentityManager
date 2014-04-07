@@ -32,23 +32,48 @@ form label.column{
     margin-top:26px;
 }
 
-.page-header{
-    h1{
-        .badge{
-            position:relative;
-            top:-5px;
+.page-header {
+    h1 {
+        .badge {
+            position: relative;
+            top: -5px;
         }
-        .waiting{
-            position:relative;
-            top:-5px;
-            font-size:35%;
+
+        .waiting {
+            position: relative;
+            top: -5px;
+            font-size: 35%;
+            -moz-animation: pulse 1s infinite;
+            -o-animation: pulse 1s infinite;
+            -webkit-animation: pulse 1s infinite;
+            animation: pulse 1s infinite;
         }
     }
-    .label{
-        position:relative;
-        top:15px;
+
+    .label {
+        position: relative;
+        top: 15px;
     }
-    .subject{
+
+    .subject {
         //color: @gray-light;
     }
+}
+
+@-moz-keyframes pulse {
+  0%   { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+
+@-webkit-keyframes pulse {
+  0%   { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+
+@keyframes pulse {
+  0%   { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
 }
