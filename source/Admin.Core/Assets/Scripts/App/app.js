@@ -7,19 +7,19 @@
         $routeProvider
             .when("/", {
                 controller: 'HomeCtrl',
-                templateUrl: 'templates/home.html'
+                templateUrl: 'assets/Templates.home.html'
             })
             .when("/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
-                templateUrl: 'templates/users/list.html'
+                templateUrl: 'assets/Templates.users.list.html'
             })
             .when("/create", {
                 controller: 'NewUserCtrl',
-                templateUrl: 'templates/users/new.html'
+                templateUrl: 'assets/Templates.users.new.html'
             })
             .when("/edit/:subject", {
                 controller: 'EditUserCtrl',
-                templateUrl: 'templates/users/edit.html'
+                templateUrl: 'assets/Templates.users.edit.html'
             })
             .otherwise({
                 redirectTo: '/'
@@ -42,7 +42,7 @@
         };
     });
 
-    app.service("meta", function ($http) {
+    app.service("meta", function ($http, $q) {
         var meta;
         this.getMetadata = function () {
             if (meta) {

@@ -31,8 +31,49 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Autofac.3.3.1\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.WebApi, Version=3.2.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Autofac.WebApi2.3.2.1\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.FileSystems.2.1.0\lib\net40\Microsoft.Owin.FileSystems.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.StaticFiles, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Owin.StaticFiles.2.1.0\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.1.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.1.2\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Owin, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Owin.5.1.2\lib\net45\System.Web.Http.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,20 +81,123 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateResult.cs" />
-    <Compile Include="IUserManager.cs" />
+    <Compile Include="Api\Controllers\PageController.cs" />
+    <Compile Include="Assets\AssetManager.cs" />
+    <Compile Include="Assets\EmbeddedHtmlResult.cs" />
+    <Compile Include="Configuration\AppBuilderExtensions.cs" />
+    <Compile Include="Configuration\AutofacConfig.cs" />
+    <Compile Include="Configuration\IdentityManagerConfiguration.cs" />
+    <Compile Include="Configuration\WebApiConfig.cs" />
+    <Compile Include="Api\Controllers\MetaController.cs" />
+    <Compile Include="Api\Controllers\UserController.cs" />
+    <Compile Include="Api\Models\Claim.cs" />
+    <Compile Include="Api\Models\CreateUser.cs" />
+    <Compile Include="Api\Models\DeleteUser.cs" />
+    <Compile Include="Api\Models\SetEmail.cs" />
+    <Compile Include="Api\Models\SetPassword.cs" />
+    <Compile Include="Api\Models\SetPhone.cs" />
+    <Compile Include="Core\CreateResult.cs" />
+    <Compile Include="Core\IUserManager.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryResult.cs" />
-    <Compile Include="UserClaim.cs" />
-    <Compile Include="UserManagerMetadata.cs" />
-    <Compile Include="UserManagerResult`1.cs" />
-    <Compile Include="UserManagerResult.cs" />
-    <Compile Include="UserResult.cs" />
+    <Compile Include="Core\QueryResult.cs" />
+    <Compile Include="Core\UserClaim.cs" />
+    <Compile Include="Core\UserManagerMetadata.cs" />
+    <Compile Include="Core\UserManagerResult`1.cs" />
+    <Compile Include="Core\UserManagerResult.cs" />
+    <Compile Include="Core\UserResult.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Content\Bundle.css">
+      <DependentUpon>Bundle.css.bundle</DependentUpon>
+    </Content>
+    <EmbeddedResource Include="Assets\Content\Bundle.min.css">
+      <DependentUpon>Bundle.css</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Assets\Content\Style.css">
+      <DependentUpon>Style.less</DependentUpon>
+    </Content>
+    <Content Include="Assets\Content\Style.min.css">
+      <DependentUpon>Style.css</DependentUpon>
+    </Content>
+    <EmbeddedResource Include="Assets\Templates\index.html" />
+    <Content Include="Assets\Scripts\App\app.js" />
+    <EmbeddedResource Include="Assets\Scripts\Bundle.js">
+      <DependentUpon>Bundle.js.bundle</DependentUpon>
+    </EmbeddedResource>
+    <Content Include="Assets\Scripts\Libs\angular-route.js" />
+    <Content Include="Assets\Scripts\Libs\angular-route.min.js" />
+    <Content Include="Assets\Scripts\Libs\angular.1.2.13.js" />
+    <Content Include="Assets\Scripts\Libs\angular.1.2.13.min.js" />
+    <Content Include="Assets\Scripts\Libs\bootstrap.js" />
+    <Content Include="Assets\Scripts\Libs\bootstrap.min.js" />
+    <Content Include="Assets\Scripts\Libs\jquery-2.1.0.js" />
+    <Content Include="Assets\Scripts\Libs\jquery-2.1.0.min.js" />
+    <EmbeddedResource Include="Assets\Templates\home.html" />
+    <EmbeddedResource Include="Assets\Templates\users\edit.html" />
+    <EmbeddedResource Include="Assets\Templates\users\list.html" />
+    <EmbeddedResource Include="Assets\Templates\users\new.html" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Assets\Scripts\Libs\jquery-2.1.0.intellisense.js" />
     <None Include="..\default.licenseheader">
       <Link>default.licenseheader</Link>
     </None>
+    <Content Include="Assets\Content\Bootstrap.css">
+      <DependentUpon>Bootstrap.less</DependentUpon>
+    </Content>
+    <Content Include="Assets\Content\Bootstrap.min.css">
+      <DependentUpon>Bootstrap.css</DependentUpon>
+    </Content>
+    <Content Include="Assets\Content\bootstrap\alerts.less" />
+    <Content Include="Assets\Content\bootstrap\badges.less" />
+    <Content Include="Assets\Content\bootstrap\bootstrap.less" />
+    <Content Include="Assets\Content\bootstrap\breadcrumbs.less" />
+    <Content Include="Assets\Content\bootstrap\button-groups.less" />
+    <Content Include="Assets\Content\bootstrap\buttons.less" />
+    <Content Include="Assets\Content\bootstrap\carousel.less" />
+    <Content Include="Assets\Content\bootstrap\close.less" />
+    <Content Include="Assets\Content\bootstrap\code.less" />
+    <Content Include="Assets\Content\bootstrap\component-animations.less" />
+    <Content Include="Assets\Content\bootstrap\dropdowns.less" />
+    <Content Include="Assets\Content\bootstrap\forms.less" />
+    <Content Include="Assets\Content\bootstrap\glyphicons.less" />
+    <Content Include="Assets\Content\bootstrap\grid.less" />
+    <Content Include="Assets\Content\bootstrap\input-groups.less" />
+    <Content Include="Assets\Content\bootstrap\jumbotron.less" />
+    <Content Include="Assets\Content\bootstrap\labels.less" />
+    <Content Include="Assets\Content\bootstrap\list-group.less" />
+    <Content Include="Assets\Content\bootstrap\media.less" />
+    <Content Include="Assets\Content\bootstrap\mixins.less" />
+    <Content Include="Assets\Content\bootstrap\modals.less" />
+    <Content Include="Assets\Content\bootstrap\navbar.less" />
+    <Content Include="Assets\Content\bootstrap\navs.less" />
+    <Content Include="Assets\Content\bootstrap\normalize.less" />
+    <Content Include="Assets\Content\bootstrap\pager.less" />
+    <Content Include="Assets\Content\bootstrap\pagination.less" />
+    <Content Include="Assets\Content\bootstrap\panels.less" />
+    <Content Include="Assets\Content\bootstrap\popovers.less" />
+    <Content Include="Assets\Content\bootstrap\print.less" />
+    <Content Include="Assets\Content\bootstrap\progress-bars.less" />
+    <Content Include="Assets\Content\bootstrap\responsive-utilities.less" />
+    <Content Include="Assets\Content\bootstrap\scaffolding.less" />
+    <Content Include="Assets\Content\bootstrap\tables.less" />
+    <Content Include="Assets\Content\bootstrap\theme.less" />
+    <Content Include="Assets\Content\bootstrap\thumbnails.less" />
+    <Content Include="Assets\Content\bootstrap\tooltip.less" />
+    <Content Include="Assets\Content\bootstrap\type.less" />
+    <Content Include="Assets\Content\bootstrap\utilities.less" />
+    <Content Include="Assets\Content\bootstrap\variables.less" />
+    <Content Include="Assets\Content\bootstrap\wells.less" />
+    <Content Include="Assets\Content\Bootstrap.less" />
+    <None Include="Assets\Content\Bundle.css.bundle" />
+    <EmbeddedResource Include="Assets\Content\fonts\glyphicons-halflings-regular.eot" />
+    <EmbeddedResource Include="Assets\Content\fonts\glyphicons-halflings-regular.ttf" />
+    <EmbeddedResource Include="Assets\Content\fonts\glyphicons-halflings-regular.woff" />
+    <None Include="Assets\Content\Style.less" />
+    <None Include="Assets\Scripts\Bundle.js.bundle" />
+    <Content Include="Assets\Scripts\Libs\jquery-2.1.0.min.map" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

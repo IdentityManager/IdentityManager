@@ -5,7 +5,6 @@
 
 using Thinktecture.IdentityManager.MembershipReboot;
 using Owin;
-using Thinktecture.IdentityManager.Api.Configuration;
 
 namespace Thinktecture.IdentityManager.Host
 {
