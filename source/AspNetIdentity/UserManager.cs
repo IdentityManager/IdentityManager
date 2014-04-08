@@ -26,6 +26,11 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
             this.userManager = userManager;
             this.cleanup = cleanup;
+
+            if (userManager.UserTokenProvider == null)
+            {
+                userManager.UserTokenProvider = new TokenProvider<TUser, string>();
+            }
         }
 
         public void Dispose()
