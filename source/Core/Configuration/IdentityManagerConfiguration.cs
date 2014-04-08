@@ -26,18 +26,22 @@ namespace Thinktecture.IdentityManager
 
         internal void Validate()
         {
-            if (String.IsNullOrWhiteSpace(this.AdminRoleName))
+            if (this.UserManagerFactory == null)
             {
-                throw new Exception("AdminRoleName is required.");
+                throw new Exception("UserManagerFactory is required.");
             }
-            if (this.EmbeddedAuthentication == null && this.ExternalAuthentication == null)
-            {
-                throw new Exception("Neither EmbeddedAuthentication nor ExternalAuthentication was provided. One is required.");
-            }
-            if (this.EmbeddedAuthentication != null && this.ExternalAuthentication != null)
-            {
-                throw new Exception("Both EmbeddedAuthentication and EmbeddedAuthentication was provided. Only one is allowed.");
-            }
+            //if (String.IsNullOrWhiteSpace(this.AdminRoleName))
+            //{
+            //    throw new Exception("AdminRoleName is required.");
+            //}
+            //if (this.EmbeddedAuthentication == null && this.ExternalAuthentication == null)
+            //{
+            //    throw new Exception("Neither EmbeddedAuthentication nor ExternalAuthentication was provided. One is required.");
+            //}
+            //if (this.EmbeddedAuthentication != null && this.ExternalAuthentication != null)
+            //{
+            //    throw new Exception("Both EmbeddedAuthentication and EmbeddedAuthentication was provided. Only one is allowed.");
+            //}
         }
     }
     

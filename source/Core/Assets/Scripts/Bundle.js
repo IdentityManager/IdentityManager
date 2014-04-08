@@ -464,6 +464,7 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
             }
         }, function (error) {
             $scope.model.message = error;
+            $scope.model.waiting = false;
         });
     });
 

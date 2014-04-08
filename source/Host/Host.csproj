@@ -93,6 +93,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AspNetIdentity\AspNetIdentity.csproj">
+      <Project>{35fb37da-28d5-4158-86a2-74d6275b842f}</Project>
+      <Name>AspNetIdentity</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{319e13dd-c16a-4936-b179-bbfba52c693b}</Project>
       <Name>Core</Name>

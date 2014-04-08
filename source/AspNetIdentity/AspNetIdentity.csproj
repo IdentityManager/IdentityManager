@@ -7,8 +7,8 @@
     <ProjectGuid>{35FB37DA-28D5-4158-86A2-74D6275B842F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AspNetIdentity</RootNamespace>
-    <AssemblyName>AspNetIdentity</AssemblyName>
+    <RootNamespace>Thinktecture.IdentityManager.AspNetIdentity</RootNamespace>
+    <AssemblyName>Thinktecture.IdentityManager.AspNetIdentity</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -54,8 +54,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserManager.cs" />
+    <Compile Include="UserManagerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\default.licenseheader">
+      <Link>default.licenseheader</Link>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>

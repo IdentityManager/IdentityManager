@@ -3,7 +3,6 @@
  * see license
  */
 
-using Thinktecture.IdentityManager.MembershipReboot;
 using Owin;
 
 namespace Thinktecture.IdentityManager.Host
@@ -14,7 +13,8 @@ namespace Thinktecture.IdentityManager.Host
         {
             app.UseIdentityManager(new IdentityManagerConfiguration()
             {
-                UserManagerFactory = UserManagerFactory.Create
+                //UserManagerFactory = Thinktecture.IdentityManager.MembershipReboot.UserManagerFactory.Create
+                UserManagerFactory = Thinktecture.IdentityManager.AspNetIdentity.UserManagerFactory.Create
             });
         }
     }

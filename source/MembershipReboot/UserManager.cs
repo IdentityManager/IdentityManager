@@ -169,7 +169,7 @@ namespace Thinktecture.IdentityManager.MembershipReboot
                 return Task.FromResult(new UserManagerResult(ex.Message));
             } 
 
-            return Task.FromResult(new UserManagerResult());
+            return Task.FromResult(UserManagerResult.Success);
         }
 
         public async Task<UserManagerResult> SetPasswordAsync(string subject, string password)
@@ -247,9 +247,9 @@ namespace Thinktecture.IdentityManager.MembershipReboot
             catch (ValidationException ex)
             {
                 return Task.FromResult(new UserManagerResult(ex.Message));
-            } 
+            }
 
-            return Task.FromResult(new UserManagerResult());
+            return Task.FromResult(UserManagerResult.Success);
         }
 
         public Task<UserManagerResult> DeleteClaimAsync(string subject, string type, string value)
@@ -267,9 +267,9 @@ namespace Thinktecture.IdentityManager.MembershipReboot
             catch (ValidationException ex)
             {
                 return Task.FromResult(new UserManagerResult(ex.Message));
-            } 
+            }
 
-            return Task.FromResult(new UserManagerResult());
+            return Task.FromResult(UserManagerResult.Success);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Owin
         {
             if (app == null) throw new ArgumentNullException("app");
             if (config == null) throw new ArgumentNullException("config");
-            //config.Validate();
+            config.Validate();
 
             app.Use(async (ctx, next) =>
             {

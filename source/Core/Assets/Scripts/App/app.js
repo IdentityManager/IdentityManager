@@ -228,6 +228,7 @@
             }
         }, function (error) {
             $scope.model.message = error;
+            $scope.model.waiting = false;
         });
     });
 
