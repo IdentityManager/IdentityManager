@@ -15,6 +15,8 @@ namespace Thinktecture.IdentityManager.MembershipReboot
         static MembershipRebootConfiguration config;
         static UserManagerFactory()
         {
+            System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
+
             config = new MembershipRebootConfiguration();
             config.PasswordHashingIterationCount = 10000;
             config.RequireAccountVerification = false;
