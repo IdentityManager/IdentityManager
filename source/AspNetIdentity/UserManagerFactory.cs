@@ -16,6 +16,8 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
         static UserManagerFactory()
         {
             System.Data.Entity.Database.SetInitializer(new System.Data.Entity.CreateDatabaseIfNotExists<IdentityDbContext>());
+            
+            //System.Data.Entity.Database.SetInitializer(new System.Data.Entity.CreateDatabaseIfNotExists<CustomDbContext>());
         }
         
         public static IUserManager Create()
@@ -23,7 +25,12 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
             var db = new IdentityDbContext<IdentityUser>("DefaultConnection");
             var store = new UserStore<IdentityUser>(db);
             var mgr = new Microsoft.AspNet.Identity.UserManager<IdentityUser>(store);
-            return new UserManager<IdentityUser>(mgr, db);
+            return new Thinktecture.IdentityManager.AspNetIdentity.UserManager<IdentityUser>(mgr, db);
+
+            //var db = new CustomDbContext("CustomAspId");
+            //var store = new CustomUserStore(db);
+            //var mgr = new CustomUserManager(store);
+            //return new Thinktecture.IdentityManager.AspNetIdentity.UserManager<CustomUser, int, CustomUserLogin, CustomUserRole, CustomUserClaim>(mgr, db);
         }
     }
 }

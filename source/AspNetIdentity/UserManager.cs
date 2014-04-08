@@ -14,13 +14,29 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.AspNetIdentity
 {
-    public class UserManager<TUser> : IUserManager, IDisposable
+    public class UserManager<TUser> : UserManager<TUser, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
         where TUser : IdentityUser, new()
     {
-        protected readonly Microsoft.AspNet.Identity.UserManager<TUser> userManager;
+        public UserManager(Microsoft.AspNet.Identity.UserManager<TUser> userManager, IDisposable cleanup)
+            : base(userManager, cleanup)
+        {
+        }
+    }
+
+    public class UserManager<TUser, TKey, TUserLogin, TUserRole, TUserClaim> : IUserManager, IDisposable
+        where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>, new()
+        //where TRole : IdentityRole<TKey, TUserRole>
+        where TUserLogin : IdentityUserLogin<TKey>
+        where TUserRole : IdentityUserRole<TKey>
+        where TUserClaim : IdentityUserClaim<TKey>
+        where TKey : IEquatable<TKey>
+    {
+        protected readonly Microsoft.AspNet.Identity.UserManager<TUser, TKey> userManager;
         IDisposable cleanup;
 
-        public UserManager(Microsoft.AspNet.Identity.UserManager<TUser> userManager, IDisposable cleanup)
+        protected readonly Func<string, TKey> ConvertSubjectToKey;
+
+        public UserManager(Microsoft.AspNet.Identity.UserManager<TUser, TKey> userManager, IDisposable cleanup)
         {
             if (userManager == null) throw new ArgumentNullException("userManager");
 
@@ -29,10 +45,43 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
             if (userManager.UserTokenProvider == null)
             {
-                userManager.UserTokenProvider = new TokenProvider<TUser, string>();
+                userManager.UserTokenProvider = new TokenProvider<TUser, TKey>();
+            }
+
+            var keyType = typeof(TKey);
+            if (keyType == typeof(string)) ConvertSubjectToKey = subject => (TKey)ParseString(subject);
+            else if (keyType == typeof(int)) ConvertSubjectToKey = subject => (TKey)ParseInt(subject);
+            else if (keyType == typeof(long)) ConvertSubjectToKey = subject => (TKey)ParseLong(subject);
+            else if (keyType == typeof(Guid)) ConvertSubjectToKey = subject => (TKey)ParseGuid(subject);
+            else
+            {
+                throw new InvalidOperationException("Key type not supported");
             }
         }
 
+        object ParseString(string sub)
+        {
+            return sub;
+        }
+        object ParseInt(string sub)
+        {
+            int key;
+            if (!Int32.TryParse(sub, out key)) return 0;
+            return key;
+        }
+        object ParseLong(string sub)
+        {
+            long key;
+            if (!Int64.TryParse(sub, out key)) return 0;
+            return key;
+        }
+        object ParseGuid(string sub)
+        {
+            Guid key;
+            if (!Guid.TryParse(sub, out key)) return Guid.Empty;
+            return key;
+        }
+        
         public void Dispose()
         {
             if (this.cleanup != null)
@@ -92,7 +141,7 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
             {
                 var user = new UserResult
                 {
-                    Subject = x.Id,
+                    Subject = x.Id.ToString(),
                     Username = x.UserName,
                     DisplayName = DisplayNameFromUser(x)
                 };
@@ -112,7 +161,8 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
         public async Task<UserManagerResult<UserResult>> GetUserAsync(string subject)
         {
-            var user = await this.userManager.FindByIdAsync(subject);
+            TKey key = ConvertSubjectToKey(subject);
+            var user = await this.userManager.FindByIdAsync(key);
             if (user == null)
             {
                 return new UserManagerResult<UserResult>("Invalid subject");
@@ -145,12 +195,13 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
                 return new UserManagerResult<CreateResult>(result.Errors.ToArray());
             }
 
-            return new UserManagerResult<CreateResult>(new CreateResult { Subject = user.Id });
+            return new UserManagerResult<CreateResult>(new CreateResult { Subject = user.Id.ToString() });
         }
         
         public async Task<UserManagerResult> DeleteUserAsync(string subject)
         {
-            var user = await this.userManager.FindByIdAsync(subject);
+            TKey key = ConvertSubjectToKey(subject);
+            var user = await this.userManager.FindByIdAsync(key);
             if (user == null)
             {
                 return new UserManagerResult("Invalid subject");
@@ -167,8 +218,9 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
         public async Task<UserManagerResult> SetPasswordAsync(string subject, string password)
         {
-            var token = await this.userManager.GeneratePasswordResetTokenAsync(subject);
-            var result = await this.userManager.ResetPasswordAsync(subject, token, password);
+            TKey key = ConvertSubjectToKey(subject);
+            var token = await this.userManager.GeneratePasswordResetTokenAsync(key);
+            var result = await this.userManager.ResetPasswordAsync(key, token, password);
             if (!result.Succeeded)
             {
                 return new UserManagerResult<CreateResult>(result.Errors.ToArray());
@@ -179,14 +231,15 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
         public async Task<UserManagerResult> SetEmailAsync(string subject, string email)
         {
-            var result = await this.userManager.SetEmailAsync(subject, email);
+            TKey key = ConvertSubjectToKey(subject);
+            var result = await this.userManager.SetEmailAsync(key, email);
             if (!result.Succeeded)
             {
                 return new UserManagerResult<CreateResult>(result.Errors.ToArray());
             }
             
-            var token = await this.userManager.GenerateEmailConfirmationTokenAsync(subject);
-            result = this.userManager.ConfirmEmail(subject, token);
+            var token = await this.userManager.GenerateEmailConfirmationTokenAsync(key);
+            result = this.userManager.ConfirmEmail(key, token);
             if (!result.Succeeded)
             {
                 return new UserManagerResult<CreateResult>(result.Errors.ToArray());
@@ -197,8 +250,9 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
         public async Task<UserManagerResult> SetPhoneAsync(string subject, string phone)
         {
-            var token = await this.userManager.GenerateChangePhoneNumberTokenAsync(subject, phone);
-            var result = await this.userManager.ChangePhoneNumberAsync(subject, phone, token);
+            TKey key = ConvertSubjectToKey(subject);
+            var token = await this.userManager.GenerateChangePhoneNumberTokenAsync(key, phone);
+            var result = await this.userManager.ChangePhoneNumberAsync(key, phone, token);
             if (!result.Succeeded)
             {
                 return new UserManagerResult<CreateResult>(result.Errors.ToArray());
@@ -209,10 +263,11 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
         public async Task<UserManagerResult> AddClaimAsync(string subject, string type, string value)
         {
-            var existingClaims = await userManager.GetClaimsAsync(subject);
+            TKey key = ConvertSubjectToKey(subject);
+            var existingClaims = await userManager.GetClaimsAsync(key);
             if (!existingClaims.Any(x => x.Type == type && x.Value == value))
             {
-                var result = await this.userManager.AddClaimAsync(subject, new System.Security.Claims.Claim(type, value));
+                var result = await this.userManager.AddClaimAsync(key, new System.Security.Claims.Claim(type, value));
                 if (!result.Succeeded)
                 {
                     return new UserManagerResult<CreateResult>(result.Errors.ToArray());
@@ -224,7 +279,8 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
         public async Task<UserManagerResult> DeleteClaimAsync(string subject, string type, string value)
         {
-            var result = await this.userManager.RemoveClaimAsync(subject, new System.Security.Claims.Claim(type, value));
+            TKey key = ConvertSubjectToKey(subject);
+            var result = await this.userManager.RemoveClaimAsync(key, new System.Security.Claims.Claim(type, value));
             if (!result.Succeeded)
             {
                 return new UserManagerResult<CreateResult>(result.Errors.ToArray());
