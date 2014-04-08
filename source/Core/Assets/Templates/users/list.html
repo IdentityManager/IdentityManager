@@ -19,6 +19,12 @@
     </div>
 </form>
 
+<div class="row" ng-show="model.message">
+    <div class="col-sm-8">
+        <div class="alert alert-danger alert-dismissable">{{model.message}}</div>
+    </div>
+</div>
+
 <div class="row" ng-hide="model.users || model.waiting">
     <div class="col-sm-8">
         <div class="alert alert-info">No Users Found</div>

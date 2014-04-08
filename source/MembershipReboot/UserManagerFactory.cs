@@ -7,14 +7,13 @@ using BrockAllen.MembershipReboot.Ef;
 using BrockAllen.MembershipReboot.Relational;
 using System.Linq;
 using Thinktecture.IdentityManager.Core;
-using Thinktecture.IdentityServer.Core;
 
 namespace Thinktecture.IdentityManager.MembershipReboot
 {
-    public class MembershipRebootUserManagerFactory
+    public class UserManagerFactory
     {
         static MembershipRebootConfiguration config;
-        static MembershipRebootUserManagerFactory()
+        static UserManagerFactory()
         {
             config = new MembershipRebootConfiguration();
             config.PasswordHashingIterationCount = 10000;
@@ -27,7 +26,7 @@ namespace Thinktecture.IdentityManager.MembershipReboot
             repo.QueryFilter = Filter;
             repo.QuerySort = Sort;
             var svc = new UserAccountService(config, repo);
-            return new MembershipRebootUserManager<UserAccount>(svc, repo, repo);
+            return new UserManager<UserAccount>(svc, repo, repo);
         }
 
         static IQueryable<RelationalUserAccount> Filter(IQueryable<RelationalUserAccount> query, string filter)

@@ -14,7 +14,7 @@ namespace Thinktecture.IdentityManager.Host
         {
             app.UseIdentityManager(new IdentityManagerConfiguration()
             {
-                UserManagerFactory = MembershipRebootUserManagerFactory.Create
+                UserManagerFactory = UserManagerFactory.Create
             });
         }
     }

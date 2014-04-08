@@ -298,6 +298,9 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
             return $http.get("api/users", { params: { filter: filter, start: start, count: count } })
                 .then(function (response) {
                     return response.data;
+                },
+                function (response) {
+                    throw (response.data && response.data.message || "Error Getting Users");
                 });
         };
         this.getUser = function (subject) {
@@ -443,6 +446,7 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
         };
 
         var filter = $routeParams.filter;
+        $scope.model.message = null;
         $scope.model.filter = filter;
         $scope.model.users = null;
         $scope.model.pager = null;
@@ -458,6 +462,8 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
             if (result.users && result.users.length) {
                 $scope.model.pager = new Pager(result, itemsPerPage, filter);
             }
+        }, function (error) {
+            $scope.model.message = error;
         });
     });
 

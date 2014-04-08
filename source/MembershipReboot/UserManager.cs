@@ -9,18 +9,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Thinktecture.IdentityManager.Core;
-using Thinktecture.IdentityServer.Core;
 
 namespace Thinktecture.IdentityManager.MembershipReboot
 {
-    public class MembershipRebootUserManager<TAccount> : IUserManager, IDisposable
+    public class UserManager<TAccount> : IUserManager, IDisposable
         where TAccount : UserAccount
     {
         UserAccountService<TAccount> userAccountService;
         IUserAccountQuery query;
         IDisposable cleanup;
 
-        public MembershipRebootUserManager(
+        public UserManager(
             UserAccountService<TAccount> userAccountService,
             IUserAccountQuery query,
             IDisposable cleanup)

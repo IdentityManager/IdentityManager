@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Thinktecture.IdentityManager.Core</RootNamespace>
     <AssemblyName>Thinktecture.IdentityManager.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -97,9 +97,10 @@
     <Compile Include="Api\Models\SetEmail.cs" />
     <Compile Include="Api\Models\SetPassword.cs" />
     <Compile Include="Api\Models\SetPhone.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IUserManager.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
     <Compile Include="Core\UserClaim.cs" />
