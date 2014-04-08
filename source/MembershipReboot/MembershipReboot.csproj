@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RelationalUserAccountQuery.cs" />
     <Compile Include="UserManager.cs" />
     <Compile Include="UserManagerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

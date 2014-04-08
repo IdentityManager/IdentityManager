@@ -23,33 +23,10 @@ namespace Thinktecture.IdentityManager.MembershipReboot
         public static IUserManager Create()
         {
             var repo = new DefaultUserAccountRepository();
-            repo.QueryFilter = Filter;
-            repo.QuerySort = Sort;
+            repo.QueryFilter = RelationalUserAccountQuery.Filter;
+            repo.QuerySort = RelationalUserAccountQuery.Sort;
             var svc = new UserAccountService(config, repo);
             return new UserManager<UserAccount>(svc, repo, repo);
-        }
-
-        static IQueryable<RelationalUserAccount> Filter(IQueryable<RelationalUserAccount> query, string filter)
-        {
-            return
-                from acct in query
-                let claims = (from claim in acct.ClaimCollection
-                              where claim.Type == Constants.ClaimTypes.Name && claim.Value.Contains(filter)
-                              select claim)
-                where
-                    acct.Username.Contains(filter) || claims.Any()
-                select acct;
-        }
-
-        static IQueryable<RelationalUserAccount> Sort(IQueryable<RelationalUserAccount> query)
-        {
-            return
-                from acct in query
-                let display = (from claim in acct.ClaimCollection
-                               where claim.Type == Constants.ClaimTypes.Name
-                               select claim.Value).FirstOrDefault()
-                orderby display ?? acct.Username
-                select acct;
         }
     }
 }
