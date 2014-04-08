@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MembershipReboot", "Members
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{807F52C2-DD37-4AF0-BE34-CF7A32DC9644}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetIdentity", "AspNetIdentity\AspNetIdentity.csproj", "{35FB37DA-28D5-4158-86A2-74D6275B842F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,11 +31,16 @@ Global
 		{DDCE2A99-EE37-42E3-A84E-00957F770B52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDCE2A99-EE37-42E3-A84E-00957F770B52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDCE2A99-EE37-42E3-A84E-00957F770B52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35FB37DA-28D5-4158-86A2-74D6275B842F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35FB37DA-28D5-4158-86A2-74D6275B842F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35FB37DA-28D5-4158-86A2-74D6275B842F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35FB37DA-28D5-4158-86A2-74D6275B842F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DDCE2A99-EE37-42E3-A84E-00957F770B52} = {807F52C2-DD37-4AF0-BE34-CF7A32DC9644}
+		{35FB37DA-28D5-4158-86A2-74D6275B842F} = {807F52C2-DD37-4AF0-BE34-CF7A32DC9644}
 	EndGlobalSection
 EndGlobal
