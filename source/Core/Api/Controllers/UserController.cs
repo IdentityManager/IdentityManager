@@ -8,10 +8,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Core;
+using Thinktecture.IdentityManager.Core.Api.Filters;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
     [RoutePrefix("api")]
+    [NoCache]
     public class UserController : ApiController
     {
         IUserManager userManager;

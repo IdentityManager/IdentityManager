@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Controllers\PageController.cs" />
+    <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
