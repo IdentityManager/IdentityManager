@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Thinktecture.IdentityManager</id>
+    <version>0.0.0</version>
+    <title>Thinktecture IdentityManager</title>
+    <authors>Brock Allen, Dominick Baier</authors>
+    <owners>Brock Allen, Dominick Baier</owners>
+    <projectUrl>https://github.com/thinktecture/Thinktecture.IdentityManager</projectUrl>
+    <iconUrl>http://www.thinktecture.com/images/favicon.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Thinktecture IdentityManager is an user management tool for MembershipReboot and ASP.NET Identity.</description>
+    <copyright>Copyright 2014</copyright>
+    <tags>Thinktecture IdentityManager Identity</tags>
+    <dependencies>
+      <dependency id="Owin" version="1.0"/>
+    </dependencies>
+  </metadata>
+</package>
