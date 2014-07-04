@@ -70,5 +70,10 @@ namespace Core.Tests.Api
         {
             return client.PostAsJsonAsync(Url(path), value).Result;
         }
+
+        protected HttpResponseMessage Delete(string path)
+        {
+            return client.DeleteAsync(Url(path)).Result;
+        }
     }
 }

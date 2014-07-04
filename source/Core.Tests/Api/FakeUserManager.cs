@@ -12,11 +12,12 @@ namespace Core.Tests.Api
     {
         public FakeUserManager()
         {
-            this.SetReturnsDefault(new UserManagerResult());
-            this.SetReturnsDefault(new UserManagerResult<QueryResult>(new QueryResult()));
-            this.SetReturnsDefault(new UserManagerResult<CreateResult>(new CreateResult()));
-            this.SetReturnsDefault(new UserManagerResult<UserResult>(new UserResult()));
+            this.SetReturnsDefault(Task.FromResult(new UserManagerResult()));
+            this.SetReturnsDefault(Task.FromResult(new UserManagerResult<QueryResult>(new QueryResult())));
+            this.SetReturnsDefault(Task.FromResult(new UserManagerResult<CreateResult>(new CreateResult())));
+            this.SetReturnsDefault(Task.FromResult(new UserManagerResult<UserResult>(new UserResult())));
         }
+
 
         public void SetupQueryUsersAsync(QueryResult result)
         {
@@ -34,6 +35,7 @@ namespace Core.Tests.Api
                 .Throws(ex);
         }
         
+
         public void VerifyQueryUsersAsync()
         {
             Verify(x=>x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()));
@@ -42,6 +44,7 @@ namespace Core.Tests.Api
         {
             Verify(x=>x.QueryUsersAsync(filter, start, count));
         }
+
 
         public void SetupCreateUserAsync(CreateResult result)
         {
@@ -62,6 +65,7 @@ namespace Core.Tests.Api
             Verify(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
         }
 
+        
         internal void VerifyGetUserAsync(string subject)
         {
             Verify(x => x.GetUserAsync(subject));
@@ -77,6 +81,15 @@ namespace Core.Tests.Api
                 .Returns(Task.FromResult(new UserManagerResult<UserResult>(errors)));
         }
 
-
+        
+        internal void VerifyDeleteUserAsync(string subject)
+        {
+            Verify(x => x.DeleteUserAsync(subject));
+        }
+        internal void SetupDeleteUserAsync(params string[] errors)
+        {
+            Setup(x => x.DeleteUserAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult(errors)));
+        }
     }
 }

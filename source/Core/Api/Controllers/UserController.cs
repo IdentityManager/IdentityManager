@@ -102,7 +102,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return NoContent();
             }
 
-            return BadRequest(ModelState.ToError());
+            return BadRequest(result.ToError());
         }
 
         [HttpPut, Route("{subject}/password")]

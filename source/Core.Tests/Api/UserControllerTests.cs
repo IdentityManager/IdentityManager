@@ -153,5 +153,29 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "foo");
             CollectionAssert.Contains(error.Errors, "bar");
         }
+
+        [TestMethod]
+        public void DeleteUserAsync_CallsUserManager()
+        {
+            Delete("api/users/123");
+            userManager.VerifyDeleteUserAsync("123");
+        }
+        [TestMethod]
+        public void DeleteUserAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        {
+            var resp = Delete("api/users/123");
+            Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
+        }
+        [TestMethod]
+        public void DeleteUserAsync_UserManagerReturnsError_ReturnsError()
+        {
+            userManager.SetupDeleteUserAsync("foo", "bar");
+            var resp = Delete("api/users/123");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
+        }
     }
 }
