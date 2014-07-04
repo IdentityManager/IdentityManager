@@ -68,44 +68,65 @@ namespace Core.Tests.Api
         [TestMethod]
         public void CreateUserAsync_ValidModel_CallsUserManager()
         {
-            Post("api/users", new CreateUserModel() { Username = "foo", Password = "bar" });
-            userManager.VerifyCreateUserAsync("foo", "bar");
+            Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
+            userManager.VerifyCreateUserAsync("user", "pass");
+        }
+
+        [TestMethod]
+        public void CreateUserAsync_UserManagerReturnsSuccess_CorrectResults()
+        {
+            userManager.SetupCreateUserAsync(new CreateResult { Subject = "123" });
+            var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
+            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+            Assert.AreEqual(Url("api/users/123"), response.Headers.Location.AbsoluteUri);
         }
 
         [TestMethod]
         public void CreateUserAsync_InvalidModel_DoesNotCallsUserManager()
         {
-            Post("api/users", new CreateUserModel() { Username = "", Password = "bar" });
-            Post("api/users", new CreateUserModel() { Username = "foo", Password = "" });
+            Post("api/users", new CreateUserModel() { Username = "", Password = "pass" });
+            Post("api/users", new CreateUserModel() { Username = "user", Password = "" });
             Post("api/users", (CreateUserModel)null);
-            userManager.VerifyCreateUserAsync("foo", "bar", Times.Never());
+            userManager.VerifyCreateUserAsyncNotCalled();
         }
 
         [TestMethod]
         public void CreateUserAsync_MissingModel_ReturnsError()
         {
-            var result = Post("api/users", (CreateUserModel)null);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-            var error = result.Content.ReadAsAsync<ErrorModel>().Result;
+            var response = Post("api/users", (CreateUserModel)null);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             CollectionAssert.Contains(error.Errors, Messages.UserDataRequired);
         }
 
         [TestMethod]
         public void CreateUserAsync_MissingUsername_ReturnsError()
         {
-            var result = Post("api/users", new CreateUserModel { Username = "", Password = "pass" });
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-            var error = result.Content.ReadAsAsync<ErrorModel>().Result;
+            var response = Post("api/users", new CreateUserModel { Username = "", Password = "pass" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             CollectionAssert.Contains(error.Errors, Messages.UsernameRequired);
         }
 
         [TestMethod]
         public void CreateUserAsync_MissingPassword_ReturnsError()
         {
-            var result = Post("api/users", new CreateUserModel { Username = "user", Password = "" });
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-            var error = result.Content.ReadAsAsync<ErrorModel>().Result;
+            var response = Post("api/users", new CreateUserModel { Username = "user", Password = "" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             CollectionAssert.Contains(error.Errors, Messages.PasswordRequired);
+        }
+
+        [TestMethod]
+        public void CreateUserAsync_UserManagerReturnsErrors_ReturnsErrors()
+        {
+            userManager.SetupCreateUserAsync("foo", "bar");
+            var response = Post("api/users", new CreateUserModel() { Username="user", Password="pass" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
         }
     }
 }

@@ -42,10 +42,23 @@ namespace Core.Tests.Api
             Verify(x=>x.QueryUsersAsync(filter, start, count));
         }
 
-        public void VerifyCreateUserAsync(string username, string password, Times? times = null)
+        public void SetupCreateUserAsync(CreateResult result)
         {
-            var t = times != null ? times.Value : Times.AtLeastOnce();
-            Verify(x => x.CreateUserAsync(username, password), t);
+            Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()))
+               .Returns(Task.FromResult(new UserManagerResult<CreateResult>(result)));
+        }
+        public void SetupCreateUserAsync(params string[] errors)
+        {
+            Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()))
+               .Returns(Task.FromResult(new UserManagerResult<CreateResult>(errors)));
+        }
+        public void VerifyCreateUserAsync(string username, string password)
+        {
+            Verify(x => x.CreateUserAsync(username, password));
+        }
+        public void VerifyCreateUserAsyncNotCalled()
+        {
+            Verify(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
         }
     }
 }
