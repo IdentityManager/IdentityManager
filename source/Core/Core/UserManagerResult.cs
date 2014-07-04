@@ -22,10 +22,5 @@ namespace Thinktecture.IdentityManager.Core
         {
             get { return Errors == null || !Errors.Any(); }
         }
-
-        public bool IsError
-        {
-            get { return !IsSuccess; }
-        }
     }
 }

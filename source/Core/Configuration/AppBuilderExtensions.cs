@@ -10,6 +10,7 @@ using Microsoft.Owin.Extensions;
 using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
+using System.Web.Http;
 
 namespace Owin
 {
@@ -43,8 +44,10 @@ namespace Owin
             app.UseStageMarker(PipelineStage.MapHandler);
 
             //app.UseJsonWebToken();
-            var resolver = AutofacConfig.Configure(config);
-            WebApiConfig.Configure(app, resolver, config);
+
+            var httpConfig = new HttpConfiguration();
+            WebApiConfig.Configure(httpConfig, config);
+            app.UseWebApi(httpConfig);
         }
     }
 }

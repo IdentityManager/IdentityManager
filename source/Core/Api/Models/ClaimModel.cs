@@ -6,11 +6,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
-    public class SetEmail
+    public class ClaimModel
     {
         [Required]
-        public string Subject { get; set; }
+        public string Type { get; set; }
         [Required]
-        public string Email { get; set; }
+        public string Value { get; set; }
     }
 }

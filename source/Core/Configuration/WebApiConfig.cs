@@ -11,17 +11,15 @@ using System.Web.Http.ExceptionHandling;
 
 namespace Thinktecture.IdentityManager
 {
-    class WebApiConfig
+    public class WebApiConfig
     {
-        public static void Configure(IAppBuilder app, IDependencyResolver resolver, IdentityManagerConfiguration config)
+        public static void Configure(HttpConfiguration apiConfig, IDependencyResolver dependencyResolver)
         {
-            if (app == null) throw new ArgumentNullException("app");
-            if (resolver == null) throw new ArgumentNullException("resolver");
-            if (config == null) throw new ArgumentNullException("config");
+            if (apiConfig == null) throw new ArgumentNullException("apiConfig");
+            if (apiConfig == null) throw new ArgumentNullException("dependencyResolver");
 
-            var apiConfig = new HttpConfiguration();
             apiConfig.MapHttpAttributeRoutes();
-            apiConfig.DependencyResolver = resolver;
+            apiConfig.DependencyResolver = dependencyResolver;
 
             apiConfig.SuppressDefaultHostAuthentication();
             apiConfig.Filters.Add(new HostAuthenticationAttribute("Bearer"));
@@ -32,8 +30,15 @@ namespace Thinktecture.IdentityManager
                 new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
             //apiConfig.Services.Add(typeof(IExceptionLogger), new UserAdminExceptionLogger());
+        }
 
-            app.UseWebApi(apiConfig);
+        public static void Configure(HttpConfiguration httpConfig, IdentityManagerConfiguration idmConfig)
+        {
+            if (httpConfig == null) throw new ArgumentNullException("httpConfig");
+            if (idmConfig == null) throw new ArgumentNullException("idmConfig");
+
+            var resolver = AutofacConfig.Configure(idmConfig);
+            Configure(httpConfig, resolver);
         }
 
         public class UserAdminExceptionLogger : ExceptionLogger

@@ -9,10 +9,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Core;
 using Thinktecture.IdentityManager.Core.Api.Filters;
+using Thinktecture.IdentityManager.Core.Resources;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
-    [RoutePrefix("api")]
+    [RoutePrefix("api/users")]
     [NoCache]
     public class UserController : ApiController
     {
@@ -24,8 +25,24 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             this.userManager = userManager;
         }
 
-        [Route("users")]
-        [HttpGet]
+        public IHttpActionResult BadRequest<T>(T data)
+        {
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, data));
+        }
+        
+        public IHttpActionResult NoContent()
+        {
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
+        }
+        
+        public IHttpActionResult Created(string location)
+        {
+            var response = Request.CreateResponse(HttpStatusCode.Created);
+            response.Headers.Location = new Uri(location);
+            return ResponseMessage(response);
+        }
+
+        [HttpGet, Route("")]
         public async Task<IHttpActionResult> GetUsersAsync(string filter = null, int start = 0, int count = 100)
         {
             var result = await userManager.QueryUsersAsync(filter, start, count);
@@ -34,28 +51,15 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return Ok(result.Result);
             }
 
-            return ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, result.Errors));
+            return BadRequest(result.ToError());
         }
 
-        [Route("users")]
-        public async Task<IHttpActionResult> GetUserAsync(string subject)
-        {
-            var result = await this.userManager.GetUserAsync(subject);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Result);
-            }
-
-            return ResponseMessage(Request.CreateResponse(HttpStatusCode.InternalServerError, result.Errors));
-        }
-
-        [Route("users")]
-        [HttpPost]
-        public async Task<IHttpActionResult> Create(CreateUser model)
+        [HttpPost, Route("")]
+        public async Task<IHttpActionResult> CreateUserAsync(CreateUserModel model)
         {
             if (model == null)
             {
-                ModelState.AddModelError("", "Data required");
+                ModelState.AddModelError("", Messages.UserDataRequired);
             }
 
             if (ModelState.IsValid)
@@ -63,172 +67,142 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 var result = await this.userManager.CreateUserAsync(model.Username, model.Password);
                 if (result.IsSuccess)
                 {
-                    return Ok(result.Result);
+                    return Created(Url.Link("user", new { subject = result.Result.Subject }));
                 }
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
+                ModelState.AddErrors(result);
             }
 
-            return BadRequest(ModelState.GetErrorMessage());
+            return BadRequest(ModelState.ToError());
         }
 
-        [Route("users/delete")]
-        [HttpPost]
-        public async Task<IHttpActionResult> DeleteUserAsync(DeleteUser model)
+        [HttpGet, Route("{subject}", Name="user")]
+        public async Task<IHttpActionResult> GetUserAsync(string subject)
         {
-            if (model == null)
+            var result = await this.userManager.GetUserAsync(subject);
+            if (result.IsSuccess)
             {
-                ModelState.AddModelError("", "Data required");
-            }
-
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.DeleteUserAsync(model.Subject);
-                if (result.IsSuccess)
+                if (result.Result == null)
                 {
-                    return Ok();
+                    return NotFound();
                 }
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
+                return Ok(result.Result);
             }
 
-            return BadRequest(ModelState.GetErrorMessage());
-        }
-
-        [Route("password")]
-        [HttpPost]
-        public async Task<IHttpActionResult> SetPassword(SetPassword model)
-        {
-            if (model == null)
-            {
-                ModelState.AddModelError("", "Data required");
-            }
-
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.SetPasswordAsync(model.Subject, model.Password);
-                if (result.IsSuccess)
-                {
-                    return Ok(UserManagerResult.Success);
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
-            }
-
-            return BadRequest(ModelState.GetErrorMessage());
-        }
-
-        [Route("email")]
-        [HttpPost]
-        public async Task<IHttpActionResult> SetEmail(SetEmail model)
-        {
-            if (model == null)
-            {
-                ModelState.AddModelError("", "Data required");
-            }
-
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.SetEmailAsync(model.Subject, model.Email);
-                if (result.IsSuccess)
-                {
-                    return Ok(UserManagerResult.Success);
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
-            }
-
-            return BadRequest(ModelState.GetErrorMessage());
-        }
-
-        [Route("phone")]
-        [HttpPost]
-        public async Task<IHttpActionResult> SetPhone(SetPhone model)
-        {
-            if (model == null)
-            {
-                ModelState.AddModelError("", "Data required");
-            }
-
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.SetPhoneAsync(model.Subject, model.Phone);
-                if (result.IsSuccess)
-                {
-                    return Ok(UserManagerResult.Success);
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
-            }
-
-            return BadRequest(ModelState.GetErrorMessage());
+            return BadRequest(result.ToError());
         }
         
-        [Route("claims/add")]
-        [HttpPost]
-        public async Task<IHttpActionResult> AddClaim(Claim model)
+        [HttpDelete, Route("{subject}")]
+        public async Task<IHttpActionResult> DeleteUserAsync(string subject)
         {
-            if (model == null)
+            var result = await this.userManager.DeleteUserAsync(subject);
+            if (result.IsSuccess)
             {
-                ModelState.AddModelError("", "Data required");
+                return NoContent();
             }
 
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.AddClaimAsync(model.Subject, model.Type, model.Value);
-                if (result.IsSuccess)
-                {
-                    return Ok(UserManagerResult.Success);
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
-            }
-
-            return BadRequest(ModelState.GetErrorMessage());
+            return BadRequest(ModelState.ToError());
         }
 
-        [Route("claims/remove")]
-        [HttpPost]
-        public async Task<IHttpActionResult> RemoveClaim(Claim model)
+        [HttpPut, Route("{subject}/password")]
+        public async Task<IHttpActionResult> SetPasswordAsync(string subject, PasswordModel model)
         {
             if (model == null)
             {
-                ModelState.AddModelError("", "Data required");
+                ModelState.AddModelError("", Messages.PasswordDataRequired);
             }
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.DeleteClaimAsync(model.Subject, model.Type, model.Value);
+                var result = await this.userManager.SetPasswordAsync(subject, model.Password);
                 if (result.IsSuccess)
                 {
-                    return Ok(UserManagerResult.Success);
+                    return NoContent();
                 }
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
+                ModelState.AddErrors(result);
             }
 
-            return BadRequest(ModelState.GetErrorMessage());
+            return BadRequest(ModelState.ToError());
+        }
+
+        [HttpPut, Route("{subject}/email")]
+        public async Task<IHttpActionResult> SetEmailAsync(string subject, EmailModel model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.EmailDataRequired);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.SetEmailAsync(subject, model.Email);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
+        [HttpPut, Route("{subject}/phone")]
+        public async Task<IHttpActionResult> SetPhoneAsync(string subject, PhoneModel model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.PhoneDataRequired);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.SetPhoneAsync(subject, model.Phone);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+        
+        [HttpPost, Route("{subject}/claims")]
+        public async Task<IHttpActionResult> AddClaim(string subject, ClaimModel model)
+        {
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.ClaimDataRequired);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.AddClaimAsync(subject, model.Type, model.Value);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+
+        [HttpDelete, Route("{subject}/claims/{type}/{value}")]
+        public async Task<IHttpActionResult> RemoveClaim(string subject, string type, string value)
+        {
+            var result = await this.userManager.DeleteClaimAsync(subject, type, value);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
         }
     }
 }

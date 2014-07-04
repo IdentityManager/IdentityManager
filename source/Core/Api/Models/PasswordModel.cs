@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
-    public class DeleteUser
+    public class PasswordModel
     {
         [Required]
-        public string Subject { get; set; }
+        public string Password { get; set; }
     }
 }

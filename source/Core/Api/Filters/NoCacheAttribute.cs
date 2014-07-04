@@ -12,8 +12,10 @@ namespace Thinktecture.IdentityManager.Core.Api.Filters
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
             base.OnActionExecuted(actionExecutedContext);
-            if (actionExecutedContext.Response.IsSuccessStatusCode)
-            {
+            if (actionExecutedContext != null && 
+                actionExecutedContext.Response != null &&
+                actionExecutedContext.Response.IsSuccessStatusCode)
+            { 
                 var cc = new System.Net.Http.Headers.CacheControlHeaderValue();
                 cc.NoStore = true;
                 cc.NoCache = true;

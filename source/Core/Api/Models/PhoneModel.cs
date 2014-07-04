@@ -6,13 +6,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
-    public class Claim
+    public class PhoneModel
     {
         [Required]
-        public string Subject { get; set; }
-        [Required]
-        public string Type { get; set; }
-        [Required]
-        public string Value { get; set; }
+        public string Phone { get; set; }
     }
 }
