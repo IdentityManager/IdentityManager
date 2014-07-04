@@ -168,7 +168,14 @@ namespace Core.Tests.Api
             var response = Get("api/users/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
-
+        [TestMethod]
+        public void GetUser_MissingSubject_ReturnsError()
+        {
+            var resp = Get("api/users/ /");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.SubjectRequired);
+        }
 
         [TestMethod]
         public void DeleteUserAsync_CallsUserManager()
@@ -199,6 +206,14 @@ namespace Core.Tests.Api
             userManager.SetupDeleteUserAsync(new Exception("Boom"));
             var response = Delete("api/users/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+        [TestMethod]
+        public void DeleteUser_MissingSubject_ReturnsError()
+        {
+            var resp = Delete("api/users/ /");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.SubjectRequired);
         }
 
         [TestMethod]
@@ -260,6 +275,8 @@ namespace Core.Tests.Api
         {
             var resp = Put("api/users/ /password", new PasswordModel { Password = "pass" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.SubjectRequired);
         }
 
 
@@ -330,6 +347,8 @@ namespace Core.Tests.Api
         {
             var resp = Put("api/users/ /email", new EmailModel { Email = "user@test.com" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.SubjectRequired);
         }
 
         [TestMethod]
@@ -391,8 +410,144 @@ namespace Core.Tests.Api
         {
             var resp = Put("api/users/ /phone", new PhoneModel { Phone = "555" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.SubjectRequired);
         }
 
 
+        [TestMethod]
+        public void AddClaimAsync_CallsUserManager()
+        {
+            Post("api/users/123/claims", new ClaimModel { Type="color", Value="blue" });
+            userManager.VerifyAddClaimAsync("123", "color", "blue");
+        }
+        [TestMethod]
+        public void AddClaimAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        {
+            var resp = Post("api/users/123/claims", new ClaimModel { Type="color", Value="blue" });
+            Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
+        }
+        [TestMethod]
+        public void AddClaimAsync_UserManagerReturnsError_ReturnsError()
+        {
+            userManager.SetupAddClaimAsync("foo", "bar");
+            var resp = Post("api/users/123/claims", new ClaimModel { Type = "color", Value = "blue" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
+        }
+        [TestMethod]
+        public void AddClaimAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupAddClaimAsync(new Exception("Boom"));
+            var resp = Post("api/users/123/claims", new ClaimModel { Type = "color", Value = "blue" });
+            Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
+        }
+        [TestMethod]
+        public void AddClaimAsync_InvalidModel_DoesNotCallUserManager()
+        {
+            Post("api/users/123/claims", new ClaimModel { Type = "", Value = "blue" });
+            Post("api/users/123/claims", new ClaimModel { Type = "color", Value = "" });
+            Post("api/users/ /claims", new ClaimModel { Type = "color", Value = "blue" });
+            Post("api/users/123/claims", (ClaimModel)null);
+            userManager.VerifyAddClaimAsyncNotCalled();
+        }
+        [TestMethod]
+        public void AddClaimAsync_MissingModel_ReturnsError()
+        {
+            var resp =  Post("api/users/123/claims", (ClaimModel)null);
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.ClaimDataRequired);
+        }
+        [TestMethod]
+        public void AddClaimAsync_MissingType_ReturnsError()
+        {
+            var resp = Post("api/users/123/claims", new ClaimModel { Type = "", Value = "blue" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.ClaimTypeRequired);
+        }
+        [TestMethod]
+        public void AddClaimAsync_MissingValue_ReturnsError()
+        {
+            var resp = Post("api/users/123/claims", new ClaimModel { Type = "color", Value = "" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.ClaimValueRequired);
+        }
+        [TestMethod]
+        public void AddClaimAsync_MissingSubject_ReturnsError()
+        {
+            var resp = Post("api/users/ /claims", new ClaimModel{ Type="color", Value="blue" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.SubjectRequired);
+        }
+
+        [TestMethod]
+        public void RemoveClaimAsync_CallsUserManager()
+        {
+            Delete("api/users/123/claims/color/blue");
+            userManager.VerifyRemoveClaimAsync("123", "color", "blue");
+        }
+        [TestMethod]
+        public void RemoveClaimAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        {
+            var resp = Delete("api/users/123/claims/color/blue");
+            Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
+        }
+        [TestMethod]
+        public void RemoveClaimAsync_UserManagerReturnsError_ReturnsError()
+        {
+            userManager.SetupRemoveClaimAsync("foo", "bar");
+            var resp = Delete("api/users/123/claims/color/blue");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
+        }
+        [TestMethod]
+        public void RemoveClaimAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupRemoveClaimAsync(new Exception("Boom"));
+            var resp = Delete("api/users/123/claims/color/blue");
+            Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
+        }
+        [TestMethod]
+        public void RemoveClaimAsync_InvalidModel_DoesNotCallUserManager()
+        {
+            Delete("api/users/ /claims/color/blue");
+            Delete("api/users/123/claims/ /blue");
+            Delete("api/users/123/claims/color/ ");
+            userManager.VerifyRemoveClaimAsyncNotCalled();
+        }
+        [TestMethod]
+        public void RemoveClaimAsync_MissingType_ReturnsError()
+        {
+            var resp = Delete("api/users/123/claims/ /blue"); 
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.ClaimTypeRequired);
+        }
+        [TestMethod]
+        public void RemoveClaimAsync_MissingValue_ReturnsError()
+        {
+            var resp = Delete("api/users/123/claims/color/ /");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.ClaimValueRequired);
+        }
+        [TestMethod]
+        public void RemoveClaimAsync_MissingSubject_ReturnsError()
+        {
+            var resp = Delete("api/users/ /claims/color/blue");
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.SubjectRequired);
+        }
     }
 }

@@ -164,5 +164,44 @@ namespace Core.Tests.Api
             Setup(x => x.SetPhoneAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(ex);
         }
+
+        internal void VerifyAddClaimAsync(string subject, string type, string value)
+        {
+            Verify(x => x.AddClaimAsync(subject, type, value));
+        }
+        internal void VerifyAddClaimAsyncNotCalled()
+        {
+            Verify(x => x.AddClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        }
+        internal void SetupAddClaimAsync(params string[] errors)
+        {
+            Setup(x => x.AddClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult(errors)));
+        }
+        public void SetupAddClaimAsync(Exception ex)
+        {
+            Setup(x => x.AddClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(ex);
+        }
+
+        internal void VerifyRemoveClaimAsync(string subject, string type, string value)
+        {
+            Verify(x => x.RemoveClaimAsync(subject, type, value));
+        }
+        internal void VerifyRemoveClaimAsyncNotCalled()
+        {
+            Verify(x => x.RemoveClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        }
+        internal void SetupRemoveClaimAsync(params string[] errors)
+        {
+            Setup(x => x.RemoveClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult(errors)));
+        }
+        public void SetupRemoveClaimAsync(Exception ex)
+        {
+            Setup(x => x.RemoveClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(ex);
+        }
+
     }
 }

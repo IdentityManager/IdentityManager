@@ -277,7 +277,7 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
             return UserManagerResult.Success;
         }
 
-        public async Task<UserManagerResult> DeleteClaimAsync(string subject, string type, string value)
+        public async Task<UserManagerResult> RemoveClaimAsync(string subject, string type, string value)
         {
             TKey key = ConvertSubjectToKey(subject);
             var result = await this.userManager.RemoveClaimAsync(key, new System.Security.Claims.Claim(type, value));

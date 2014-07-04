@@ -151,6 +151,15 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Subject is required..
+        /// </summary>
+        public static string SubjectRequired {
+            get {
+                return ResourceManager.GetString("SubjectRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User data required..
         /// </summary>
         public static string UserDataRequired {

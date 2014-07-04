@@ -147,6 +147,9 @@
   <data name="PhoneRequired" xml:space="preserve">
     <value>Phone is required.</value>
   </data>
+  <data name="SubjectRequired" xml:space="preserve">
+    <value>Subject is required.</value>
+  </data>
   <data name="UserDataRequired" xml:space="preserve">
     <value>User data required.</value>
   </data>

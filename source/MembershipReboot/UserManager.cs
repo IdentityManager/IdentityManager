@@ -252,7 +252,7 @@ namespace Thinktecture.IdentityManager.MembershipReboot
             return Task.FromResult(UserManagerResult.Success);
         }
 
-        public Task<UserManagerResult> DeleteClaimAsync(string subject, string type, string value)
+        public Task<UserManagerResult> RemoveClaimAsync(string subject, string type, string value)
         {
             Guid g;
             if (!Guid.TryParse(subject, out g))

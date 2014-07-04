@@ -3,6 +3,7 @@
  * see license
  */
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -79,6 +80,17 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpGet, Route("{subject}", Name="user")]
         public async Task<IHttpActionResult> GetUserAsync(string subject)
         {
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToError());
+            } 
+            
             var result = await this.userManager.GetUserAsync(subject);
             if (result.IsSuccess)
             {
@@ -96,6 +108,17 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpDelete, Route("{subject}")]
         public async Task<IHttpActionResult> DeleteUserAsync(string subject)
         {
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+            
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToError());
+            }
+
             var result = await this.userManager.DeleteUserAsync(subject);
             if (result.IsSuccess)
             {
@@ -108,6 +131,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpPut, Route("{subject}/password")]
         public async Task<IHttpActionResult> SetPasswordAsync(string subject, PasswordModel model)
         {
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+            
             if (model == null)
             {
                 ModelState.AddModelError("", Messages.PasswordDataRequired);
@@ -130,6 +159,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpPut, Route("{subject}/email")]
         public async Task<IHttpActionResult> SetEmailAsync(string subject, EmailModel model)
         {
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+            
             if (model == null)
             {
                 ModelState.AddModelError("", Messages.EmailDataRequired);
@@ -152,6 +187,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpPut, Route("{subject}/phone")]
         public async Task<IHttpActionResult> SetPhoneAsync(string subject, PhoneModel model)
         {
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+            
             if (model == null)
             {
                 ModelState.AddModelError("", Messages.PhoneDataRequired);
@@ -172,8 +213,14 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
         
         [HttpPost, Route("{subject}/claims")]
-        public async Task<IHttpActionResult> AddClaim(string subject, ClaimModel model)
+        public async Task<IHttpActionResult> AddClaimAsync(string subject, ClaimModel model)
         {
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
             if (model == null)
             {
                 ModelState.AddModelError("", Messages.ClaimDataRequired);
@@ -194,9 +241,30 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [HttpDelete, Route("{subject}/claims/{type}/{value}")]
-        public async Task<IHttpActionResult> RemoveClaim(string subject, string type, string value)
+        public async Task<IHttpActionResult> RemoveClaimAsync(string subject, string type, string value)
         {
-            var result = await this.userManager.DeleteClaimAsync(subject, type, value);
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+            if (String.IsNullOrWhiteSpace(type))
+            {
+                ModelState["type.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.ClaimTypeRequired);
+            }
+            if (String.IsNullOrWhiteSpace(value))
+            {
+                ModelState["value.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.ClaimValueRequired);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToError());
+            }
+
+            var result = await this.userManager.RemoveClaimAsync(subject, type, value);
             if (result.IsSuccess)
             {
                 return NoContent();

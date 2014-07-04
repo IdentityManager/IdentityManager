@@ -21,6 +21,6 @@ namespace Thinktecture.IdentityManager.Core
         Task<UserManagerResult> SetPhoneAsync(string subject, string phone);
         
         Task<UserManagerResult> AddClaimAsync(string subject, string type, string value);
-        Task<UserManagerResult> DeleteClaimAsync(string subject, string type, string value);
+        Task<UserManagerResult> RemoveClaimAsync(string subject, string type, string value);
     }
 }
