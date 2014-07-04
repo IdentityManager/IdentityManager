@@ -84,6 +84,7 @@
     <Compile Include="Api\MetadataControllerTests.cs" />
     <Compile Include="Api\UserControllerTests.cs" />
     <Compile Include="Api\WebApiTestBase.cs" />
+    <Compile Include="Core\UserManagerSemanticsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
