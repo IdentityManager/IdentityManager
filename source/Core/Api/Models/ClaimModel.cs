@@ -3,14 +3,15 @@
  * see license
  */
 using System.ComponentModel.DataAnnotations;
+using Thinktecture.IdentityManager.Core.Resources;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
     public class ClaimModel
     {
-        [Required]
+        [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "ClaimTypeRequired")]
         public string Type { get; set; }
-        [Required]
+        [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "ClaimValueRequired")]
         public string Value { get; set; }
     }
 }

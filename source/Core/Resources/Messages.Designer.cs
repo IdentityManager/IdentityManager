@@ -70,11 +70,47 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Claim type is required..
+        /// </summary>
+        public static string ClaimTypeRequired {
+            get {
+                return ResourceManager.GetString("ClaimTypeRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Claim value is required..
+        /// </summary>
+        public static string ClaimValueRequired {
+            get {
+                return ResourceManager.GetString("ClaimValueRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email data required..
         /// </summary>
         public static string EmailDataRequired {
             get {
                 return ResourceManager.GetString("EmailDataRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email is required..
+        /// </summary>
+        public static string EmailRequired {
+            get {
+                return ResourceManager.GetString("EmailRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The email must be in a valid format..
+        /// </summary>
+        public static string InvalidEmail {
+            get {
+                return ResourceManager.GetString("InvalidEmail", resourceCulture);
             }
         }
         
@@ -102,6 +138,15 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         public static string PhoneDataRequired {
             get {
                 return ResourceManager.GetString("PhoneDataRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone is required..
+        /// </summary>
+        public static string PhoneRequired {
+            get {
+                return ResourceManager.GetString("PhoneRequired", resourceCulture);
             }
         }
         

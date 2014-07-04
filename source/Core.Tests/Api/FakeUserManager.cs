@@ -106,5 +106,63 @@ namespace Core.Tests.Api
                 .Throws(ex);
         }
 
+
+        internal void VerifySetPasswordAsync(string subject, string password)
+        {
+            Verify(x => x.SetPasswordAsync(subject, password));
+        }
+        internal void VerifySetPasswordAsyncNotCalled()
+        {
+            Verify(x => x.SetPasswordAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        }
+        internal void SetupSetPasswordAsync(params string[] errors)
+        {
+            Setup(x=>x.SetPasswordAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult(errors)));
+        }
+        public void SetupSetPasswordAsync(Exception ex)
+        {
+            Setup(x => x.SetPasswordAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(ex);
+        }
+
+
+        internal void VerifySetEmailAsync(string subject, string email)
+        {
+            Verify(x => x.SetEmailAsync(subject, email));
+        }
+        internal void VerifySetEmailAsyncNotCalled()
+        {
+            Verify(x => x.SetEmailAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        }
+        internal void SetupSetEmailAsync(params string[] errors)
+        {
+            Setup(x => x.SetEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult(errors)));
+        }
+        public void SetupSetEmailAsync(Exception ex)
+        {
+            Setup(x => x.SetEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(ex);
+        }
+
+        internal void VerifySetPhoneAsync(string subject, string phone)
+        {
+            Verify(x => x.SetPhoneAsync(subject, phone));
+        }
+        internal void VerifySetPhoneAsyncNotCalled()
+        {
+            Verify(x => x.SetPhoneAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        }
+        internal void SetupSetPhoneAsync(params string[] errors)
+        {
+            Setup(x => x.SetPhoneAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult(errors)));
+        }
+        public void SetupSetPhoneAsync(Exception ex)
+        {
+            Setup(x => x.SetPhoneAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(ex);
+        }
     }
 }

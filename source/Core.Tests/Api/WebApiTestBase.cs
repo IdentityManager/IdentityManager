@@ -70,6 +70,11 @@ namespace Core.Tests.Api
         {
             return client.PostAsJsonAsync(Url(path), value).Result;
         }
+        
+        protected HttpResponseMessage Put<T>(string path, T value)
+        {
+            return client.PutAsJsonAsync(Url(path), value).Result;
+        }
 
         protected HttpResponseMessage Delete(string path)
         {

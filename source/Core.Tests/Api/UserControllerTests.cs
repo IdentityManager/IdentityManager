@@ -20,10 +20,16 @@ namespace Core.Tests.Api
     public class UserControllerTests : WebApiTestBase
     {
         [TestMethod]
-        public void GetUsersAsync_CallsUserManager()
+        public void GetUsersAsync_NoParams_CallsUserManager()
         {
             Get("api/users");
             userManager.VerifyQueryUsersAsync();
+        }
+        [TestMethod]
+        public void GetUsersAsync_WithParams_PassesParamsToUserManager()
+        {
+            Get("api/users?filter=foo&start=7&count=25");
+            userManager.VerifyQueryUsersAsync("foo", 7, 25);
         }
         [TestMethod]
         public void GetUsersAsync_SuccessfulResult_ReturnsResults()
@@ -32,12 +38,6 @@ namespace Core.Tests.Api
             var result = Get<QueryResult>("api/users");
             Assert.AreEqual(53, result.Users.Count());
         }        
-        [TestMethod]
-        public void GetUsersAsync_PassesParamsToUserManager()
-        {
-            Get("api/users?filter=foo&start=7&count=25");
-            userManager.VerifyQueryUsersAsync("foo", 7, 25);
-        }
         [TestMethod]
         public void GetUsersAsync_UserManagerFails_ReturnsErrors()
         {
@@ -77,7 +77,7 @@ namespace Core.Tests.Api
             Assert.AreEqual(Url("api/users/123"), response.Headers.Location.AbsoluteUri);
         }
         [TestMethod]
-        public void CreateUserAsync_InvalidModel_DoesNotCallsUserManager()
+        public void CreateUserAsync_InvalidModel_DoesNotCallUserManager()
         {
             Post("api/users", new CreateUserModel() { Username = "", Password = "pass" });
             Post("api/users", new CreateUserModel() { Username = "user", Password = "" });
@@ -199,6 +199,198 @@ namespace Core.Tests.Api
             userManager.SetupDeleteUserAsync(new Exception("Boom"));
             var response = Delete("api/users/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        [TestMethod]
+        public void SetPasswordAsync_CallsUserManager()
+        {
+            Put("api/users/123/password", new PasswordModel { Password = "pass" });
+            userManager.VerifySetPasswordAsync("123", "pass");
+        }
+        [TestMethod]
+        public void SetPasswordAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        {
+            var resp = Put("api/users/123/password", new PasswordModel { Password = "pass" });
+            Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
+        }
+        [TestMethod]
+        public void SetPasswordAsync_UserManagerReturnsError_ReturnsError()
+        {
+            userManager.SetupSetPasswordAsync("foo", "bar");
+            var resp = Put("api/users/123/password", new PasswordModel { Password = "pass" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
+        }
+        [TestMethod]
+        public void SetPasswordAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupSetPasswordAsync(new Exception("Boom"));
+            var resp = Put("api/users/123/password", new PasswordModel { Password = "pass" });
+            Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
+        }
+        [TestMethod]
+        public void SetPasswordAsync_InvalidModel_DoesNotCallUserManager()
+        {
+            Put("api/users/123/password", new PasswordModel { Password = "" });
+            Put("api/users/ /password", new PasswordModel { Password = "pass" });
+            Put("api/users/123/password", (PasswordModel)null);
+            userManager.VerifySetPasswordAsyncNotCalled();
+        }
+        [TestMethod]
+        public void SetPasswordAsync_MissingModel_ReturnsError()
+        {
+            var resp = Put("api/users/123/password", (PasswordModel)null);
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.PasswordDataRequired);
+        }
+        [TestMethod]
+        public void SetPasswordAsync_MissingPassword_ReturnsError()
+        {
+            var resp = Put("api/users/123/password", new PasswordModel { Password = "" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.PasswordRequired);
+        }
+        [TestMethod]
+        public void SetPasswordAsync_MissingSubject_ReturnsError()
+        {
+            var resp = Put("api/users/ /password", new PasswordModel { Password = "pass" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+        }
+
+
+        [TestMethod]
+        public void SetEmailAsync_CallsUserManager()
+        {
+            Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
+            userManager.VerifySetEmailAsync("123", "user@test.com");
+        }
+        [TestMethod]
+        public void SetEmailAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        {
+            var resp = Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
+            Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
+        }
+        [TestMethod]
+        public void SetEmailAsync_UserManagerReturnsError_ReturnsError()
+        {
+            userManager.SetupSetEmailAsync("foo", "bar");
+            var resp = Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
+        }
+        [TestMethod]
+        public void SetEmailAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupSetEmailAsync(new Exception("Boom"));
+            var resp = Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
+            Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
+        }
+        [TestMethod]
+        public void SetEmailAsync_InvalidModel_DoesNotCallUserManager()
+        {
+            Put("api/users/123/email", new EmailModel { Email = "" });
+            Put("api/users/ /email", new EmailModel { Email = "user@test.com" });
+            Put("api/users/123/email", (EmailModel)null);
+            userManager.VerifySetEmailAsyncNotCalled();
+        }
+        [TestMethod]
+        public void SetEmailAsync_MissingModel_ReturnsError()
+        {
+            var resp = Put("api/users/123/email", (EmailModel)null);
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.EmailDataRequired);
+        }
+        [TestMethod]
+        public void SetEmailAsync_MissingEmail_ReturnsError()
+        {
+            var resp = Put("api/users/123/email", new EmailModel { Email = "" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.EmailRequired);
+        }
+        [TestMethod]
+        public void SetEmailAsync_InvalidEmail_ReturnsError()
+        {
+            var resp = Put("api/users/123/email", new EmailModel { Email = "foo" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.InvalidEmail);
+        }
+        [TestMethod]
+        public void SetEmailAsync_MissingSubject_ReturnsError()
+        {
+            var resp = Put("api/users/ /email", new EmailModel { Email = "user@test.com" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+        }
+
+        [TestMethod]
+        public void SetPhoneAsync_CallsUserManager()
+        {
+            Put("api/users/123/phone", new PhoneModel { Phone = "555" });
+            userManager.VerifySetPhoneAsync("123", "555");
+        }
+        [TestMethod]
+        public void SetPhoneAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        {
+            var resp = Put("api/users/123/phone", new PhoneModel { Phone = "555" });
+            Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
+        }
+        [TestMethod]
+        public void SetPhoneAsync_UserManagerReturnsError_ReturnsError()
+        {
+            userManager.SetupSetPhoneAsync("foo", "bar");
+            var resp = Put("api/users/123/phone", new PhoneModel { Phone = "555" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
+        }
+        [TestMethod]
+        public void SetPhoneAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupSetPhoneAsync(new Exception("Boom"));
+            var resp = Put("api/users/123/phone", new PhoneModel { Phone = "555" });
+            Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
+        }
+        [TestMethod]
+        public void SetPhoneAsync_InvalidModel_DoesNotCallUserManager()
+        {
+            Put("api/users/123/phone", new PhoneModel { Phone = "" });
+            Put("api/users/ /phone", new PhoneModel { Phone = "555" });
+            Put("api/users/123/phone", (PhoneModel)null);
+            userManager.VerifySetPhoneAsyncNotCalled();
+        }
+        [TestMethod]
+        public void SetPhoneAsync_MissingModel_ReturnsError()
+        {
+            var resp = Put("api/users/123/phone", (PhoneModel)null);
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.PhoneDataRequired);
+        }
+        [TestMethod]
+        public void SetPhoneAsync_MissingPhone_ReturnsError()
+        {
+            var resp = Put("api/users/123/phone", new PhoneModel { Phone = "" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
+            var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
+            CollectionAssert.Contains(error.Errors, Messages.PhoneRequired);
+        }
+        [TestMethod]
+        public void SetPhoneAsync_MissingSubject_ReturnsError()
+        {
+            var resp = Put("api/users/ /phone", new PhoneModel { Phone = "555" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
         }
     }
 }
