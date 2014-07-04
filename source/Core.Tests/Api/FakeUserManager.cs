@@ -34,8 +34,6 @@ namespace Core.Tests.Api
             Setup(x => x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Throws(ex);
         }
-        
-
         public void VerifyQueryUsersAsync()
         {
             Verify(x=>x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()));
@@ -44,6 +42,7 @@ namespace Core.Tests.Api
         {
             Verify(x=>x.QueryUsersAsync(filter, start, count));
         }
+
 
 
         public void SetupCreateUserAsync(CreateResult result)
@@ -55,6 +54,11 @@ namespace Core.Tests.Api
         {
             Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()))
                .Returns(Task.FromResult(new UserManagerResult<CreateResult>(errors)));
+        }
+        public void SetupCreateUserAsync(Exception ex)
+        {
+            Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(ex);
         }
         public void VerifyCreateUserAsync(string username, string password)
         {
@@ -80,6 +84,11 @@ namespace Core.Tests.Api
             Setup(x => x.GetUserAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new UserManagerResult<UserResult>(errors)));
         }
+        public void SetupGetUserAsync(Exception ex)
+        {
+            Setup(x => x.GetUserAsync(It.IsAny<string>()))
+                .Throws(ex);
+        }
 
         
         internal void VerifyDeleteUserAsync(string subject)
@@ -91,5 +100,11 @@ namespace Core.Tests.Api
             Setup(x => x.DeleteUserAsync(It.IsAny<string>()))
                 .Returns(Task.FromResult(new UserManagerResult(errors)));
         }
+        public void SetupDeleteUserAsync(Exception ex)
+        {
+            Setup(x => x.DeleteUserAsync(It.IsAny<string>()))
+                .Throws(ex);
+        }
+
     }
 }

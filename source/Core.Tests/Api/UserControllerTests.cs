@@ -119,6 +119,14 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "foo");
             CollectionAssert.Contains(error.Errors, "bar");
         }
+        [TestMethod]
+        public void CreateUserAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupCreateUserAsync(new Exception("Boom"));
+            var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
+            Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
 
 
         [TestMethod]
@@ -153,6 +161,14 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "foo");
             CollectionAssert.Contains(error.Errors, "bar");
         }
+        [TestMethod]
+        public void GetUserAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupGetUserAsync(new Exception("Boom"));
+            var response = Get("api/users/123");
+            Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
 
         [TestMethod]
         public void DeleteUserAsync_CallsUserManager()
@@ -176,6 +192,13 @@ namespace Core.Tests.Api
             Assert.AreEqual(2, error.Errors.Length);
             CollectionAssert.Contains(error.Errors, "foo");
             CollectionAssert.Contains(error.Errors, "bar");
+        }
+        [TestMethod]
+        public void DeleteUserAsync_UserManagerThrows_ReturnsErrors()
+        {
+            userManager.SetupDeleteUserAsync(new Exception("Boom"));
+            var response = Delete("api/users/123");
+            Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
     }
 }
