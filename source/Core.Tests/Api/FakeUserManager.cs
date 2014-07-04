@@ -33,6 +33,7 @@ namespace Core.Tests.Api
             Setup(x => x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
                 .Throws(ex);
         }
+        
         public void VerifyQueryUsersAsync()
         {
             Verify(x=>x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()));
@@ -60,5 +61,22 @@ namespace Core.Tests.Api
         {
             Verify(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
         }
+
+        internal void VerifyGetUserAsync(string subject)
+        {
+            Verify(x => x.GetUserAsync(subject));
+        }
+        internal void SetupGetUserAsync(UserResult userResult)
+        {
+            Setup(x => x.GetUserAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult<UserResult>(userResult)));
+        }
+        internal void SetupGetUserAsync(params string[] errors)
+        {
+            Setup(x => x.GetUserAsync(It.IsAny<string>()))
+                .Returns(Task.FromResult(new UserManagerResult<UserResult>(errors)));
+        }
+
+
     }
 }

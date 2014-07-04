@@ -4,6 +4,7 @@
  */
 using Owin;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Web.Http;
 using System.Web.Http.Dependencies;
@@ -30,6 +31,10 @@ namespace Thinktecture.IdentityManager
                 new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
             //apiConfig.Services.Add(typeof(IExceptionLogger), new UserAdminExceptionLogger());
+
+#if DEBUG
+            apiConfig.Services.Add(typeof(IExceptionLogger), new TraceLogger());
+#endif
         }
 
         public static void Configure(HttpConfiguration httpConfig, IdentityManagerConfiguration idmConfig)
@@ -50,6 +55,14 @@ namespace Thinktecture.IdentityManager
                 Directory.CreateDirectory(path);
                 var msg = DateTime.Now.ToString() + Environment.NewLine + context.Exception.ToString() + Environment.NewLine + Environment.NewLine;
                 File.AppendAllText(path, msg);
+            }
+        }
+
+        public class TraceLogger : ExceptionLogger
+        {
+            public override void Log(ExceptionLoggerContext context)
+            {
+                Trace.WriteLine(context.Exception.ToString());
             }
         }
     }

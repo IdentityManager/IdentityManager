@@ -25,22 +25,19 @@ namespace Core.Tests.Api
             Get("api/users");
             userManager.VerifyQueryUsersAsync();
         }
-
         [TestMethod]
         public void GetUsersAsync_SuccessfulResult_ReturnsResults()
         {
             ConfigureQueryUsers(53);
             var result = Get<QueryResult>("api/users");
             Assert.AreEqual(53, result.Users.Count());
-        }
-        
+        }        
         [TestMethod]
         public void GetUsersAsync_PassesParamsToUserManager()
         {
             Get("api/users?filter=foo&start=7&count=25");
             userManager.VerifyQueryUsersAsync("foo", 7, 25);
         }
-
         [TestMethod]
         public void GetUsersAsync_UserManagerFails_ReturnsErrors()
         {
@@ -56,7 +53,6 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
             CollectionAssert.Contains(error.Errors, "baz");
         }
-
         [TestMethod]
         public void GetUsersAsync_UserManagerThrows_ReturnsErrors()
         {
@@ -65,13 +61,13 @@ namespace Core.Tests.Api
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
+
         [TestMethod]
         public void CreateUserAsync_ValidModel_CallsUserManager()
         {
             Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
             userManager.VerifyCreateUserAsync("user", "pass");
         }
-
         [TestMethod]
         public void CreateUserAsync_UserManagerReturnsSuccess_CorrectResults()
         {
@@ -80,7 +76,6 @@ namespace Core.Tests.Api
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
             Assert.AreEqual(Url("api/users/123"), response.Headers.Location.AbsoluteUri);
         }
-
         [TestMethod]
         public void CreateUserAsync_InvalidModel_DoesNotCallsUserManager()
         {
@@ -89,7 +84,6 @@ namespace Core.Tests.Api
             Post("api/users", (CreateUserModel)null);
             userManager.VerifyCreateUserAsyncNotCalled();
         }
-
         [TestMethod]
         public void CreateUserAsync_MissingModel_ReturnsError()
         {
@@ -98,7 +92,6 @@ namespace Core.Tests.Api
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             CollectionAssert.Contains(error.Errors, Messages.UserDataRequired);
         }
-
         [TestMethod]
         public void CreateUserAsync_MissingUsername_ReturnsError()
         {
@@ -107,7 +100,6 @@ namespace Core.Tests.Api
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             CollectionAssert.Contains(error.Errors, Messages.UsernameRequired);
         }
-
         [TestMethod]
         public void CreateUserAsync_MissingPassword_ReturnsError()
         {
@@ -116,12 +108,45 @@ namespace Core.Tests.Api
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             CollectionAssert.Contains(error.Errors, Messages.PasswordRequired);
         }
-
         [TestMethod]
         public void CreateUserAsync_UserManagerReturnsErrors_ReturnsErrors()
         {
             userManager.SetupCreateUserAsync("foo", "bar");
             var response = Post("api/users", new CreateUserModel() { Username="user", Password="pass" });
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
+            Assert.AreEqual(2, error.Errors.Length);
+            CollectionAssert.Contains(error.Errors, "foo");
+            CollectionAssert.Contains(error.Errors, "bar");
+        }
+
+
+        [TestMethod]
+        public void GetUserAsync_CallsUserManager()
+        {
+            Get("api/users/123");
+            userManager.VerifyGetUserAsync("123");
+        }
+        [TestMethod]
+        public void GetUserAsync_UserFound_ReturnsUser()
+        {
+            userManager.SetupGetUserAsync(new UserResult { Subject = "foo", Username = "user" });
+            var result = Get<UserResult>("api/users/123");
+            Assert.AreEqual("foo", result.Subject);
+            Assert.AreEqual("user", result.Username);
+        }
+        [TestMethod]
+        public void GetUserAsync_UserNotFound_ReturnsNotFound()
+        {
+            userManager.SetupGetUserAsync((UserResult)null);
+            var resp = Get("api/users/123");
+            Assert.AreEqual(HttpStatusCode.NotFound, resp.StatusCode);
+        }
+        [TestMethod]
+        public void GetUserAsync_UserManagerReturnsErrors_ReturnsErrors()
+        {
+            userManager.SetupGetUserAsync("foo", "bar");
+            var response = Get("api/users/123");
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             Assert.AreEqual(2, error.Errors.Length);
