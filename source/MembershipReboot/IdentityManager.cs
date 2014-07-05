@@ -12,19 +12,33 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.MembershipReboot
 {
-    public class IdentityManager<TAccount> : IIdentityManagerService
+    public class IdentityManager<TAccount> : IIdentityManagerService, IDisposable
         where TAccount : UserAccount
     {
         readonly UserAccountService<TAccount> userAccountService;
         readonly IUserAccountQuery query;
+        IDisposable cleanup;
 
-        public IdentityManager(UserAccountService<TAccount> userAccountService, IUserAccountQuery query)
+        public IdentityManager(
+            UserAccountService<TAccount> userAccountService, 
+            IUserAccountQuery query, 
+            IDisposable cleanup = null)
         {
             if (userAccountService == null) throw new ArgumentNullException("userAccountService");
             if (query == null) throw new ArgumentNullException("query");
 
             this.userAccountService = userAccountService;
             this.query = query;
+            this.cleanup = cleanup;
+        }
+
+        public virtual void Dispose()
+        {
+            if (this.cleanup != null)
+            {
+                this.cleanup.Dispose();
+                this.cleanup = null;
+            }
         }
 
         public Task<IdentityManagerMetadata> GetMetadataAsync()
