@@ -17,10 +17,12 @@ namespace Thinktecture.IdentityManager
             if (config == null) throw new ArgumentNullException("config");
 
             var builder = new ContainerBuilder();
+            
             builder
-                .Register(ctx => config.UserManagerFactory())
-                .As<IUserManager>()
-                .InstancePerApiRequest();
+                .Register(ctx => config.IdentityManagerFactory())
+                .As<IIdentityManagerService>()
+                .InstancePerRequest();
+            
             builder
                 .RegisterApiControllers(typeof(AutofacConfig).Assembly);
             

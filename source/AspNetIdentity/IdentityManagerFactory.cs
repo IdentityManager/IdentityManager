@@ -11,21 +11,21 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.AspNetIdentity
 {
-    public class UserManagerFactory
+    public class IdentityManagerFactory
     {
-        static UserManagerFactory()
+        static IdentityManagerFactory()
         {
             System.Data.Entity.Database.SetInitializer(new System.Data.Entity.CreateDatabaseIfNotExists<IdentityDbContext>());
             
             //System.Data.Entity.Database.SetInitializer(new System.Data.Entity.CreateDatabaseIfNotExists<CustomDbContext>());
         }
         
-        public static IUserManager Create()
+        public static IIdentityManagerService Create()
         {
             var db = new IdentityDbContext<IdentityUser>("DefaultConnection");
             var store = new UserStore<IdentityUser>(db);
             var mgr = new Microsoft.AspNet.Identity.UserManager<IdentityUser>(store);
-            return new Thinktecture.IdentityManager.AspNetIdentity.UserManager<IdentityUser>(mgr, db);
+            return new Thinktecture.IdentityManager.AspNetIdentity.IdentityManager<IdentityUser>(mgr, db);
 
             //var db = new CustomDbContext("CustomAspId");
             //var store = new CustomUserStore(db);

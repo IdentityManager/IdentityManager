@@ -14,13 +14,15 @@ namespace Thinktecture.IdentityManager
 {
     public class WebApiConfig
     {
-        public static void Configure(HttpConfiguration apiConfig, IDependencyResolver dependencyResolver)
+        public static void Configure(HttpConfiguration apiConfig, IdentityManagerConfiguration idmConfig)
         {
             if (apiConfig == null) throw new ArgumentNullException("apiConfig");
-            if (apiConfig == null) throw new ArgumentNullException("dependencyResolver");
+            if (idmConfig == null) throw new ArgumentNullException("idmConfig");
+
+            var resolver = AutofacConfig.Configure(idmConfig);
+            apiConfig.DependencyResolver = resolver;
 
             apiConfig.MapHttpAttributeRoutes();
-            apiConfig.DependencyResolver = dependencyResolver;
 
             apiConfig.SuppressDefaultHostAuthentication();
             apiConfig.Filters.Add(new HostAuthenticationAttribute("Bearer"));
@@ -35,15 +37,6 @@ namespace Thinktecture.IdentityManager
 #if DEBUG
             apiConfig.Services.Add(typeof(IExceptionLogger), new TraceLogger());
 #endif
-        }
-
-        public static void Configure(HttpConfiguration httpConfig, IdentityManagerConfiguration idmConfig)
-        {
-            if (httpConfig == null) throw new ArgumentNullException("httpConfig");
-            if (idmConfig == null) throw new ArgumentNullException("idmConfig");
-
-            var resolver = AutofacConfig.Configure(idmConfig);
-            Configure(httpConfig, resolver);
         }
 
         public class UserAdminExceptionLogger : ExceptionLogger

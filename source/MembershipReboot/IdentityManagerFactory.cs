@@ -10,10 +10,10 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.MembershipReboot
 {
-    public class UserManagerFactory
+    public class IdentityManagerFactory
     {
         static MembershipRebootConfiguration config;
-        static UserManagerFactory()
+        static IdentityManagerFactory()
         {
             System.Data.Entity.Database.SetInitializer(new System.Data.Entity.MigrateDatabaseToLatestVersion<DefaultMembershipRebootDatabase, BrockAllen.MembershipReboot.Ef.Migrations.Configuration>());
 
@@ -22,13 +22,14 @@ namespace Thinktecture.IdentityManager.MembershipReboot
             config.RequireAccountVerification = false;
         }
         
-        public static IUserManager Create()
+        public static IIdentityManagerService Create()
         {
             var repo = new DefaultUserAccountRepository();
             repo.QueryFilter = RelationalUserAccountQuery.Filter;
             repo.QuerySort = RelationalUserAccountQuery.Sort;
             var svc = new UserAccountService(config, repo);
-            return new UserManager<UserAccount>(svc, repo, repo);
+            return null;
+            //return new UserManager<UserAccount>(svc, repo, repo);
         }
     }
 }

@@ -16,18 +16,18 @@ namespace Core.Tests.Api
 {
     public class WebApiTestBase
     {
-        protected FakeUserManager userManager;
+        protected FakeIdentityManager identityManager;
         protected TestServer server;
         protected HttpClient client;
 
         [TestInitialize]
         public void Init()
         {
-            userManager = new FakeUserManager();
+            identityManager = new FakeIdentityManager();
             server = TestServer.Create(app =>
             {
                 app.UseIdentityManager(new IdentityManagerConfiguration {
-                    UserManagerFactory = () => userManager.Object
+                    IdentityManagerFactory = () => identityManager.Object
                 });
             });
             client = server.HttpClient;
@@ -51,7 +51,7 @@ namespace Core.Tests.Api
             {
                 users[i] = new UserResult { Subject = i.ToString() };
             }
-            userManager.SetupQueryUsersAsync(new QueryResult { Users = users });
+            identityManager.SetupQueryUsersAsync(new QueryResult { Users = users });
         }
 
         protected HttpResponseMessage Get(string path)

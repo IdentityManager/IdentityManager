@@ -12,8 +12,8 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
     [RoutePrefix("api")]
     public class MetaController : ApiController
     {
-        IUserManager userManager;
-        public MetaController(IUserManager userManager)
+        IIdentityManagerService userManager;
+        public MetaController(IIdentityManagerService userManager)
         {
             if (userManager == null) throw new ArgumentNullException("userManager");
 

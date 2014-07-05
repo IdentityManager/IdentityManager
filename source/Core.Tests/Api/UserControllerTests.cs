@@ -20,16 +20,16 @@ namespace Core.Tests.Api
     public class UserControllerTests : WebApiTestBase
     {
         [TestMethod]
-        public void GetUsersAsync_NoParams_CallsUserManager()
+        public void GetUsersAsync_NoParams_CallsIdentityManager()
         {
             Get("api/users");
-            userManager.VerifyQueryUsersAsync();
+            identityManager.VerifyQueryUsersAsync();
         }
         [TestMethod]
-        public void GetUsersAsync_WithParams_PassesParamsToUserManager()
+        public void GetUsersAsync_WithParams_PassesParamsToIdentityManager()
         {
             Get("api/users?filter=foo&start=7&count=25");
-            userManager.VerifyQueryUsersAsync("foo", 7, 25);
+            identityManager.VerifyQueryUsersAsync("foo", 7, 25);
         }
         [TestMethod]
         public void GetUsersAsync_SuccessfulResult_ReturnsResults()
@@ -39,9 +39,9 @@ namespace Core.Tests.Api
             Assert.AreEqual(53, result.Users.Count());
         }        
         [TestMethod]
-        public void GetUsersAsync_UserManagerFails_ReturnsErrors()
+        public void GetUsersAsync_IdentityManagerFails_ReturnsErrors()
         {
-            userManager.SetupQueryUsersAsync("foo", "bar", "baz");
+            identityManager.SetupQueryUsersAsync("foo", "bar", "baz");
 
             var response = Get("api/users");
 
@@ -54,35 +54,35 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "baz");
         }
         [TestMethod]
-        public void GetUsersAsync_UserManagerThrows_ReturnsErrors()
+        public void GetUsersAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupQueryUsersAsync(new Exception("Boom"));
+            identityManager.SetupQueryUsersAsync(new Exception("Boom"));
             var response = Get("api/users");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
 
         [TestMethod]
-        public void CreateUserAsync_ValidModel_CallsUserManager()
+        public void CreateUserAsync_ValidModel_CallsIdentityManager()
         {
             Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
-            userManager.VerifyCreateUserAsync("user", "pass");
+            identityManager.VerifyCreateUserAsync("user", "pass");
         }
         [TestMethod]
-        public void CreateUserAsync_UserManagerReturnsSuccess_CorrectResults()
+        public void CreateUserAsync_IdentityManagerReturnsSuccess_CorrectResults()
         {
-            userManager.SetupCreateUserAsync(new CreateResult { Subject = "123" });
+            identityManager.SetupCreateUserAsync(new CreateResult { Subject = "123" });
             var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
             Assert.AreEqual(Url("api/users/123"), response.Headers.Location.AbsoluteUri);
         }
         [TestMethod]
-        public void CreateUserAsync_InvalidModel_DoesNotCallUserManager()
+        public void CreateUserAsync_InvalidModel_DoesNotCallIdentityManager()
         {
             Post("api/users", new CreateUserModel() { Username = "", Password = "pass" });
             Post("api/users", new CreateUserModel() { Username = "user", Password = "" });
             Post("api/users", (CreateUserModel)null);
-            userManager.VerifyCreateUserAsyncNotCalled();
+            identityManager.VerifyCreateUserAsyncNotCalled();
         }
         [TestMethod]
         public void CreateUserAsync_MissingModel_ReturnsError()
@@ -109,9 +109,9 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, Messages.PasswordRequired);
         }
         [TestMethod]
-        public void CreateUserAsync_UserManagerReturnsErrors_ReturnsErrors()
+        public void CreateUserAsync_IdentityManagerReturnsErrors_ReturnsErrors()
         {
-            userManager.SetupCreateUserAsync("foo", "bar");
+            identityManager.SetupCreateUserAsync("foo", "bar");
             var response = Post("api/users", new CreateUserModel() { Username="user", Password="pass" });
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
@@ -120,9 +120,9 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void CreateUserAsync_UserManagerThrows_ReturnsErrors()
+        public void CreateUserAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupCreateUserAsync(new Exception("Boom"));
+            identityManager.SetupCreateUserAsync(new Exception("Boom"));
             var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
@@ -130,15 +130,15 @@ namespace Core.Tests.Api
 
 
         [TestMethod]
-        public void GetUserAsync_CallsUserManager()
+        public void GetUserAsync_CallsIdentityManager()
         {
             Get("api/users/123");
-            userManager.VerifyGetUserAsync("123");
+            identityManager.VerifyGetUserAsync("123");
         }
         [TestMethod]
         public void GetUserAsync_UserFound_ReturnsUser()
         {
-            userManager.SetupGetUserAsync(new UserResult { Subject = "foo", Username = "user" });
+            identityManager.SetupGetUserAsync(new UserResult { Subject = "foo", Username = "user" });
             var result = Get<UserResult>("api/users/123");
             Assert.AreEqual("foo", result.Subject);
             Assert.AreEqual("user", result.Username);
@@ -146,14 +146,14 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetUserAsync_UserNotFound_ReturnsNotFound()
         {
-            userManager.SetupGetUserAsync((UserResult)null);
+            identityManager.SetupGetUserAsync((UserResult)null);
             var resp = Get("api/users/123");
             Assert.AreEqual(HttpStatusCode.NotFound, resp.StatusCode);
         }
         [TestMethod]
-        public void GetUserAsync_UserManagerReturnsErrors_ReturnsErrors()
+        public void GetUserAsync_IdentityManagerReturnsErrors_ReturnsErrors()
         {
-            userManager.SetupGetUserAsync("foo", "bar");
+            identityManager.SetupGetUserAsync("foo", "bar");
             var response = Get("api/users/123");
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
@@ -162,9 +162,9 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void GetUserAsync_UserManagerThrows_ReturnsErrors()
+        public void GetUserAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupGetUserAsync(new Exception("Boom"));
+            identityManager.SetupGetUserAsync(new Exception("Boom"));
             var response = Get("api/users/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
@@ -178,21 +178,21 @@ namespace Core.Tests.Api
         }
 
         [TestMethod]
-        public void DeleteUserAsync_CallsUserManager()
+        public void DeleteUserAsync_CallsIdentityManager()
         {
             Delete("api/users/123");
-            userManager.VerifyDeleteUserAsync("123");
+            identityManager.VerifyDeleteUserAsync("123");
         }
         [TestMethod]
-        public void DeleteUserAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        public void DeleteUserAsync_IdentityManagerReturnsSuccess_ReturnsNoContent()
         {
             var resp = Delete("api/users/123");
             Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
         }
         [TestMethod]
-        public void DeleteUserAsync_UserManagerReturnsError_ReturnsError()
+        public void DeleteUserAsync_IdentityManagerReturnsError_ReturnsError()
         {
-            userManager.SetupDeleteUserAsync("foo", "bar");
+            identityManager.SetupDeleteUserAsync("foo", "bar");
             var resp = Delete("api/users/123");
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -201,9 +201,9 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void DeleteUserAsync_UserManagerThrows_ReturnsErrors()
+        public void DeleteUserAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupDeleteUserAsync(new Exception("Boom"));
+            identityManager.SetupDeleteUserAsync(new Exception("Boom"));
             var response = Delete("api/users/123");
             Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
@@ -217,21 +217,21 @@ namespace Core.Tests.Api
         }
 
         [TestMethod]
-        public void SetPasswordAsync_CallsUserManager()
+        public void SetPasswordAsync_CallsIdentityManager()
         {
             Put("api/users/123/password", new PasswordModel { Password = "pass" });
-            userManager.VerifySetPasswordAsync("123", "pass");
+            identityManager.VerifySetPasswordAsync("123", "pass");
         }
         [TestMethod]
-        public void SetPasswordAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        public void SetPasswordAsync_IdentityManagerReturnsSuccess_ReturnsNoContent()
         {
             var resp = Put("api/users/123/password", new PasswordModel { Password = "pass" });
             Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
         }
         [TestMethod]
-        public void SetPasswordAsync_UserManagerReturnsError_ReturnsError()
+        public void SetPasswordAsync_IdentityManagerReturnsError_ReturnsError()
         {
-            userManager.SetupSetPasswordAsync("foo", "bar");
+            identityManager.SetupSetPasswordAsync("foo", "bar");
             var resp = Put("api/users/123/password", new PasswordModel { Password = "pass" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -240,19 +240,19 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void SetPasswordAsync_UserManagerThrows_ReturnsErrors()
+        public void SetPasswordAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupSetPasswordAsync(new Exception("Boom"));
+            identityManager.SetupSetPasswordAsync(new Exception("Boom"));
             var resp = Put("api/users/123/password", new PasswordModel { Password = "pass" });
             Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
         }
         [TestMethod]
-        public void SetPasswordAsync_InvalidModel_DoesNotCallUserManager()
+        public void SetPasswordAsync_InvalidModel_DoesNotCallIdentityManager()
         {
             Put("api/users/123/password", new PasswordModel { Password = "" });
             Put("api/users/ /password", new PasswordModel { Password = "pass" });
             Put("api/users/123/password", (PasswordModel)null);
-            userManager.VerifySetPasswordAsyncNotCalled();
+            identityManager.VerifySetPasswordAsyncNotCalled();
         }
         [TestMethod]
         public void SetPasswordAsync_MissingModel_ReturnsError()
@@ -281,21 +281,21 @@ namespace Core.Tests.Api
 
 
         [TestMethod]
-        public void SetEmailAsync_CallsUserManager()
+        public void SetEmailAsync_CallsIdentityManager()
         {
             Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
-            userManager.VerifySetEmailAsync("123", "user@test.com");
+            identityManager.VerifySetEmailAsync("123", "user@test.com");
         }
         [TestMethod]
-        public void SetEmailAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        public void SetEmailAsync_IdentityManagerReturnsSuccess_ReturnsNoContent()
         {
             var resp = Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
             Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
         }
         [TestMethod]
-        public void SetEmailAsync_UserManagerReturnsError_ReturnsError()
+        public void SetEmailAsync_IdentityManagerReturnsError_ReturnsError()
         {
-            userManager.SetupSetEmailAsync("foo", "bar");
+            identityManager.SetupSetEmailAsync("foo", "bar");
             var resp = Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -304,19 +304,19 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void SetEmailAsync_UserManagerThrows_ReturnsErrors()
+        public void SetEmailAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupSetEmailAsync(new Exception("Boom"));
+            identityManager.SetupSetEmailAsync(new Exception("Boom"));
             var resp = Put("api/users/123/email", new EmailModel { Email = "user@test.com" });
             Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
         }
         [TestMethod]
-        public void SetEmailAsync_InvalidModel_DoesNotCallUserManager()
+        public void SetEmailAsync_InvalidModel_DoesNotCallIdentityManager()
         {
             Put("api/users/123/email", new EmailModel { Email = "" });
             Put("api/users/ /email", new EmailModel { Email = "user@test.com" });
             Put("api/users/123/email", (EmailModel)null);
-            userManager.VerifySetEmailAsyncNotCalled();
+            identityManager.VerifySetEmailAsyncNotCalled();
         }
         [TestMethod]
         public void SetEmailAsync_MissingModel_ReturnsError()
@@ -352,21 +352,21 @@ namespace Core.Tests.Api
         }
 
         [TestMethod]
-        public void SetPhoneAsync_CallsUserManager()
+        public void SetPhoneAsync_CallsIdentityManager()
         {
             Put("api/users/123/phone", new PhoneModel { Phone = "555" });
-            userManager.VerifySetPhoneAsync("123", "555");
+            identityManager.VerifySetPhoneAsync("123", "555");
         }
         [TestMethod]
-        public void SetPhoneAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        public void SetPhoneAsync_IdentityManagerReturnsSuccess_ReturnsNoContent()
         {
             var resp = Put("api/users/123/phone", new PhoneModel { Phone = "555" });
             Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
         }
         [TestMethod]
-        public void SetPhoneAsync_UserManagerReturnsError_ReturnsError()
+        public void SetPhoneAsync_IdentityManagerReturnsError_ReturnsError()
         {
-            userManager.SetupSetPhoneAsync("foo", "bar");
+            identityManager.SetupSetPhoneAsync("foo", "bar");
             var resp = Put("api/users/123/phone", new PhoneModel { Phone = "555" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -375,19 +375,19 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void SetPhoneAsync_UserManagerThrows_ReturnsErrors()
+        public void SetPhoneAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupSetPhoneAsync(new Exception("Boom"));
+            identityManager.SetupSetPhoneAsync(new Exception("Boom"));
             var resp = Put("api/users/123/phone", new PhoneModel { Phone = "555" });
             Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
         }
         [TestMethod]
-        public void SetPhoneAsync_InvalidModel_DoesNotCallUserManager()
+        public void SetPhoneAsync_InvalidModel_DoesNotCallIdentityManager()
         {
             Put("api/users/123/phone", new PhoneModel { Phone = "" });
             Put("api/users/ /phone", new PhoneModel { Phone = "555" });
             Put("api/users/123/phone", (PhoneModel)null);
-            userManager.VerifySetPhoneAsyncNotCalled();
+            identityManager.VerifySetPhoneAsyncNotCalled();
         }
         [TestMethod]
         public void SetPhoneAsync_MissingModel_ReturnsError()
@@ -416,21 +416,21 @@ namespace Core.Tests.Api
 
 
         [TestMethod]
-        public void AddClaimAsync_CallsUserManager()
+        public void AddClaimAsync_CallsIdentityManager()
         {
             Post("api/users/123/claims", new ClaimModel { Type="color", Value="blue" });
-            userManager.VerifyAddClaimAsync("123", "color", "blue");
+            identityManager.VerifyAddClaimAsync("123", "color", "blue");
         }
         [TestMethod]
-        public void AddClaimAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        public void AddClaimAsync_IdentityManagerReturnsSuccess_ReturnsNoContent()
         {
             var resp = Post("api/users/123/claims", new ClaimModel { Type="color", Value="blue" });
             Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
         }
         [TestMethod]
-        public void AddClaimAsync_UserManagerReturnsError_ReturnsError()
+        public void AddClaimAsync_IdentityManagerReturnsError_ReturnsError()
         {
-            userManager.SetupAddClaimAsync("foo", "bar");
+            identityManager.SetupAddClaimAsync("foo", "bar");
             var resp = Post("api/users/123/claims", new ClaimModel { Type = "color", Value = "blue" });
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -439,20 +439,20 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void AddClaimAsync_UserManagerThrows_ReturnsErrors()
+        public void AddClaimAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupAddClaimAsync(new Exception("Boom"));
+            identityManager.SetupAddClaimAsync(new Exception("Boom"));
             var resp = Post("api/users/123/claims", new ClaimModel { Type = "color", Value = "blue" });
             Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
         }
         [TestMethod]
-        public void AddClaimAsync_InvalidModel_DoesNotCallUserManager()
+        public void AddClaimAsync_InvalidModel_DoesNotCallIdentityManager()
         {
             Post("api/users/123/claims", new ClaimModel { Type = "", Value = "blue" });
             Post("api/users/123/claims", new ClaimModel { Type = "color", Value = "" });
             Post("api/users/ /claims", new ClaimModel { Type = "color", Value = "blue" });
             Post("api/users/123/claims", (ClaimModel)null);
-            userManager.VerifyAddClaimAsyncNotCalled();
+            identityManager.VerifyAddClaimAsyncNotCalled();
         }
         [TestMethod]
         public void AddClaimAsync_MissingModel_ReturnsError()
@@ -488,21 +488,21 @@ namespace Core.Tests.Api
         }
 
         [TestMethod]
-        public void RemoveClaimAsync_CallsUserManager()
+        public void RemoveClaimAsync_CallsIdentityManager()
         {
             Delete("api/users/123/claims/color/blue");
-            userManager.VerifyRemoveClaimAsync("123", "color", "blue");
+            identityManager.VerifyRemoveClaimAsync("123", "color", "blue");
         }
         [TestMethod]
-        public void RemoveClaimAsync_UserManagerReturnsSuccess_ReturnsNoContent()
+        public void RemoveClaimAsync_IdentityManagerReturnsSuccess_ReturnsNoContent()
         {
             var resp = Delete("api/users/123/claims/color/blue");
             Assert.AreEqual(HttpStatusCode.NoContent, resp.StatusCode);
         }
         [TestMethod]
-        public void RemoveClaimAsync_UserManagerReturnsError_ReturnsError()
+        public void RemoveClaimAsync_IdentityManagerReturnsError_ReturnsError()
         {
-            userManager.SetupRemoveClaimAsync("foo", "bar");
+            identityManager.SetupRemoveClaimAsync("foo", "bar");
             var resp = Delete("api/users/123/claims/color/blue");
             Assert.AreEqual(HttpStatusCode.BadRequest, resp.StatusCode);
             var error = resp.Content.ReadAsAsync<ErrorModel>().Result;
@@ -511,19 +511,19 @@ namespace Core.Tests.Api
             CollectionAssert.Contains(error.Errors, "bar");
         }
         [TestMethod]
-        public void RemoveClaimAsync_UserManagerThrows_ReturnsErrors()
+        public void RemoveClaimAsync_IdentityManagerThrows_ReturnsErrors()
         {
-            userManager.SetupRemoveClaimAsync(new Exception("Boom"));
+            identityManager.SetupRemoveClaimAsync(new Exception("Boom"));
             var resp = Delete("api/users/123/claims/color/blue");
             Assert.AreEqual(HttpStatusCode.InternalServerError, resp.StatusCode);
         }
         [TestMethod]
-        public void RemoveClaimAsync_InvalidModel_DoesNotCallUserManager()
+        public void RemoveClaimAsync_InvalidModel_DoesNotCallIdentityManager()
         {
             Delete("api/users/ /claims/color/blue");
             Delete("api/users/123/claims/ /blue");
             Delete("api/users/123/claims/color/ ");
-            userManager.VerifyRemoveClaimAsyncNotCalled();
+            identityManager.VerifyRemoveClaimAsyncNotCalled();
         }
         [TestMethod]
         public void RemoveClaimAsync_MissingType_ReturnsError()

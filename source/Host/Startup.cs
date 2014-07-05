@@ -13,7 +13,7 @@ namespace Thinktecture.IdentityManager.Host
         {
             app.UseIdentityManager(new IdentityManagerConfiguration()
             {
-                UserManagerFactory = Thinktecture.IdentityManager.MembershipReboot.UserManagerFactory.Create
+                IdentityManagerFactory = Thinktecture.IdentityManager.MembershipReboot.IdentityManagerFactory.Create
                 //UserManagerFactory = Thinktecture.IdentityManager.AspNetIdentity.UserManagerFactory.Create
             });
         }

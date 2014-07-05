@@ -17,7 +17,7 @@ namespace Thinktecture.IdentityManager
             this.AdminRoleName = "IdentityManagerAdministrator";
         }
 
-        public Func<IUserManager> UserManagerFactory { get; set; }
+        public Func<IIdentityManagerService> IdentityManagerFactory { get; set; }
 
         public EmbeddedAuthentication EmbeddedAuthentication { get; set; }
         public ExternalAuthentication ExternalAuthentication { get; set; }
@@ -26,7 +26,7 @@ namespace Thinktecture.IdentityManager
 
         internal void Validate()
         {
-            if (this.UserManagerFactory == null)
+            if (this.IdentityManagerFactory == null)
             {
                 throw new Exception("UserManagerFactory is required.");
             }

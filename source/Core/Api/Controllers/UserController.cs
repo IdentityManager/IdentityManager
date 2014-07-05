@@ -18,8 +18,8 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
     [NoCache]
     public class UserController : ApiController
     {
-        IUserManager userManager;
-        public UserController(IUserManager userManager)
+        IIdentityManagerService userManager;
+        public UserController(IIdentityManagerService userManager)
         {
             if (userManager == null) throw new ArgumentNullException("userManager");
 

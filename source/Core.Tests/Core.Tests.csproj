@@ -66,6 +66,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.0\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
+    <Reference Include="xunit">
+      <HintPath>..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -80,11 +83,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Api\FakeUserManager.cs" />
+    <Compile Include="Api\FakeIdentityManager.cs" />
     <Compile Include="Api\MetadataControllerTests.cs" />
     <Compile Include="Api\UserControllerTests.cs" />
     <Compile Include="Api\WebApiTestBase.cs" />
-    <Compile Include="Core\UserManagerSemanticsTests.cs" />
+    <Compile Include="Core\IdentityManagerSemanticsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

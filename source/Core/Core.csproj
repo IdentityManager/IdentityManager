@@ -99,15 +99,17 @@
     <Compile Include="Api\Models\PasswordModel.cs" />
     <Compile Include="Api\Models\PhoneModel.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\ClaimDataType.cs" />
+    <Compile Include="Core\ClaimMetadata.cs" />
     <Compile Include="Core\CreateResult.cs" />
-    <Compile Include="Core\IUserManager.cs" />
+    <Compile Include="Core\IIdentityManagerService.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
     <Compile Include="Core\UserClaim.cs" />
-    <Compile Include="Core\UserManagerMetadata.cs" />
-    <Compile Include="Core\UserManagerResult`1.cs" />
-    <Compile Include="Core\UserManagerResult.cs" />
+    <Compile Include="Core\IdentityManagerMetadata.cs" />
+    <Compile Include="Core\IdentityManagerResult`1.cs" />
+    <Compile Include="Core\IdentityManagerResult.cs" />
     <Compile Include="Core\UserResult.cs" />
     <Compile Include="Resources\Messages.Designer.cs">
       <AutoGen>True</AutoGen>

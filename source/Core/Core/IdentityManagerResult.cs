@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace Thinktecture.IdentityManager.Core
 {
-    public class UserManagerResult
+    public class IdentityManagerResult
     {
-        public static readonly UserManagerResult Success = new UserManagerResult();
+        public static readonly IdentityManagerResult Success = new IdentityManagerResult();
 
-        public UserManagerResult(params string[] errors)
+        public IdentityManagerResult(params string[] errors)
         {
             this.Errors = errors;
         }

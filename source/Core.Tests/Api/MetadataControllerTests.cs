@@ -11,16 +11,16 @@ namespace Core.Tests.Api
         public void GetMetadata_CallsUserManager()
         {
             Get("api");
-            userManager.GetMetadataAsync();
+            identityManager.GetMetadataAsync();
         }
         [TestMethod]
         public void GetMetadata_ReturnsCorrectMetadata()
         {
-            userManager.SetupGetMetadataAsync(new UserManagerMetadata
+            identityManager.SetupGetMetadataAsync(new IdentityManagerMetadata
             {
                 UniqueIdentitiferClaimType = "foo",
             });
-            var result = Get<UserManagerMetadata>("api");
+            var result = Get<IdentityManagerMetadata>("api");
             Assert.AreEqual("foo", result.UniqueIdentitiferClaimType);
         }
     }

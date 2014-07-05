@@ -8,15 +8,15 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Core.Tests.Api
 {
-    public class FakeUserManager : Mock<IUserManager>
+    public class FakeIdentityManager : Mock<IIdentityManagerService>
     {
-        public FakeUserManager()
+        public FakeIdentityManager()
         {
-            this.SetReturnsDefault(Task.FromResult(new UserManagerResult()));
-            this.SetReturnsDefault(Task.FromResult(new UserManagerResult<QueryResult>(new QueryResult())));
-            this.SetReturnsDefault(Task.FromResult(new UserManagerResult<CreateResult>(new CreateResult())));
-            this.SetReturnsDefault(Task.FromResult(new UserManagerResult<UserResult>(new UserResult())));
-            this.SetupGetMetadataAsync(new UserManagerMetadata {
+            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult()));
+            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<QueryResult>(new QueryResult())));
+            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult())));
+            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<UserResult>(new UserResult())));
+            this.SetupGetMetadataAsync(new IdentityManagerMetadata {
                 UniqueIdentitiferClaimType = Constants.ClaimTypes.Subject,
             });
         }
@@ -25,12 +25,12 @@ namespace Core.Tests.Api
         public void SetupQueryUsersAsync(QueryResult result)
         {
             Setup(x => x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(new UserManagerResult<QueryResult>(result)));
+                .Returns(Task.FromResult(new IdentityManagerResult<QueryResult>(result)));
         }
         public void SetupQueryUsersAsync(params string[] errors)
         {
             Setup(x => x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(new UserManagerResult<QueryResult>(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult<QueryResult>(errors)));
         }
         public void SetupQueryUsersAsync(Exception ex)
         {
@@ -51,12 +51,12 @@ namespace Core.Tests.Api
         public void SetupCreateUserAsync(CreateResult result)
         {
             Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()))
-               .Returns(Task.FromResult(new UserManagerResult<CreateResult>(result)));
+               .Returns(Task.FromResult(new IdentityManagerResult<CreateResult>(result)));
         }
         public void SetupCreateUserAsync(params string[] errors)
         {
             Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>()))
-               .Returns(Task.FromResult(new UserManagerResult<CreateResult>(errors)));
+               .Returns(Task.FromResult(new IdentityManagerResult<CreateResult>(errors)));
         }
         public void SetupCreateUserAsync(Exception ex)
         {
@@ -80,12 +80,12 @@ namespace Core.Tests.Api
         internal void SetupGetUserAsync(UserResult userResult)
         {
             Setup(x => x.GetUserAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult<UserResult>(userResult)));
+                .Returns(Task.FromResult(new IdentityManagerResult<UserResult>(userResult)));
         }
         internal void SetupGetUserAsync(params string[] errors)
         {
             Setup(x => x.GetUserAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult<UserResult>(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult<UserResult>(errors)));
         }
         public void SetupGetUserAsync(Exception ex)
         {
@@ -101,7 +101,7 @@ namespace Core.Tests.Api
         internal void SetupDeleteUserAsync(params string[] errors)
         {
             Setup(x => x.DeleteUserAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupDeleteUserAsync(Exception ex)
         {
@@ -121,7 +121,7 @@ namespace Core.Tests.Api
         internal void SetupSetPasswordAsync(params string[] errors)
         {
             Setup(x=>x.SetPasswordAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupSetPasswordAsync(Exception ex)
         {
@@ -141,7 +141,7 @@ namespace Core.Tests.Api
         internal void SetupSetEmailAsync(params string[] errors)
         {
             Setup(x => x.SetEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupSetEmailAsync(Exception ex)
         {
@@ -160,7 +160,7 @@ namespace Core.Tests.Api
         internal void SetupSetPhoneAsync(params string[] errors)
         {
             Setup(x => x.SetPhoneAsync(It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupSetPhoneAsync(Exception ex)
         {
@@ -179,7 +179,7 @@ namespace Core.Tests.Api
         internal void SetupAddClaimAsync(params string[] errors)
         {
             Setup(x => x.AddClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupAddClaimAsync(Exception ex)
         {
@@ -198,7 +198,7 @@ namespace Core.Tests.Api
         internal void SetupRemoveClaimAsync(params string[] errors)
         {
             Setup(x => x.RemoveClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new UserManagerResult(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupRemoveClaimAsync(Exception ex)
         {
@@ -211,7 +211,7 @@ namespace Core.Tests.Api
         {
             Verify(x => x.GetMetadataAsync());
         }
-        internal void SetupGetMetadataAsync(UserManagerMetadata data)
+        internal void SetupGetMetadataAsync(IdentityManagerMetadata data)
         {
             Setup(x => x.GetMetadataAsync())
                 .Returns(Task.FromResult(data));

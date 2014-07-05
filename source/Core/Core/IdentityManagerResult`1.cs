@@ -5,14 +5,14 @@
 
 namespace Thinktecture.IdentityManager.Core
 {
-    public class UserManagerResult<T> : UserManagerResult
+    public class IdentityManagerResult<T> : IdentityManagerResult
     {
-        public UserManagerResult(T result)
+        public IdentityManagerResult(T result)
         {
             Result = result;
         }
         
-        public UserManagerResult(params string[] errors)
+        public IdentityManagerResult(params string[] errors)
             : base(errors)
         {
         }

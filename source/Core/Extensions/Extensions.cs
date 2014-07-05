@@ -11,7 +11,7 @@ namespace System.Web.Http
 {
     static class Extensions
     {
-        public static void AddErrors(this ModelStateDictionary modelState, UserManagerResult result)
+        public static void AddErrors(this ModelStateDictionary modelState, IdentityManagerResult result)
         {
             if (modelState == null) throw new ArgumentNullException("modelState");
             if (result == null) throw new ArgumentNullException("result");
@@ -32,7 +32,7 @@ namespace System.Web.Http
             };
         }
 
-        public static ErrorModel ToError(this UserManagerResult result)
+        public static ErrorModel ToError(this IdentityManagerResult result)
         {
             if (result == null) throw new ArgumentNullException("result");
 
