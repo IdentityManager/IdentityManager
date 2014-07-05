@@ -11,7 +11,7 @@ namespace MembershipReboot.Tests
     {
         public TestUserAccountRepository()
         {
-            //this.UseEqualsOrdinalIgnoreCaseForQueries = true;
+            this.UseEqualsOrdinalIgnoreCaseForQueries = true;
         }
 
         public List<TestUserAccount> UserAccounts = new List<TestUserAccount>();
