@@ -4,7 +4,6 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Core.Tests.Core
 {
-    [TestClass]
     public abstract class UserManagerSemanticsTests
     {
         IUserManager subject;
@@ -15,5 +14,7 @@ namespace Core.Tests.Core
         {
             subject = CreateUserManager();
         }
+
+
     }
 }
