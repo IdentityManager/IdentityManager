@@ -8,11 +8,22 @@ namespace MembershipReboot.Tests
 {
     public class MembershipRebootSemanticsTests : IdentityManagerSemanticsTests
     {
+        UserAccountService<TestUserAccount> userAccountService;
+
         protected override IIdentityManagerService CreateIdentityManager()
         {
+            var config = new MembershipRebootConfiguration<TestUserAccount>();
+            config.RequireAccountVerification = false;
+            config.PasswordHashingIterationCount = 100;
+            
             var repository = new TestUserAccountRepository();
-            var service = new UserAccountService<TestUserAccount>(repository);
-            return null;// new UserManager<TestUserAccount>(service, null, null);
+            userAccountService = new UserAccountService<TestUserAccount>(config, repository);
+            return new IdentityManager<TestUserAccount>(userAccountService, repository);
+        }
+
+        protected override bool ValidatePassword(string uid, string pwd)
+        {
+            return userAccountService.Authenticate(uid, pwd);
         }
     }
 }

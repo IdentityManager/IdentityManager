@@ -12,12 +12,11 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.MembershipReboot
 {
-    public class IdentityManager<TAccount> : IIdentityManagerService, IDisposable
+    public class IdentityManager<TAccount> : IIdentityManagerService
         where TAccount : UserAccount
     {
         readonly UserAccountService<TAccount> userAccountService;
         readonly IUserAccountQuery query;
-        IDisposable cleanup;
 
         public IdentityManager(UserAccountService<TAccount> userAccountService, IUserAccountQuery query)
         {
@@ -26,15 +25,6 @@ namespace Thinktecture.IdentityManager.MembershipReboot
 
             this.userAccountService = userAccountService;
             this.query = query;
-        }
-
-        public void Dispose()
-        {
-            if (this.cleanup != null)
-            {
-                cleanup.Dispose();
-                cleanup = null;
-            }
         }
 
         public Task<IdentityManagerMetadata> GetMetadataAsync()
@@ -100,7 +90,7 @@ namespace Thinktecture.IdentityManager.MembershipReboot
                 var acct = this.userAccountService.GetByID(g);
                 if (acct == null)
                 {
-                    return Task.FromResult(new IdentityManagerResult<UserResult>("Invalid subject"));
+                    return Task.FromResult(new IdentityManagerResult<UserResult>((UserResult)null));
                 }
 
                 var user = new UserResult

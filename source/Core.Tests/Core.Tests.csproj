@@ -87,7 +87,9 @@
     <Compile Include="Api\MetadataControllerTests.cs" />
     <Compile Include="Api\UserControllerTests.cs" />
     <Compile Include="Api\WebApiTestBase.cs" />
+    <Compile Include="Core\IdentityManagerResult`1Tests.cs" />
     <Compile Include="Core\IdentityManagerSemanticsTests.cs" />
+    <Compile Include="Core\IdentityManagerResultTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

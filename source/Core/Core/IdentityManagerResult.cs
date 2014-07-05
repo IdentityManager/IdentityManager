@@ -11,6 +11,10 @@ namespace Thinktecture.IdentityManager.Core
     {
         public static readonly IdentityManagerResult Success = new IdentityManagerResult();
 
+        public IdentityManagerResult()
+        {
+        }
+
         public IdentityManagerResult(params string[] errors)
         {
             this.Errors = errors;
