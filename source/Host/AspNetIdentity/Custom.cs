@@ -3,10 +3,9 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
-namespace Thinktecture.IdentityManager.AspNetIdentity
+namespace Thinktecture.IdentityManager.Host.AspNetIdentity
 {
     public class CustomDbContext : IdentityDbContext<CustomUser, CustomRole, int, CustomUserLogin, CustomUserRole, CustomUserClaim>
     {

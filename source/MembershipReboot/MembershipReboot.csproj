@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="RelationalUserAccountQuery.cs" />
     <Compile Include="IdentityManager.cs" />
-    <Compile Include="IdentityManagerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

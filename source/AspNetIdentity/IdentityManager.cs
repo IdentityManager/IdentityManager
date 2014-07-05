@@ -14,7 +14,7 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.AspNetIdentity
 {
-    public class IdentityManager<TUser> : UserManager<TUser, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
+    public class IdentityManager<TUser> : IdentityManager<TUser, string, IdentityUserLogin, IdentityUserRole, IdentityUserClaim>
         where TUser : IdentityUser, new()
     {
         public IdentityManager(Microsoft.AspNet.Identity.UserManager<TUser> userManager, IDisposable cleanup)
@@ -23,7 +23,7 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
         }
     }
 
-    public class UserManager<TUser, TKey, TUserLogin, TUserRole, TUserClaim> : IIdentityManagerService, IDisposable
+    public class IdentityManager<TUser, TKey, TUserLogin, TUserRole, TUserClaim> : IIdentityManagerService, IDisposable
         where TUser : IdentityUser<TKey, TUserLogin, TUserRole, TUserClaim>, new()
         //where TRole : IdentityRole<TKey, TUserRole>
         where TUserLogin : IdentityUserLogin<TKey>
@@ -36,7 +36,7 @@ namespace Thinktecture.IdentityManager.AspNetIdentity
 
         protected readonly Func<string, TKey> ConvertSubjectToKey;
 
-        public UserManager(Microsoft.AspNet.Identity.UserManager<TUser, TKey> userManager, IDisposable cleanup)
+        public IdentityManager(Microsoft.AspNet.Identity.UserManager<TUser, TKey> userManager, IDisposable cleanup)
         {
             if (userManager == null) throw new ArgumentNullException("userManager");
 
