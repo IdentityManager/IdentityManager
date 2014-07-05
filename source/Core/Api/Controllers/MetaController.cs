@@ -20,7 +20,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             this.userManager = userManager;
         }
 
-        [Route("meta")]
+        [Route("")]
         public async Task<IHttpActionResult> GetAsync()
         {
             return Ok(await userManager.GetMetadataAsync());

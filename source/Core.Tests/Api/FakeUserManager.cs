@@ -16,6 +16,9 @@ namespace Core.Tests.Api
             this.SetReturnsDefault(Task.FromResult(new UserManagerResult<QueryResult>(new QueryResult())));
             this.SetReturnsDefault(Task.FromResult(new UserManagerResult<CreateResult>(new CreateResult())));
             this.SetReturnsDefault(Task.FromResult(new UserManagerResult<UserResult>(new UserResult())));
+            this.SetupGetMetadataAsync(new UserManagerMetadata {
+                UniqueIdentitiferClaimType = Constants.ClaimTypes.Subject,
+            });
         }
 
 
@@ -203,5 +206,15 @@ namespace Core.Tests.Api
                 .Throws(ex);
         }
 
+
+        internal void GetMetadataAsync()
+        {
+            Verify(x => x.GetMetadataAsync());
+        }
+        internal void SetupGetMetadataAsync(UserManagerMetadata data)
+        {
+            Setup(x => x.GetMetadataAsync())
+                .Returns(Task.FromResult(data));
+        }
     }
 }
