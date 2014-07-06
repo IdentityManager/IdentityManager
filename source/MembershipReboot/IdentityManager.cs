@@ -91,12 +91,12 @@ namespace Thinktecture.IdentityManager.MembershipReboot
             return name;
         }
 
-        public Task<IdentityManagerResult<UserResult>> GetUserAsync(string subject)
+        public Task<IdentityManagerResult<UserDetail>> GetUserAsync(string subject)
         {
             Guid g;
             if (!Guid.TryParse(subject, out g))
             {
-                return Task.FromResult(new IdentityManagerResult<UserResult>("Invalid subject"));
+                return Task.FromResult(new IdentityManagerResult<UserDetail>("Invalid subject"));
             }
 
             try
@@ -104,10 +104,10 @@ namespace Thinktecture.IdentityManager.MembershipReboot
                 var acct = this.userAccountService.GetByID(g);
                 if (acct == null)
                 {
-                    return Task.FromResult(new IdentityManagerResult<UserResult>((UserResult)null));
+                    return Task.FromResult(new IdentityManagerResult<UserDetail>((UserDetail)null));
                 }
 
-                var user = new UserResult
+                var user = new UserDetail
                 {
                     Subject = subject,
                     Username = acct.Username,
@@ -122,11 +122,11 @@ namespace Thinktecture.IdentityManager.MembershipReboot
                 }
                 user.Claims = claims.ToArray();
 
-                return Task.FromResult(new IdentityManagerResult<UserResult>(user));
+                return Task.FromResult(new IdentityManagerResult<UserDetail>(user));
             }
             catch (ValidationException ex)
             {
-                return Task.FromResult(new IdentityManagerResult<UserResult>(ex.Message));
+                return Task.FromResult(new IdentityManagerResult<UserDetail>(ex.Message));
             }
         }
 

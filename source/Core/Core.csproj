@@ -103,6 +103,7 @@
     <Compile Include="Core\ClaimMetadata.cs" />
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IIdentityManagerService.cs" />
+    <Compile Include="Core\UserDetail.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
@@ -121,6 +122,7 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Templates\navbar.html" />
     <EmbeddedResource Include="Assets\Content\Bundle.min.css">
       <DependentUpon>Bundle.css</DependentUpon>
     </EmbeddedResource>
@@ -136,13 +138,11 @@
     <EmbeddedResource Include="Assets\Scripts\Bundle.js">
       <DependentUpon>Bundle.js.bundle</DependentUpon>
     </EmbeddedResource>
-    <Content Include="Assets\Scripts\Libs\angular-route.js" />
+    <Content Include="Assets\Scripts\Libs\angular-mocks.js" />
+    <Content Include="Assets\Scripts\Libs\angular-resource.min.js" />
     <Content Include="Assets\Scripts\Libs\angular-route.min.js" />
-    <Content Include="Assets\Scripts\Libs\angular.1.2.13.js" />
-    <Content Include="Assets\Scripts\Libs\angular.1.2.13.min.js" />
-    <Content Include="Assets\Scripts\Libs\bootstrap.js" />
+    <Content Include="Assets\Scripts\Libs\angular.min.js" />
     <Content Include="Assets\Scripts\Libs\bootstrap.min.js" />
-    <Content Include="Assets\Scripts\Libs\jquery-2.1.0.js" />
     <Content Include="Assets\Scripts\Libs\jquery-2.1.0.min.js" />
     <EmbeddedResource Include="Assets\Templates\home.html" />
     <EmbeddedResource Include="Assets\Templates\users\edit.html" />
@@ -211,7 +211,6 @@
     <EmbeddedResource Include="Assets\Content\fonts\glyphicons-halflings-regular.woff" />
     <None Include="Assets\Content\Style.less" />
     <None Include="Assets\Scripts\Bundle.js.bundle" />
-    <Content Include="Assets\Scripts\Libs\jquery-2.1.0.min.map" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

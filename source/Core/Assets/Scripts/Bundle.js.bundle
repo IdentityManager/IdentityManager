@@ -12,7 +12,7 @@
   <files>
     <file>/Assets/Scripts/Libs/jquery-2.1.0.min.js</file>
     <file>/Assets/Scripts/Libs/bootstrap.min.js</file>
-    <file>/Assets/Scripts/Libs/angular.1.2.13.min.js</file>
+    <file>/Assets/Scripts/Libs/angular.min.js</file>
     <file>/Assets/Scripts/Libs/angular-route.min.js</file>
     <file>/Assets/Scripts/App/App.js</file>
   </files>

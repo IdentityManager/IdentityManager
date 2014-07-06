@@ -138,7 +138,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetUserAsync_UserFound_ReturnsUser()
         {
-            identityManager.SetupGetUserAsync(new UserResult { Subject = "foo", Username = "user" });
+            identityManager.SetupGetUserAsync(new UserDetail { Subject = "foo", Username = "user" });
             var result = Get<UserResult>("api/users/123");
             Assert.AreEqual("foo", result.Subject);
             Assert.AreEqual("user", result.Username);
@@ -146,7 +146,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetUserAsync_UserNotFound_ReturnsNotFound()
         {
-            identityManager.SetupGetUserAsync((UserResult)null);
+            identityManager.SetupGetUserAsync((UserDetail)null);
             var resp = Get("api/users/123");
             Assert.AreEqual(HttpStatusCode.NotFound, resp.StatusCode);
         }

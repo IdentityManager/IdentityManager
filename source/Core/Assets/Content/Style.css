@@ -1,4 +1,4 @@
-/*! normalize.css v3.0.0 | MIT License | git.io/normalize */
+﻿/*! normalize.css v3.0.0 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
@@ -5773,7 +5773,8 @@ button.close {
   }
 }
 body {
-  margin-top: 40px;
+  margin-top: 60px;
+  margin-bottom: 60px;
 }
 .section {
   padding: 15px 0;

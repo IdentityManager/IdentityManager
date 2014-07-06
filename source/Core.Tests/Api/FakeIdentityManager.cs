@@ -77,15 +77,15 @@ namespace Core.Tests.Api
         {
             Verify(x => x.GetUserAsync(subject));
         }
-        internal void SetupGetUserAsync(UserResult userResult)
+        internal void SetupGetUserAsync(UserDetail userResult)
         {
             Setup(x => x.GetUserAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new IdentityManagerResult<UserResult>(userResult)));
+                .Returns(Task.FromResult(new IdentityManagerResult<UserDetail>(userResult)));
         }
         internal void SetupGetUserAsync(params string[] errors)
         {
             Setup(x => x.GetUserAsync(It.IsAny<string>()))
-                .Returns(Task.FromResult(new IdentityManagerResult<UserResult>(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult<UserDetail>(errors)));
         }
         public void SetupGetUserAsync(Exception ex)
         {

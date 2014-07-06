@@ -6,10 +6,12 @@ using System;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Core;
+using Thinktecture.IdentityManager.Core.Api.Filters;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
     [RoutePrefix("api")]
+    [NoCache]
     public class MetaController : ApiController
     {
         IIdentityManagerService userManager;
@@ -21,17 +23,28 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [Route("")]
-        public async Task<IHttpActionResult> GetAsync()
+        public IHttpActionResult Get()
+        {
+            return Ok(new {
+                metadata = Url.Link("metadata", null),
+                currentUser = Url.Link("currentUser", null),
+                users = Url.Link("getUsers", null),
+                createUser = Url.Link("createUser", null),
+            });
+        }
+
+        [Route("metadata", Name = "metadata")]
+        public async Task<IHttpActionResult> GetMetadataAsync()
         {
             return Ok(await userManager.GetMetadataAsync());
         }
         
-        [Route("admin")]
-        public IHttpActionResult Get()
+        [Route("currentuser", Name="currentUser")]
+        public IHttpActionResult GetCurrentUser()
         {
             return Ok(new
             {
-                username = "Admin Username"
+                username = User.Identity.Name
             });
         }
     }

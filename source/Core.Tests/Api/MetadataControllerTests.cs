@@ -10,7 +10,7 @@ namespace Core.Tests.Api
         [TestMethod]
         public void GetMetadata_CallsUserManager()
         {
-            Get("api");
+            Get("api/metadata");
             identityManager.GetMetadataAsync();
         }
         [TestMethod]
@@ -20,7 +20,7 @@ namespace Core.Tests.Api
             {
                 UniqueIdentitiferClaimType = "foo",
             });
-            var result = Get<IdentityManagerMetadata>("api");
+            var result = Get<IdentityManagerMetadata>("api/metadata");
             Assert.AreEqual("foo", result.UniqueIdentitiferClaimType);
         }
     }
