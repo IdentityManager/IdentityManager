@@ -5843,4 +5843,19 @@ form label.column {
     opacity: 0.2;
   }
 }
+.errors {
+  margin: 0;
+}
+.errors li {
+  list-style-type: none;
+}
+.user-edit-regular.form-control {
+  width: 289px;
+}
+.user-edit-wide.form-control {
+  width: 582px;
+}
+.line .btn {
+  width: 60px;
+}
 

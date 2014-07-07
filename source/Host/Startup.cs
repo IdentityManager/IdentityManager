@@ -11,6 +11,11 @@ namespace Thinktecture.IdentityManager.Host
     {
         public void Configuration(IAppBuilder app)
         {
+            app.Use(async (ctx, next) =>
+            {
+                await next();
+
+            });
             app.UseIdentityManager(new IdentityManagerConfiguration()
             {
                 IdentityManagerFactory = Thinktecture.IdentityManager.Host.MembershipReboot.MembershipRebootIdentityManagerFactory.Create

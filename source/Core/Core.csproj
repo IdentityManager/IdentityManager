@@ -122,6 +122,7 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Templates\message.html" />
     <EmbeddedResource Include="Assets\Templates\navbar.html" />
     <EmbeddedResource Include="Assets\Content\Bundle.min.css">
       <DependentUpon>Bundle.css</DependentUpon>
@@ -139,7 +140,6 @@
       <DependentUpon>Bundle.js.bundle</DependentUpon>
     </EmbeddedResource>
     <Content Include="Assets\Scripts\Libs\angular-mocks.js" />
-    <Content Include="Assets\Scripts\Libs\angular-resource.min.js" />
     <Content Include="Assets\Scripts\Libs\angular-route.min.js" />
     <Content Include="Assets\Scripts\Libs\angular.min.js" />
     <Content Include="Assets\Scripts\Libs\bootstrap.min.js" />

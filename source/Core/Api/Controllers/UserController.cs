@@ -68,7 +68,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 var result = await this.userManager.CreateUserAsync(model.Username, model.Password);
                 if (result.IsSuccess)
                 {
-                    return Created(Url.Link("user", new { subject = result.Result.Subject }));
+                    return Created(Url.Link("user", new { subject = result.Result.Subject }), result.Result);
                 }
 
                 ModelState.AddErrors(result);

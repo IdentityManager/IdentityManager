@@ -3,13 +3,10 @@
     <h1>Create New User</h1>
 </div>
 
-<div class="row" ng-show="model.message">
-    <div class="col-sm-6">
-        <div ng-class="model.success ? 'alert alert-success alert-dismissable' : 'alert alert-danger alert-dismissable'">{{model.message}}</div>
-    </div>
-</div>
 <div class="row">
     <div class="col-sm-6">
+        <idm-message message="feedback"></idm-message>
+
         <form class="form" ng-submit="create(uid, pwd)">
             <div class="form-group">
                 <label for="uid">Username</label>
@@ -30,4 +27,3 @@
         </form>
     </div>
 </div>
-

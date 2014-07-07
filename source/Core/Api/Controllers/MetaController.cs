@@ -44,7 +44,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         {
             return Ok(new
             {
-                username = User.Identity.Name
+                username = "Admin User"
             });
         }
     }

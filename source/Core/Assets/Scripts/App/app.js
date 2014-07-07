@@ -1,8 +1,151 @@
-﻿/// <reference path="../Libs/angular.1.2.13.js" />
-/// <reference path="../Libs/angular-route.js" />
+﻿/// <reference path="../Libs/angular.min.js" />
+/// <reference path="../Libs/angular-route.min.js" />
 
 (function (angular) {
-    var app = angular.module("app", ['ngRoute']);
+    var app = angular.module("ttIdm", []);
+    
+    app.service("idmApi", function ($http, $q) {
+        var api;
+        this.start = function () {
+            var q = $q.defer();
+            if (api) {
+                q.resolve(api);
+            }
+            else {
+                $http.get("api").then(function (resp) {
+                    api = resp.data;
+                    q.resolve(api);
+                }, function (resp) {
+                    q.reject('Error loading API');
+                });
+            }
+            return q.promise;
+        };
+    });
+
+    app.service("idmCurrentUser", function ($http, idmApi) {
+        var user = {
+            username:'Admin'
+        };
+        this.user = user;
+
+        idmApi.start().then(function (config) {
+            $http.get(config.currentUser).then(function (response) {
+                if (response.data.username) {
+                    user.username = response.data.username;
+                }
+            });
+        });
+    });
+
+    app.service("idmUsers", function ($http) {
+        function nop() {
+        }
+        function mapData(response) {
+            return response.data;
+        }
+        function errorHandler(msg) {
+            msg = msg || "Unexpected Error";
+            return function (response) {
+                throw (response.data.errors || msg);
+            }
+        }
+
+        this.getUsers = function (filter, start, count) {
+            return $http.get("api/users", { params: { filter: filter, start: start, count: count } })
+                .then(mapData, errorHandler("Error Getting Users"));
+        };
+        this.getUser = function (subject) {
+            return $http.get("api/users/" + encodeURIComponent(subject))
+                .then(mapData, errorHandler("Error Getting User"));
+        };
+
+        this.createUser = function (username, password) {
+            return $http.post("api/users", { username: username, password: password })
+                .then(mapData, errorHandler("Error Creating User"));
+        };
+        this.deleteUser = function (subject) {
+            return $http.delete("api/users/" + encodeURIComponent(subject))
+                .then(nop, errorHandler("Error Deleting User"));
+        };
+        this.setPassword = function (subject, password) {
+            return $http.put("api/users/" + encodeURIComponent(subject) + "/password", { password: password })
+                .then(nop,  errorHandler("Error Setting Password"));
+        };
+        this.setEmail = function (subject, email) {
+            return $http.put("api/users/" + encodeURIComponent(subject) + "/email", { email: email })
+                .then(nop,  errorHandler("Error Setting Email"));
+        };
+        this.setPhone = function (subject, phone) {
+            return $http.put("api/users/" + encodeURIComponent(subject) + "/phone", { phone: phone })
+                .then(nop,  errorHandler("Error Setting Phone"));
+        };
+        this.addClaim = function (subject, type, value) {
+            return $http.post("api/users/" + encodeURIComponent(subject) + "/claims" , { type: type, value: value })
+                .then(nop,  errorHandler("Error Adding Claim"));
+        };
+        this.removeClaim = function (subject, type, value) {
+            return $http.delete("api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
+                .then(nop,  errorHandler("Error Removing Claim"));
+        };
+    });
+})(angular);
+
+(function (angular) {
+
+    function Feedback() {
+        var self = this;
+        var _errors;
+        var _message;
+
+        self.clear = function () {
+            _errors = null;
+            _message = null;
+        };
+
+        Object.defineProperty(this, "message", {
+            get: function () {
+                return _message;
+            },
+            set: function (value) {
+                self.clear();
+                _message = value;
+            }
+        });
+        Object.defineProperty(this, "errors", {
+            get: function () {
+                return _errors;
+            },
+            set: function (value) {
+                self.clear();
+                if (value instanceof Array) {
+                    _errors = value;
+                }
+                else {
+                    _errors = [value];
+                }
+            }
+        });
+
+        self.messageHandler = function (message) {
+            self.message = message;
+        };
+        self.errorHandler = function (errors) {
+            self.errors = errors;
+        };
+        self.createMessageHandler = function (msg) {
+            return function () {
+                self.message = msg;
+            };
+        };
+        self.createErrorHandler = function (msg) {
+            return function (errors) {
+                self.errors = errors || msg;
+            };
+        };
+    }
+
+    var app = angular.module("app", ['ngRoute', 'ttIdm']);
     app.config(function ($routeProvider) {
         $routeProvider
             .when("/", {
@@ -26,129 +169,28 @@
             });
     });
 
-    app.service("admin", function ($http, $q) {
-        var admin;
+    app.directive("idmMessage", function () {
+        return {
+            restrict: 'E',
+            scope: {
+                model:"=message"
+            },
+            templateUrl: 'assets/Templates.message.html',
+            link: function (scope, elem, attrs) {
 
-        this.getCurrentAdmin = function () {
-            if (admin) {
-                var def = $q.defer();
-                def.resolve(admin);
-                return def.promise;
             }
-            return $http.get("api/admin").then(function (response) {
-                admin = response.data;
-                return admin;
-            });
         };
     });
 
-    app.service("meta", function ($http, $q) {
-        var meta;
-        this.getMetadata = function () {
-            if (meta) {
-                var def = $q.defer();
-                def.resolve(meta);
-                return def.promise;
-            }
-            return $http.get("api/meta").then(function (response) {
-                meta = response.data;
-                return meta;
-            });
-        };
-    });
-
-    app.service("users", function ($http) {
-        this.getUsers = function (filter, start, count) {
-            return $http.get("api/users", { params: { filter: filter, start: start, count: count } })
-                .then(function (response) {
-                    return response.data;
-                },
-                function (response) {
-                    throw (response.data && response.data.message || "Error Getting Users");
-                });
-        };
-        this.getUser = function (subject) {
-            return $http.get("api/users", { params: { subject: subject } })
-                .then(function (response) {
-                    return response.data;
-                },
-                function (response) {
-                    throw (response.data && response.data.message || "Error Getting User");
-                });
-        };
-
-        this.createUser = function (username, password) {
-            return $http.post("api/users", { username: username, password: password })
-                .then(function (response) {
-                    return response.data;
-                },
-                function (response) {
-                    throw (response.data && response.data.message || "Error Creating User");
-                });
-        };
-        this.deleteUser = function (subject) {
-            return $http.post("api/users/delete", { subject:subject })
-                .then(function (response) {
-                },
-                function (response) {
-                    throw (response.data && response.data.message || "Error Creating User");
-                });
-        };
-        this.setPassword = function (subject, password) {
-            return $http.post("api/password", { subject: subject, password: password })
-                .then(function () {
-                    return;
-                }, function (response) {
-                    throw (response.data && response.data.message || "Error Setting Password");
-                });
-        };
-        this.setEmail = function (subject, email) {
-            return $http.post("api/email", { subject: subject, email: email })
-                .then(function () {
-                    return;
-                }, function (response) {
-                    throw (response.data && response.data.message || "Error Setting Email");
-                });
-        };
-        this.setPhone = function (subject, phone) {
-            return $http.post("api/phone", { subject: subject, phone: phone })
-                .then(function () {
-                    return;
-                }, function (response) {
-                    throw (response.data && response.data.message || "Error Setting Phone");
-                });
-        };
-        this.addClaim = function (subject, type, value) {
-            return $http.post("api/claims/add", { subject: subject, type: type, value: value })
-                .then(function () {
-                    return;
-                }, function (response) {
-                    throw (response.data && response.data.message || "Error Adding Claim");
-                });
-        };
-        this.removeClaim = function (subject, type, value) {
-            return $http.post("api/claims/remove", { subject: subject, type: type, value: value })
-                .then(function () {
-                    return;
-                }, function (response) {
-                    throw (response.data && response.data.message || "Error Removing Claim");
-                });
-        };
-    });
-
-    app.controller("LayoutCtrl", function ($scope, admin) {
-        $scope.model = {};
-
-        admin.getCurrentAdmin().then(function (data) {
-            $scope.model.username = data.username;
-        });
+    app.controller("LayoutCtrl", function ($scope, idmCurrentUser) {
+        $scope.model = idmCurrentUser.user;
     });
 
     app.controller("HomeCtrl", function ($scope) {
         $scope.model = {};
     });
 
-    app.controller("ListUsersCtrl", function ($scope, users, $sce, $routeParams, $location) {
+    app.controller("ListUsersCtrl", function ($scope, idmUsers, $sce, $routeParams, $location) {
         $scope.model = {};
 
         function PagerButton(text, page, enabled, current) {
@@ -220,7 +262,7 @@
         var page = $routeParams.page || 1;
         var startItem = (page - 1) * itemsPerPage;
 
-        users.getUsers(filter, startItem, itemsPerPage).then(function (result) {
+        idmUsers.getUsers(filter, startItem, itemsPerPage).then(function (result) {
             $scope.model.waiting = false;
             $scope.model.users = result.users;
             if (result.users && result.users.length) {
@@ -232,121 +274,85 @@
         });
     });
 
-    app.controller("NewUserCtrl", function ($scope, users, meta) {
-        $scope.model = {};
+    app.controller("NewUserCtrl", function ($scope, idmUsers) {
+        var feedback = new Feedback();
+        $scope.feedback = feedback;
 
-        meta.getMetadata().then(function (result) {
-            //$scope.model.claims = [1,2,3];
-        });
+        $scope.model = {
+        };
+
+        //meta.getMetadata().then(function (result) {
+        //    //$scope.model.claims = [1,2,3];
+        //});
 
         $scope.create = function (username, password) {
-            $scope.model.message = null;
-            $scope.model.success = true;
-
-            users.createUser(username, password)
+            idmUsers.createUser(username, password)
                 .then(function (result) {
                     $scope.model.last = result.subject;
-                    $scope.model.message = "Create Success";
-                },
-                function (message) {
-                    $scope.model.success = false;
-                    $scope.model.message = message;
-                });
+                    feedback.message = "Create Success";
+                }, feedback.errorHandler);
         };
     });
 
-    app.controller("EditUserCtrl", function ($scope, users, $routeParams) {
+    app.controller("EditUserCtrl", function ($scope, idmUsers, $routeParams) {
+        var feedback = new Feedback();
+        $scope.feedback = feedback;
+
         $scope.model = {};
 
-        function clear() {
-            $scope.model.success = false;
-            $scope.model.message = null;
-        }
-        function success(msg) {
-            $scope.model.success = true;
-            $scope.model.message = msg;
-        }
-        function error(msg) {
-            $scope.model.success = false;
-            $scope.model.message = msg;
-        }
-
         function loadUser() {
-            users.getUser($routeParams.subject)
+            idmUsers.getUser($routeParams.subject)
                 .then(function (result) {
                     $scope.model.user = result;
-                }, function (message) {
-                    error(message);
-                });
+                }, feedback.errorHandler);
         };
         loadUser();
 
         $scope.setPassword = function (subject, password, confirm) {
-            clear();
             if (password === confirm) {
-                users.setPassword(subject, password)
+                idmUsers.setPassword(subject, password)
                     .then(function () {
-                        success("Password Changed");
-                    }, function (message) {
-                        error(message);
-                    });
+                        feedback.message = "Password Changed";
+                    }, feedback.errorHandler);
             }
             else {
-                error("Password and Confirmation do not match");
+                feedback.errors = "Password and Confirmation do not match";
             }
         };
 
         $scope.setEmail = function (subject, email) {
-            clear();
-            users.setEmail(subject, email)
-                .then(function () {
-                    success("Email Changed");
-                }, function (message) {
-                    error(message);
-                });
+            idmUsers.setEmail(subject, email)
+                .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
         };
 
         $scope.setPhone = function (subject, phone) {
-            clear();
-            users.setPhone(subject, phone)
-                .then(function () {
-                    success("Phone Changed");
-                }, function (message) {
-                    error(message);
-                });
+            idmUsers.setPhone(subject, phone)
+                .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
         };
 
         $scope.addClaim = function (subject, type, value) {
-            clear();
-            users.addClaim(subject, type, value)
+            idmUsers.addClaim(subject, type, value)
                 .then(function () {
-                    success("Claim Added");
+                    feedback.message = "Claim Added";
                     loadUser();
-                }, function (message) {
-                    error(message);
-                });
+                }, feedback.errorHandler);
         };
 
         $scope.removeClaim = function (subject, type, value) {
-            clear();
-            users.removeClaim(subject, type, value)
+            idmUsers.removeClaim(subject, type, value)
                 .then(function () {
-                    success("Claim Removed");
+                    feedback.message = "Claim Removed";
                     loadUser();
-                }, function (message) {
-                    error(message);
-                });
+                }, feedback.errorHandler);
         };
 
         $scope.deleteUser = function (subject) {
-            clear();
-            users.deleteUser(subject)
+            idmUsers.deleteUser(subject)
                 .then(function () {
-                    success("User Deleted");
+                    feedback.message = "User Deleted";
                     $scope.model.user = null;
-                }, function (message) {
-                    error(message);
-                });
+                }, feedback.errorHandler);
         };
     });
+
 })(angular);

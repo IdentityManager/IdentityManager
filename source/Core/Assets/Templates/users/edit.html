@@ -5,9 +5,9 @@
     </h1>
 </div>
 
-<div class="row" ng-show="model.message">
+<div class="row">
     <div class="col-sm-8">
-        <div ng-class="model.success ? 'alert alert-success alert-dismissable' : 'alert alert-danger alert-dismissable'">{{model.message}}</div>
+        <idm-message message="feedback"></idm-message>
     </div>
 </div>
 
@@ -18,10 +18,10 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="password" class="column">Set Password</label>
-                        <input type="password" class="form-control" id="password" placeholder="Password" required autofocus ng-model="model.password">
+                        <input type="password" class="form-control user-edit-regular" id="password" placeholder="Password" required autofocus ng-model="model.password">
                     </div>
                     <div class="form-group">
-                        <input type="password" class="form-control" id="confirm" placeholder="Confirm" required ng-model="model.confirm">
+                        <input type="password" class="form-control user-edit-regular" id="confirm" placeholder="Confirm" required ng-model="model.confirm">
                     </div>
                     <button type="submit" class="btn btn-primary" ng-disabled="setPasswordForm.$invalid">Set</button>
                 </div>
@@ -35,7 +35,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="email" class="column">Set Email</label>
-                        <input type="email" class="form-control" id="email" required placeholder="Email" ng-model="model.user.email">
+                        <input type="email" class="form-control user-edit-wide" id="email" required placeholder="Email" ng-model="model.user.email">
                     </div>
                     <button type="submit" class="btn btn-primary" ng-disabled="setEmailForm.$invalid">Set</button>
                 </div>
@@ -49,7 +49,7 @@
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="phone" class="column">Set Phone</label>
-                        <input type="tel" class="form-control" id="phone" required placeholder="Phone" ng-model="model.user.phone">
+                        <input type="tel" class="form-control user-edit-wide" id="phone" required placeholder="Phone" ng-model="model.user.phone">
                     </div>
                     <button type="submit" class="btn btn-primary" ng-disabled="setPhoneForm.$invalid">Set</button>
                 </div>
@@ -63,10 +63,10 @@
                 <form name="addClaimForm" class="form-inline" ng-submit="addClaim(model.user.subject, model.type, model.value)">
                     <div class="form-group">
                         <label for="type" class="column">Add Claim</label>
-                        <input type="text" class="form-control" id="type" placeholder="Type" required autofocus ng-model="model.type">
+                        <input type="text" class="form-control user-edit-regular" id="type" placeholder="Type" required autofocus ng-model="model.type">
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" id="value" placeholder="Value" required ng-model="model.value">
+                        <input type="text" class="form-control user-edit-regular" id="value" placeholder="Value" required ng-model="model.value">
                     </div>
                     <button type="submit" class="btn btn-primary" ng-disabled="addClaimForm.$invalid">Add</button>
                 </form>
