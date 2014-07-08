@@ -14,8 +14,8 @@ namespace Thinktecture.IdentityManager.Host
             app.Use(async (ctx, next) =>
             {
                 await next();
-
             });
+
             app.UseIdentityManager(new IdentityManagerConfiguration()
             {
                 IdentityManagerFactory = Thinktecture.IdentityManager.Host.MembershipReboot.MembershipRebootIdentityManagerFactory.Create
@@ -23,6 +23,4 @@ namespace Thinktecture.IdentityManager.Host
             });
         }
     }
-
-    
 }

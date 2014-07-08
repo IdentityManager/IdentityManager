@@ -527,10 +527,6 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
         $scope.model = {
         };
 
-        //meta.getMetadata().then(function (result) {
-        //    //$scope.model.claims = [1,2,3];
-        //});
-
         $scope.create = function (username, password) {
             idmUsers.createUser(username, password)
                 .then(function (result) {
