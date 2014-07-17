@@ -57,9 +57,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AspNetIdentitySemanticsTests.cs" />
+    <Compile Include="InMemoryRole.cs" />
+    <Compile Include="InMemoryRoleStore.cs" />
+    <Compile Include="InMemoryUserStore.cs" />
+    <Compile Include="LoginComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestStore.cs" />
-    <Compile Include="TestUser.cs" />
+    <Compile Include="InMemoryUser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
