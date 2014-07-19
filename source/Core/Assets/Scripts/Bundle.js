@@ -284,7 +284,7 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
         });
     });
 
-    app.service("idmUsers", function ($http, PathBase) {
+    app.service("idmUsers", function ($http, PathBase, $log) {
         function nop() {
         }
         function mapData(response) {
@@ -293,6 +293,9 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
         function errorHandler(msg) {
             msg = msg || "Unexpected Error";
             return function (response) {
+                if (response.data.exceptionMessage) {
+                    $log.error(response.data.exceptionMessage);
+                }
                 throw (response.data.errors || response.data.message || msg);
             }
         }

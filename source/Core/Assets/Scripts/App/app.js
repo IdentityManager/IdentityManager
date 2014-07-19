@@ -38,7 +38,7 @@
         });
     });
 
-    app.service("idmUsers", function ($http, PathBase) {
+    app.service("idmUsers", function ($http, PathBase, $log) {
         function nop() {
         }
         function mapData(response) {
@@ -47,6 +47,9 @@
         function errorHandler(msg) {
             msg = msg || "Unexpected Error";
             return function (response) {
+                if (response.data.exceptionMessage) {
+                    $log.error(response.data.exceptionMessage);
+                }
                 throw (response.data.errors || response.data.message || msg);
             }
         }
