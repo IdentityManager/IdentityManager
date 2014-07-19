@@ -4,7 +4,7 @@
 (function (angular) {
     var app = angular.module("ttIdm", []);
     
-    app.service("idmApi", function ($http, $q) {
+    app.service("idmApi", function ($http, $q, PathBase) {
         var api;
         this.start = function () {
             var q = $q.defer();
@@ -12,7 +12,7 @@
                 q.resolve(api);
             }
             else {
-                $http.get("api").then(function (resp) {
+                $http.get(PathBase + "/api").then(function (resp) {
                     api = resp.data;
                     q.resolve(api);
                 }, function (resp) {
@@ -38,7 +38,7 @@
         });
     });
 
-    app.service("idmUsers", function ($http) {
+    app.service("idmUsers", function ($http, PathBase) {
         function nop() {
         }
         function mapData(response) {
@@ -47,45 +47,45 @@
         function errorHandler(msg) {
             msg = msg || "Unexpected Error";
             return function (response) {
-                throw (response.data.errors || msg);
+                throw (response.data.errors || response.data.message || msg);
             }
         }
 
         this.getUsers = function (filter, start, count) {
-            return $http.get("api/users", { params: { filter: filter, start: start, count: count } })
+            return $http.get(PathBase + "/api/users", { params: { filter: filter, start: start, count: count } })
                 .then(mapData, errorHandler("Error Getting Users"));
         };
         this.getUser = function (subject) {
-            return $http.get("api/users/" + encodeURIComponent(subject))
+            return $http.get(PathBase + "/api/users/" + encodeURIComponent(subject))
                 .then(mapData, errorHandler("Error Getting User"));
         };
 
         this.createUser = function (username, password) {
-            return $http.post("api/users", { username: username, password: password })
+            return $http.post(PathBase + "/api/users", { username: username, password: password })
                 .then(mapData, errorHandler("Error Creating User"));
         };
         this.deleteUser = function (subject) {
-            return $http.delete("api/users/" + encodeURIComponent(subject))
+            return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject))
                 .then(nop, errorHandler("Error Deleting User"));
         };
         this.setPassword = function (subject, password) {
-            return $http.put("api/users/" + encodeURIComponent(subject) + "/password", { password: password })
+            return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/password", { password: password })
                 .then(nop,  errorHandler("Error Setting Password"));
         };
         this.setEmail = function (subject, email) {
-            return $http.put("api/users/" + encodeURIComponent(subject) + "/email", { email: email })
+            return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/email", { email: email })
                 .then(nop,  errorHandler("Error Setting Email"));
         };
         this.setPhone = function (subject, phone) {
-            return $http.put("api/users/" + encodeURIComponent(subject) + "/phone", { phone: phone })
+            return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/phone", { phone: phone })
                 .then(nop,  errorHandler("Error Setting Phone"));
         };
         this.addClaim = function (subject, type, value) {
-            return $http.post("api/users/" + encodeURIComponent(subject) + "/claims" , { type: type, value: value })
+            return $http.post(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims", { type: type, value: value })
                 .then(nop,  errorHandler("Error Adding Claim"));
         };
         this.removeClaim = function (subject, type, value) {
-            return $http.delete("api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
+            return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
                 .then(nop,  errorHandler("Error Removing Claim"));
         };
     });
@@ -146,36 +146,36 @@
     }
 
     var app = angular.module("app", ['ngRoute', 'ttIdm']);
-    app.config(function ($routeProvider) {
+    app.config(function ($routeProvider, PathBase) {
         $routeProvider
             .when("/", {
                 controller: 'HomeCtrl',
-                templateUrl: 'assets/Templates.home.html'
+                templateUrl: PathBase + '/assets/Templates.home.html'
             })
             .when("/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
-                templateUrl: 'assets/Templates.users.list.html'
+                templateUrl: PathBase + '/assets/Templates.users.list.html'
             })
             .when("/create", {
                 controller: 'NewUserCtrl',
-                templateUrl: 'assets/Templates.users.new.html'
+                templateUrl: PathBase + '/assets/Templates.users.new.html'
             })
             .when("/edit/:subject", {
                 controller: 'EditUserCtrl',
-                templateUrl: 'assets/Templates.users.edit.html'
+                templateUrl: PathBase + '/assets/Templates.users.edit.html'
             })
             .otherwise({
                 redirectTo: '/'
             });
     });
 
-    app.directive("idmMessage", function () {
+    app.directive("idmMessage", function (PathBase) {
         return {
             restrict: 'E',
             scope: {
                 model:"=message"
             },
-            templateUrl: 'assets/Templates.message.html',
+            templateUrl: PathBase + '/assets/Templates.message.html',
             link: function (scope, elem, attrs) {
 
             }
@@ -352,3 +352,9 @@
     });
 
 })(angular);
+
+
+(function () {
+    var pathBase = document.getElementById("pathBase").textContent;
+    angular.module("ttIdm").constant("PathBase", pathBase);
+})();

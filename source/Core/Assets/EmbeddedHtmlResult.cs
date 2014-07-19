@@ -27,8 +27,8 @@ namespace Thinktecture.IdentityManager.Assets
 
         public static HttpResponseMessage GetResponseMessage(HttpRequestMessage request, string name)
         {
-            var root = request.GetRequestContext().VirtualPathRoot;
-            var html = AssetManager.LoadResourceString(name);
+            var root = request.GetOwinContext().Request.PathBase;
+            var html = AssetManager.LoadResourceString(name, new { pathBase = root.Value });
             return new HttpResponseMessage()
             {
                 Content = new StringContent(html, Encoding.UTF8, "text/html")

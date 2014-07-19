@@ -3,16 +3,17 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Thinktecture IdentityManager</title>
-    <link href="assets/Content.Bundle.min.css" rel="stylesheet" />
+    <link href="{pathBase}/assets/Content.Bundle.min.css" rel="stylesheet" />
 </head>
 <body lang="en" ng-app="app" ng-controller="LayoutCtrl" ng-cloak>
     
-    <div ng-include="'assets/Templates.navbar.html'"></div>
+    <div ng-include="'{pathBase}/assets/Templates.navbar.html'"></div>
 
     <div class="container" ng-cloak>
         <ng-view></ng-view>
     </div>
 
-    <script src="assets/Scripts.Bundle.js"></script>
+    <script id="pathBase" type="application/json">{pathBase}</script>
+    <script src="{pathBase}/assets/Scripts.Bundle.js"></script>
 </body>
 </html>
