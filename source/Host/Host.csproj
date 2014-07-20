@@ -108,7 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AspNetIdentity\AspNetIdentityIdentityManagerFactory.cs" />
-    <Compile Include="AspNetIdentity\Custom.cs" />
+    <Compile Include="AspNetIdentity\CustomWithIntKey.cs" />
     <Compile Include="MembershipReboot\MembershipRebootIdentityManagerFactory.cs" />
     <Compile Include="MembershipReboot\RelationalUserAccountQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
