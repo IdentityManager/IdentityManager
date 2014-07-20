@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Thinktecture.IdentityManager.AspNetIdentity
 {
     class TokenProvider<TUser, TKey> : IUserTokenProvider<TUser, TKey>
-        where TUser : class, IUser<TKey>, new()
+        where TUser : class, IUser<TKey>
         where TKey : System.IEquatable<TKey>
     {
         public Task<string> GenerateAsync(string purpose, Microsoft.AspNet.Identity.UserManager<TUser, TKey> manager, TUser user)

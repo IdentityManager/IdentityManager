@@ -12,14 +12,14 @@ using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.MembershipReboot
 {
-    public class IdentityManager<TAccount> : IIdentityManagerService, IDisposable
+    public class IdentityManagerService<TAccount> : IIdentityManagerService, IDisposable
         where TAccount : UserAccount
     {
         readonly UserAccountService<TAccount> userAccountService;
         readonly IUserAccountQuery query;
         IDisposable cleanup;
 
-        public IdentityManager(
+        public IdentityManagerService(
             UserAccountService<TAccount> userAccountService, 
             IUserAccountQuery query, 
             IDisposable cleanup = null)

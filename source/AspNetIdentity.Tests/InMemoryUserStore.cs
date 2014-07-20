@@ -17,7 +17,8 @@ namespace AspNetIdentity.Tests
      IUserSecurityStampStore<InMemoryUser>,
      IUserEmailStore<InMemoryUser>,
      IUserLockoutStore<InMemoryUser, string>,
-     IUserPhoneNumberStore<InMemoryUser>
+     IUserPhoneNumberStore<InMemoryUser>,
+     IQueryableUserStore<InMemoryUser>
     {
         private readonly Dictionary<UserLoginInfo, InMemoryUser> _logins =
             new Dictionary<UserLoginInfo, InMemoryUser>(new LoginComparer());

@@ -10,20 +10,24 @@ using Thinktecture.IdentityManager.Core;
 
 namespace AspNetIdentity.Tests
 {
-    //public class AspNetIdentitySemanticsTests : IdentityManagerSemanticsTests
-    //{
-    //    UserManager<TestUser> userManager;
+    public class AspNetIdentitySemanticsTests : IdentityManagerSemanticsTests
+    {
+        UserManager<InMemoryUser> userManager;
 
-    //    protected override IIdentityManagerService CreateIdentityManager()
-    //    {
-    //        var store = new TestStore();
-    //        userManager = new UserManager<TestUser>(store);
-    //        return new IdentityManager<TestUser>(userManager);
-    //    }
+        protected override IIdentityManagerService CreateIdentityManager()
+        {
+            var store = new InMemoryUserStore();
+            userManager = new UserManager<InMemoryUser>(store);
+            userManager.PasswordValidator = new PasswordValidator
+            {
+                RequiredLength = 4
+            };
+            return new IdentityManagerService<InMemoryUser, string>(userManager);
+        }
 
-    //    protected override bool ValidatePassword(string uid, string pwd)
-    //    {
-    //        return userAccountService.Authenticate(uid, pwd);
-    //    }
-    //}
+        protected override bool ValidatePassword(string uid, string pwd)
+        {
+            return userManager.Find(uid, pwd) != null;
+        }
+    }
 }

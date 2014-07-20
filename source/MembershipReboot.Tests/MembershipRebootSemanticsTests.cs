@@ -18,7 +18,7 @@ namespace MembershipReboot.Tests
             
             var repository = new TestUserAccountRepository();
             userAccountService = new UserAccountService<TestUserAccount>(config, repository);
-            return new IdentityManager<TestUserAccount>(userAccountService, repository);
+            return new IdentityManagerService<TestUserAccount>(userAccountService, repository);
         }
 
         protected override bool ValidatePassword(string uid, string pwd)

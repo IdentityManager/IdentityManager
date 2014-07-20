@@ -14,13 +14,12 @@ namespace AspNetIdentity.Tests
         private readonly IList<UserLoginInfo> _logins;
         private readonly IList<string> _roles;
 
-        public InMemoryUser(string name)
+        public InMemoryUser()
         {
             Id = Guid.NewGuid().ToString();
             _logins = new List<UserLoginInfo>();
             _claims = new List<Claim>();
             _roles = new List<string>();
-            UserName = name;
         }
 
         /// <summary>

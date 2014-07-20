@@ -27,7 +27,7 @@ namespace Thinktecture.IdentityManager.Host.MembershipReboot
             repo.QueryFilter = RelationalUserAccountQuery.Filter;
             repo.QuerySort = RelationalUserAccountQuery.Sort;
             var svc = new UserAccountService(config, repo);
-            return new IdentityManager<UserAccount>(svc, repo, repo);
+            return new IdentityManagerService<UserAccount>(svc, repo, repo);
         }
     }
 }
