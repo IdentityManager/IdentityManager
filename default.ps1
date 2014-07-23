@@ -25,6 +25,9 @@ task Clean {
 
 task Compile -depends UpdateVersion {
 	exec { msbuild /nologo /verbosity:q $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.5 }
+	
+	$versionAssemblyInfoFile = "$src_directory/VersionAssemblyInfo.cs"
+	rm $versionAssemblyInfoFile
 }
 
 task UpdateVersion {
@@ -75,6 +78,6 @@ task CreateNuGetPackage -depends ILMerge {
 		$packageVersion = "$packageVersion-$preRelease" 
 	}
 
-	copy-item $src_directory\Thinktecture.IdentityManager.nuspec $dist_directory
+	copy-item $src_directory\Core\Thinktecture.IdentityManager.nuspec $dist_directory
 	exec { . $nuget_path pack $dist_directory\Thinktecture.IdentityManager.nuspec -BasePath $dist_directory -o $dist_directory -version $packageVersion }
 }

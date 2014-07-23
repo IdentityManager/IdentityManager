@@ -11,6 +11,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using System.Web.Http;
+using Microsoft.Owin.Infrastructure;
 
 namespace Owin
 {
@@ -44,6 +45,8 @@ namespace Owin
             app.UseStageMarker(PipelineStage.MapHandler);
 
             //app.UseJsonWebToken();
+
+            SignatureConversions.AddConversions(app);
 
             var httpConfig = new HttpConfiguration();
             WebApiConfig.Configure(httpConfig, config);

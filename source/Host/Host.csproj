@@ -20,6 +20,8 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -107,25 +109,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AspNetIdentity\AspNetIdentityIdentityManagerFactory.cs" />
-    <Compile Include="AspNetIdentity\CustomWithIntKey.cs" />
-    <Compile Include="MembershipReboot\MembershipRebootIdentityManagerFactory.cs" />
-    <Compile Include="MembershipReboot\RelationalUserAccountQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AspNetIdentity\AspNetIdentity.csproj">
-      <Project>{35fb37da-28d5-4158-86a2-74d6275b842f}</Project>
-      <Name>AspNetIdentity</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{319e13dd-c16a-4936-b179-bbfba52c693b}</Project>
       <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MembershipReboot\MembershipReboot.csproj">
-      <Project>{ddce2a99-ee37-42e3-a84e-00957f770b52}</Project>
-      <Name>MembershipReboot</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
@@ -154,6 +144,13 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

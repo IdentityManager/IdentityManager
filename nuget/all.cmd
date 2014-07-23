@@ -1,3 +1,0 @@
-call Thinktecture.IdentityManager.Core.cmd
-call Thinktecture.IdentityManager.MembershipReboot.cmd
-call Thinktecture.IdentityManager.AspNetIdentity.cmd

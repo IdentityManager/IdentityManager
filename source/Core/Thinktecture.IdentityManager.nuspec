@@ -12,8 +12,5 @@
     <description>Thinktecture IdentityManager is an user management tool for MembershipReboot and ASP.NET Identity.</description>
     <copyright>Copyright 2014</copyright>
     <tags>Thinktecture IdentityManager Identity</tags>
-    <dependencies>
-      <dependency id="Owin" version="1.0"/>
-    </dependencies>
   </metadata>
 </package>

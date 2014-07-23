@@ -28,7 +28,7 @@ namespace Thinktecture.IdentityManager
         {
             if (this.IdentityManagerFactory == null)
             {
-                throw new Exception("UserManagerFactory is required.");
+                throw new Exception("IdentityManagerFactory is required.");
             }
             //if (String.IsNullOrWhiteSpace(this.AdminRoleName))
             //{
