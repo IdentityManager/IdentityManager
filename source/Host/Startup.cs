@@ -17,6 +17,7 @@ namespace Thinktecture.IdentityManager.Host
             {
                 IdentityManagerFactory = () => svc,
                 DisableUserInterface = false,
+                SecurityMode = SecurityMode.Local
             });
         }
     }
