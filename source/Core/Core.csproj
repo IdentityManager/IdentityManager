@@ -87,6 +87,7 @@
     <Compile Include="Api\Controllers\PageController.cs" />
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Models\ErrorModel.cs" />
+    <Compile Include="Api\Validation\NoUrlCharactersAttribute.cs" />
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
     <Compile Include="Configuration\AppBuilderExtensions.cs" />

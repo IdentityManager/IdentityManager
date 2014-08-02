@@ -120,6 +120,9 @@
   <data name="ClaimDataRequired" xml:space="preserve">
     <value>Claim data required.</value>
   </data>
+  <data name="ClaimReservedCharacters" xml:space="preserve">
+    <value>The characters {0} are not allowed as a claim type or value.</value>
+  </data>
   <data name="ClaimTypeRequired" xml:space="preserve">
     <value>Claim type is required.</value>
   </data>
