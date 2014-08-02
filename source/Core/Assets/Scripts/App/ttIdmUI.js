@@ -81,6 +81,27 @@
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
 
+    function ttConfirmClick() {
+        return {
+            restrict: 'A',
+            link: function (scope, elem, attrs) {
+                var inClick = false;
+                elem.on("click", function (e) {
+                    if (!inClick) {
+                        inClick = true;
+                        e.preventDefault();
+                        if (confirm(attrs.ttConfirmClick)) {
+                            elem.trigger("click");
+                        }
+                        inClick = false;
+                    }
+                });
+            }
+        }
+    }
+    ttConfirmClick.$inject = [];
+    app.directive("ttConfirmClick", ttConfirmClick);
+
     function idmMessage(PathBase) {
         return {
             restrict: 'E',
