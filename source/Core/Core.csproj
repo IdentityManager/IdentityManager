@@ -126,6 +126,7 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Templates\modal.html" />
     <EmbeddedResource Include="Assets\Templates\message.html" />
     <EmbeddedResource Include="Assets\Templates\navbar.html" />
     <EmbeddedResource Include="Assets\Content\Bundle.min.css">

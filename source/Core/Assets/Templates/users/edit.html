@@ -104,7 +104,8 @@
               class="form-inline" 
               ng-submit="deleteUser(model.user.subject)" >
             <div class="col-sm-12">
-                <button type="submit" class="btn btn-primary" tt-confirm-click="Are you sure you want to delete this user?">Delete User</button>
+                <tt-prompt id="m" action="Delete">Are you sure you want to delete user {{model.user.subject}}?</tt-prompt>
+                <button type="submit" class="btn btn-primary" tt-confirm-click="m">Delete User</button>
             </div>
         </form>
     </div>

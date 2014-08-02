@@ -342,6 +342,12 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
     idmUsers.$inject = ["$http", "PathBase", "$log"];
     app.service("idmUsers", idmUsers);
 })(angular);
+
+(function (angular) {
+    var pathBase = document.getElementById("pathBase").textContent;
+    angular.module("ttIdm").constant("PathBase", pathBase);
+})(angular);
+
 ///#source 1 1 /Assets/Scripts/App/ttIdmUI.js
 /// <reference path="../Libs/angular.min.js" />
 /// <reference path="../Libs/angular-route.min.js" />
@@ -426,19 +432,42 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
 
+    function ttPrompt(PathBase) {
+        return {
+            restrict: 'E',
+            templateUrl: PathBase + '/assets/Templates.modal.html',
+            replace: true,
+            transclude:true,
+            scope:{
+                id: '@',
+                action:'@'
+            },
+            link: function (scope, elem, attrs) {
+                elem.id = scope.id.trim();
+                elem.find(".btn-primary").on("click", function () {
+                    elem.trigger("confirm");
+                });
+            }
+        }
+    }
+    ttPrompt.$inject = ["PathBase"];
+    app.directive("ttPrompt", ttPrompt);
+
     function ttConfirmClick() {
         return {
             restrict: 'A',
             link: function (scope, elem, attrs) {
-                var inClick = false;
+                var prevent = true;
                 elem.on("click", function (e) {
-                    if (!inClick) {
-                        inClick = true;
+                    if (prevent) {
                         e.preventDefault();
-                        if (confirm(attrs.ttConfirmClick)) {
-                            elem.trigger("click");
-                        }
-                        inClick = false;
+                        $('#' + attrs.ttConfirmClick)
+                            .modal('show')
+                            .on("confirm", function () {
+                                $(this).off("confirm");
+                                prevent = false;
+                                elem.trigger("click");
+                            });
                     }
                 });
             }
@@ -642,10 +671,4 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
     app.controller("EditUserCtrl", EditUserCtrl);
 
 })(angular);
-
-
-(function () {
-    var pathBase = document.getElementById("pathBase").textContent;
-    angular.module("ttIdm").constant("PathBase", pathBase);
-})();
 

@@ -18,6 +18,7 @@ namespace Thinktecture.IdentityManager.Host
             var users = new HashSet<InMemoryUser>
             {
                 new InMemoryUser{
+                    Subject = Guid.Parse("081d965f-1f84-4360-90e4-8f6deac7b9bc").ToString(),
                     Username = "alice",
                     Password = "alice",
                     Email = "alice@email.com",
@@ -30,6 +31,7 @@ namespace Thinktecture.IdentityManager.Host
                     }
                 },
                 new InMemoryUser{
+                    Subject = Guid.Parse("5f292677-d3d2-4bf9-a6f8-e982d08e1306").ToString(),
                     Username = "bob",
                     Password = "bob",
                     Email = "bob@email.com",

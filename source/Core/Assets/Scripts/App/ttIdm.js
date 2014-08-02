@@ -98,3 +98,8 @@
     idmUsers.$inject = ["$http", "PathBase", "$log"];
     app.service("idmUsers", idmUsers);
 })(angular);
+
+(function (angular) {
+    var pathBase = document.getElementById("pathBase").textContent;
+    angular.module("ttIdm").constant("PathBase", pathBase);
+})(angular);
