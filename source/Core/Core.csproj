@@ -142,6 +142,9 @@
     <EmbeddedResource Include="Assets\Scripts\Bundle.js">
       <DependentUpon>Bundle.js.bundle</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Assets\Scripts\App\app.min.js">
+      <DependentUpon>app.js</DependentUpon>
+    </Content>
     <Content Include="Assets\Scripts\Libs\angular-mocks.js" />
     <Content Include="Assets\Scripts\Libs\angular-route.min.js" />
     <Content Include="Assets\Scripts\Libs\angular.min.js" />
@@ -156,6 +159,9 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="Assets\Scripts\App\app.min.js.map">
+      <DependentUpon>app.min.js</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <None Include="Assets\Scripts\Libs\jquery-2.1.0.intellisense.js" />
     <None Include="..\default.licenseheader">

@@ -4,7 +4,7 @@
 (function (angular) {
     var app = angular.module("ttIdm", []);
     
-    app.service("idmApi", function ($http, $q, PathBase) {
+    function idmApi($http, $q, PathBase) {
         var api;
         this.start = function () {
             var q = $q.defer();
@@ -21,9 +21,11 @@
             }
             return q.promise;
         };
-    });
+    }
+    idmApi.$inject = ["$http", "$q", "PathBase"];
+    app.service("idmApi", idmApi);
 
-    app.service("idmCurrentUser", function ($http, idmApi) {
+    function idmCurrentUser($http, idmApi) {
         var user = {
             username:'Admin'
         };
@@ -36,9 +38,11 @@
                 }
             });
         });
-    });
+    }
+    idmCurrentUser.$inject = ["$http", "idmApi"];
+    app.service("idmCurrentUser", idmCurrentUser);
 
-    app.service("idmUsers", function ($http, PathBase, $log) {
+    function idmUsers($http, PathBase, $log) {
         function nop() {
         }
         function mapData(response) {
@@ -91,7 +95,9 @@
             return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
                 .then(nop,  errorHandler("Error Removing Claim"));
         };
-    });
+    }
+    idmUsers.$inject = ["$http", "PathBase", "$log"];
+    app.service("idmUsers", idmUsers);
 })(angular);
 
 (function (angular) {
@@ -149,7 +155,7 @@
     }
 
     var app = angular.module("app", ['ngRoute', 'ttIdm']);
-    app.config(function ($routeProvider, PathBase) {
+    function config($routeProvider, PathBase) {
         $routeProvider
             .when("/", {
                 controller: 'HomeCtrl',
@@ -170,9 +176,11 @@
             .otherwise({
                 redirectTo: '/'
             });
-    });
+    }
+    config.$inject = ["$routeProvider", "PathBase"];
+    app.config(config);
 
-    app.directive("idmMessage", function (PathBase) {
+    function idmMessage(PathBase) {
         return {
             restrict: 'E',
             scope: {
@@ -183,17 +191,23 @@
 
             }
         };
-    });
+    }
+    idmMessage.$inject = ["PathBase"];
+    app.directive("idmMessage", idmMessage);
 
-    app.controller("LayoutCtrl", function ($scope, idmCurrentUser) {
+    function LayoutCtrl($scope, idmCurrentUser) {
         $scope.model = idmCurrentUser.user;
-    });
+    }
+    LayoutCtrl.$inject = ["$scope", "idmCurrentUser"];
+    app.controller("LayoutCtrl", LayoutCtrl);
 
-    app.controller("HomeCtrl", function ($scope) {
+    function HomeCtrl($scope) {
         $scope.model = {};
-    });
+    }
+    HomeCtrl.$inject = ["$scope"];
+    app.controller("HomeCtrl", HomeCtrl);
 
-    app.controller("ListUsersCtrl", function ($scope, idmUsers, $sce, $routeParams, $location) {
+    function ListUsersCtrl($scope, idmUsers, $sce, $routeParams, $location) {
         $scope.model = {};
 
         function PagerButton(text, page, enabled, current) {
@@ -275,9 +289,11 @@
             $scope.model.message = error;
             $scope.model.waiting = false;
         });
-    });
+    }
+    ListUsersCtrl.$inject = ["$scope", "idmUsers", "$sce", "$routeParams", "$location"];
+    app.controller("ListUsersCtrl", ListUsersCtrl);
 
-    app.controller("NewUserCtrl", function ($scope, idmUsers) {
+    function NewUserCtrl($scope, idmUsers) {
         var feedback = new Feedback();
         $scope.feedback = feedback;
 
@@ -291,9 +307,11 @@
                     feedback.message = "Create Success";
                 }, feedback.errorHandler);
         };
-    });
+    }
+    NewUserCtrl.$inject = ["$scope", "idmUsers"];
+    app.controller("NewUserCtrl", NewUserCtrl);
 
-    app.controller("EditUserCtrl", function ($scope, idmUsers, $routeParams) {
+    function EditUserCtrl($scope, idmUsers, $routeParams) {
         var feedback = new Feedback();
         $scope.feedback = feedback;
 
@@ -352,7 +370,9 @@
                     $scope.model.user = null;
                 }, feedback.errorHandler);
         };
-    });
+    }
+    EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
+    app.controller("EditUserCtrl", EditUserCtrl);
 
 })(angular);
 

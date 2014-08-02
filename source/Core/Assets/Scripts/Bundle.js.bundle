@@ -14,6 +14,6 @@
     <file>/Assets/Scripts/Libs/bootstrap.min.js</file>
     <file>/Assets/Scripts/Libs/angular.min.js</file>
     <file>/Assets/Scripts/Libs/angular-route.min.js</file>
-    <file>/Assets/Scripts/App/App.js</file>
+    <file>/Assets/Scripts/App/App.min.js</file>
   </files>
 </bundle>
