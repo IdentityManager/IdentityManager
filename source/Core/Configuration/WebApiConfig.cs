@@ -32,7 +32,11 @@ namespace Thinktecture.IdentityManager
 
             apiConfig.SuppressDefaultHostAuthentication();
             apiConfig.Filters.Add(new HostAuthenticationAttribute("Bearer"));
-            //apiConfig.Filters.Add(new AuthorizeAttribute(){Roles=config.AdminRoleName});
+
+            if (idmConfig.SecurityMode != SecurityMode.Local)
+            {
+                apiConfig.Filters.Add(new AuthorizeAttribute() { Roles = idmConfig.AdminRoleName });
+            }
 
             apiConfig.Formatters.Remove(apiConfig.Formatters.XmlFormatter);
             apiConfig.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
