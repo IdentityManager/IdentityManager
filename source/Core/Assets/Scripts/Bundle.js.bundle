@@ -14,6 +14,7 @@
     <file>/Assets/Scripts/Libs/bootstrap.min.js</file>
     <file>/Assets/Scripts/Libs/angular.min.js</file>
     <file>/Assets/Scripts/Libs/angular-route.min.js</file>
-    <file>/Assets/Scripts/App/App.min.js</file>
+    <file>/Assets/Scripts/App/ttIdm.min.js</file>
+    <file>/Assets/Scripts/App/ttIdmUI.min.js</file>
   </files>
 </bundle>
