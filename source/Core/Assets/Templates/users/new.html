@@ -1,5 +1,4 @@
-﻿
-<div class="page-header">
+﻿<div class="page-header">
     <h1>Create New User</h1>
 </div>
 
@@ -7,22 +6,24 @@
     <div class="col-sm-6">
         <idm-message message="feedback"></idm-message>
 
-        <form class="form" ng-submit="create(uid, pwd)">
+        <form class="form" ng-submit="create(uid, pwd, confirm)" name="form">
             <div class="form-group">
                 <label for="uid">Username</label>
-                <input type="text" id="uid" class="form-control" ng-model="uid" autofocus>
+                <input type="text" id="uid" class="form-control" ng-model="uid" autofocus required>
             </div>
             <div class="form-group">
                 <label for="pwd">Password</label>
-                <input type="password" id="pwd" class="form-control" ng-model="pwd">
+                <input type="password" id="pwd" class="form-control" ng-model="pwd" required>
             </div>
-            <div class="form-group" ng-repeat="claim in model.claims">
-                <label for="pwd">Password</label>
-                <input type="password" id="pwd" class="form-control" ng-model="pwd">
+            <div class="form-group">
+                <label for="confirm">Confirm Password</label>
+                <input type="password" id="confirm" class="form-control" ng-model="confirm" required>
             </div>
             <div>
-                <button class="btn btn-primary">Create</button>
-                <a ng-show="model.last" class="btn btn-default" href="#/edit/{{model.last}}">Edit User {{model.last}}</a>
+                <button class="btn btn-primary" ng-disabled="form.$invalid">Create</button>
+                <a ng-show="model.last"
+                    class="btn btn-default"
+                    href="#/edit/{{model.last}}">Edit User {{model.last}}</a>
             </div>
         </form>
     </div>

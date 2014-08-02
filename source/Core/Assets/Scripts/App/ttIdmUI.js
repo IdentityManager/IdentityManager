@@ -81,6 +81,30 @@
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
 
+    //function ttCompare($document) {
+    //    return {
+    //        restrict: 'A',
+    //        requires: 'ngModel',
+    //        link: function (scope, elem, attrs, ctrl) {
+    //            var other = $document.find(attrs.ttValidateSameAs);
+    //            console.log(ctrl, arguments);
+    //            //ctrl.$parsers.unshift(function (viewValue) {
+    //            //    if (other.val() === viewValue) {
+    //            //        // it is valid
+    //            //        ctrl.$setValidity('ttValidateSameAs', true);
+    //            //        return viewValue;
+    //            //    } else {
+    //            //        // it is invalid, return undefined (no model update)
+    //            //        ctrl.$setValidity('ttValidateSameAs', false);
+    //            //        return undefined;
+    //            //    }
+    //            //});
+    //        }
+    //    }
+    //}
+    //ttCompare.$inject = ["$document"];
+    //app.directive("ttCompare", ttCompare);
+
     function ttPrompt(PathBase) {
         return {
             restrict: 'E',
@@ -91,11 +115,9 @@
                 id: '@',
                 action: '@'
             },
-            link: function (scope, elem, attrs) {
-                console.log('linked');
+            link: function (scope, elem, attrs, ctrl) {
                 elem.id = scope.id.trim();
                 elem.find(".btn-primary.confirm").on("click", function () {
-                    console.log('trigger');
                     elem.trigger("confirm");
                 });
             }
@@ -113,14 +135,14 @@
                 elem.on("click", function (e) {
                     if (prevent) {
                         e.preventDefault();
-                        $('#' + attrs.ttConfirmClick).modal('show');
+                        $(attrs.ttConfirmClick).modal('show');
                         if (!cb) {
                             cb = function () {
                                 $(this).off("confirm");
                                 prevent = false;
                                 elem.trigger("click");
                             };
-                            $('#' + attrs.ttConfirmClick).on("confirm", cb);
+                            $(attrs.ttConfirmClick).on("confirm", cb);
                         }
                     }
                 });
@@ -250,7 +272,12 @@
         $scope.model = {
         };
 
-        $scope.create = function (username, password) {
+        $scope.create = function (username, password, confirm) {
+            if (password !== confirm) {
+                feedback.errors = "Password and Confirm do not match.";
+                return;
+            }
+
             idmUsers.createUser(username, password)
                 .then(function (result) {
                     $scope.model.last = result.subject;
