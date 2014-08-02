@@ -11,13 +11,11 @@ namespace Thinktecture.IdentityManager.Host
     {
         public void Configuration(IAppBuilder app)
         {
-            app.Use(async (ctx, next) =>
-            {
-                await next();
-            });
-
+            int numberOfRandomUsers = new System.Random().Next(5000, 20000);
+            var svc = new InMemoryIdentityManagerService(Users.Get(numberOfRandomUsers));
             app.UseIdentityManager(new IdentityManagerConfiguration()
             {
+                IdentityManagerFactory = () => svc
             });
         }
     }
