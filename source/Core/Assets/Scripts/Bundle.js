@@ -437,14 +437,16 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
             restrict: 'E',
             templateUrl: PathBase + '/assets/Templates.modal.html',
             replace: true,
-            transclude:true,
-            scope:{
+            transclude: true,
+            scope: {
                 id: '@',
-                action:'@'
+                action: '@'
             },
             link: function (scope, elem, attrs) {
+                console.log('linked');
                 elem.id = scope.id.trim();
-                elem.find(".btn-primary").on("click", function () {
+                elem.find(".btn-primary.confirm").on("click", function () {
+                    console.log('trigger');
                     elem.trigger("confirm");
                 });
             }
@@ -458,16 +460,19 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
             restrict: 'A',
             link: function (scope, elem, attrs) {
                 var prevent = true;
+                var cb = null;
                 elem.on("click", function (e) {
                     if (prevent) {
                         e.preventDefault();
-                        $('#' + attrs.ttConfirmClick)
-                            .modal('show')
-                            .on("confirm", function () {
+                        $('#' + attrs.ttConfirmClick).modal('show');
+                        if (!cb) {
+                            cb = function () {
                                 $(this).off("confirm");
                                 prevent = false;
                                 elem.trigger("click");
-                            });
+                            };
+                            $('#' + attrs.ttConfirmClick).on("confirm", cb);
+                        }
                     }
                 });
             }
@@ -480,7 +485,7 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
         return {
             restrict: 'E',
             scope: {
-                model:"=message"
+                model: "=message"
             },
             templateUrl: PathBase + '/assets/Templates.message.html',
             link: function (scope, elem, attrs) {
@@ -530,7 +535,7 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
             var totalButtons = 7; // ensure this is odd
             var pageSkip = 10;
             var startButton = 1;
-            if (this.currentPage > Math.floor(totalButtons/2)) startButton = this.currentPage - Math.floor(totalButtons/2);
+            if (this.currentPage > Math.floor(totalButtons / 2)) startButton = this.currentPage - Math.floor(totalButtons / 2);
 
             var endButton = startButton + totalButtons - 1;
             if (endButton >= this.totalPages) endButton = this.totalPages;
