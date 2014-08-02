@@ -25,7 +25,6 @@ namespace Thinktecture.IdentityManager.Host
         {
             return Task.FromResult(new IdentityManagerMetadata()
             {
-                UniqueIdentitiferClaimType = "subject",
                 Claims = new ClaimMetadata[] { 
                     new ClaimMetadata{
                     }

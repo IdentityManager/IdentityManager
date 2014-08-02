@@ -23,6 +23,12 @@ namespace Thinktecture.IdentityManager
             apiConfig.DependencyResolver = resolver;
 
             apiConfig.MapHttpAttributeRoutes();
+            if (!idmConfig.DisableUserInterface)
+            {
+                apiConfig.Routes.MapHttpRoute("page",
+                    "",
+                    new { controller = "Page" });
+            }
 
             apiConfig.SuppressDefaultHostAuthentication();
             apiConfig.Filters.Add(new HostAuthenticationAttribute("Bearer"));

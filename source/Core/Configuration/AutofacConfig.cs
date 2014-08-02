@@ -17,6 +17,8 @@ namespace Thinktecture.IdentityManager
             if (config == null) throw new ArgumentNullException("config");
 
             var builder = new ContainerBuilder();
+
+            builder.RegisterInstance(config); 
             
             builder
                 .Register(ctx => config.IdentityManagerFactory())

@@ -17,7 +17,6 @@ namespace Core.Tests.Api
             this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult())));
             this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<UserResult>(new UserResult())));
             this.SetupGetMetadataAsync(new IdentityManagerMetadata {
-                UniqueIdentitiferClaimType = Constants.ClaimTypes.Subject,
             });
         }
 

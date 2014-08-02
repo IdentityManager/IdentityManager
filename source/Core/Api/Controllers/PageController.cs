@@ -14,7 +14,6 @@ namespace Thinktecture.IdentityManager.Core.Api.Controllers
 {
     public class PageController : ApiController
     {
-        [Route("")]
         [HttpGet]
         public IHttpActionResult Index()
         {

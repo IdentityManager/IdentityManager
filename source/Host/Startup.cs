@@ -13,9 +13,10 @@ namespace Thinktecture.IdentityManager.Host
         {
             int numberOfRandomUsers = new System.Random().Next(5000, 20000);
             var svc = new InMemoryIdentityManagerService(Users.Get(numberOfRandomUsers));
-            app.UseIdentityManager(new IdentityManagerConfiguration()
+            app.UseIdentityManager(new IdentityManagerConfiguration
             {
-                IdentityManagerFactory = () => svc
+                IdentityManagerFactory = () => svc,
+                DisableUserInterface = false,
             });
         }
     }

@@ -50,7 +50,7 @@ namespace System.Web.Http
                 from error in modelState
                 where error.Value.Errors.Any()
                 from err in error.Value.Errors
-                select err.ErrorMessage;
+                select String.IsNullOrWhiteSpace(err.ErrorMessage) ? err.Exception.Message : err.ErrorMessage;
 
             return errors.ToArray();
         }

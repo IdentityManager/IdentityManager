@@ -12,6 +12,8 @@ namespace Thinktecture.IdentityManager.Core
 {
     public class Constants
     {
+        public const string AdminRoleName = "IdentityManagerAdministrator";
+
         public class ClaimTypes
         {
             public const string Subject = "sub";

@@ -14,10 +14,12 @@ namespace Thinktecture.IdentityManager
     {
         public IdentityManagerConfiguration()
         {
-            this.AdminRoleName = "IdentityManagerAdministrator";
+            this.AdminRoleName = Constants.AdminRoleName;
         }
 
         public Func<IIdentityManagerService> IdentityManagerFactory { get; set; }
+        public SecurityMode SecurityMode { get; set; }
+        public bool DisableUserInterface { get; set; }
 
         public EmbeddedAuthentication EmbeddedAuthentication { get; set; }
         public ExternalAuthentication ExternalAuthentication { get; set; }

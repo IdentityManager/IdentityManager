@@ -13,15 +13,5 @@ namespace Core.Tests.Api
             Get("api/metadata");
             identityManager.GetMetadataAsync();
         }
-        [TestMethod]
-        public void GetMetadata_ReturnsCorrectMetadata()
-        {
-            identityManager.SetupGetMetadataAsync(new IdentityManagerMetadata
-            {
-                UniqueIdentitiferClaimType = "foo",
-            });
-            var result = Get<IdentityManagerMetadata>("api/metadata");
-            Assert.AreEqual("foo", result.UniqueIdentitiferClaimType);
-        }
     }
 }

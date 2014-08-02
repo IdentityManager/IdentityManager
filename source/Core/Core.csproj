@@ -93,6 +93,7 @@
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
     <Compile Include="Configuration\AutofacConfig.cs" />
     <Compile Include="Configuration\IdentityManagerConfiguration.cs" />
+    <Compile Include="Configuration\SecurityMode.cs" />
     <Compile Include="Configuration\WebApiConfig.cs" />
     <Compile Include="Api\Controllers\MetaController.cs" />
     <Compile Include="Api\Controllers\UserController.cs" />

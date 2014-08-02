@@ -23,26 +23,32 @@ namespace Owin
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
 
-            app.Use(async (ctx, next) =>
+            if (config.SecurityMode == SecurityMode.Local)
             {
-                var localAddresses = new string[]{"127.0.0.1", "::1", ctx.Request.LocalIpAddress};
-                if (localAddresses.Contains(ctx.Request.RemoteIpAddress))
+                app.Use(async (ctx, next) =>
                 {
-                    await next();
-                }
-            });
+                    var localAddresses = new string[] { "127.0.0.1", "::1", ctx.Request.LocalIpAddress };
+                    if (localAddresses.Contains(ctx.Request.RemoteIpAddress))
+                    {
+                        await next();
+                    }
+                });
+            }
 
-            app.UseFileServer(new FileServerOptions
+            if (!config.DisableUserInterface)
             {
-                RequestPath = new PathString("/assets"),
-                FileSystem = new EmbeddedResourceFileSystem(typeof(AppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Core.Assets")
-            });
-            app.UseFileServer(new FileServerOptions
-            {
-                RequestPath = new PathString("/assets/libs/fonts"),
-                FileSystem = new EmbeddedResourceFileSystem(typeof(AppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Core.Assets.Content.fonts")
-            });
-            app.UseStageMarker(PipelineStage.MapHandler);
+                app.UseFileServer(new FileServerOptions
+                {
+                    RequestPath = new PathString("/assets"),
+                    FileSystem = new EmbeddedResourceFileSystem(typeof(AppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Core.Assets")
+                });
+                app.UseFileServer(new FileServerOptions
+                {
+                    RequestPath = new PathString("/assets/libs/fonts"),
+                    FileSystem = new EmbeddedResourceFileSystem(typeof(AppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Core.Assets.Content.fonts")
+                });
+                app.UseStageMarker(PipelineStage.MapHandler);
+            }
 
             //app.UseJsonWebToken();
 

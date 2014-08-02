@@ -109,11 +109,11 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InMemoryIdentityManagerService.cs" />
-    <Compile Include="InMemoryUser.cs" />
+    <Compile Include="InMemoryService\InMemoryIdentityManagerService.cs" />
+    <Compile Include="InMemoryService\InMemoryUser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Users.cs" />
+    <Compile Include="InMemoryService\Users.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
