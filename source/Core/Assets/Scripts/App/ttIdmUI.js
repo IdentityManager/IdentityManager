@@ -179,58 +179,8 @@
     HomeCtrl.$inject = ["$scope"];
     app.controller("HomeCtrl", HomeCtrl);
 
-    function ListUsersCtrl($scope, idmUsers, $sce, $routeParams, $location) {
+    function ListUsersCtrl($scope, idmUsers, idmPager, $routeParams, $location) {
         $scope.model = {};
-
-        function PagerButton(text, page, enabled, current) {
-            this.text = $sce.trustAsHtml(text + "");
-            this.page = page;
-            this.enabled = enabled;
-            this.current = current;
-        }
-
-        function Pager(result, pageSize, filter) {
-            this.start = result.start;
-            this.count = result.count;
-            this.total = result.total;
-            this.pageSize = pageSize;
-            this.filter = filter;
-
-            this.totalPages = Math.ceil(this.total / pageSize);
-            this.currentPage = (this.start / pageSize) + 1;
-            this.canPrev = this.currentPage > 1;
-            this.canNext = this.currentPage < this.totalPages;
-
-            this.buttons = [];
-
-            var totalButtons = 7; // ensure this is odd
-            var pageSkip = 10;
-            var startButton = 1;
-            if (this.currentPage > Math.floor(totalButtons / 2)) startButton = this.currentPage - Math.floor(totalButtons / 2);
-
-            var endButton = startButton + totalButtons - 1;
-            if (endButton >= this.totalPages) endButton = this.totalPages;
-            if (this.totalPages > totalButtons &&
-                (endButton - startButton + 1) < totalButtons) {
-                startButton = endButton - totalButtons + 1;
-            }
-
-            var prevPage = this.currentPage - pageSkip;
-            if (prevPage < 1) prevPage = 1;
-
-            var nextPage = this.currentPage + pageSkip;
-            if (nextPage > this.totalPages) nextPage = this.totalPages;
-
-            this.buttons.push(new PagerButton("<strong>&lt;&lt;</strong>", 1, endButton > totalButtons));
-            this.buttons.push(new PagerButton("<strong>&lt;</strong>", prevPage, endButton > totalButtons));
-
-            for (var i = startButton; i <= endButton; i++) {
-                this.buttons.push(new PagerButton(i, i, true, i === this.currentPage));
-            }
-
-            this.buttons.push(new PagerButton("<strong>&gt;</strong>", nextPage, endButton < this.totalPages));
-            this.buttons.push(new PagerButton("<strong>&gt;&gt;</strong>", this.totalPages, endButton < this.totalPages));
-        }
 
         $scope.search = function (filter) {
             var url = "/list";
@@ -255,14 +205,14 @@
             $scope.model.waiting = false;
             $scope.model.users = result.users;
             if (result.users && result.users.length) {
-                $scope.model.pager = new Pager(result, itemsPerPage, filter);
+                $scope.model.pager = new idmPager(result, itemsPerPage, filter);
             }
         }, function (error) {
             $scope.model.message = error;
             $scope.model.waiting = false;
         });
     }
-    ListUsersCtrl.$inject = ["$scope", "idmUsers", "$sce", "$routeParams", "$location"];
+    ListUsersCtrl.$inject = ["$scope", "idmUsers", "idmPager", "$routeParams", "$location"];
     app.controller("ListUsersCtrl", ListUsersCtrl);
 
     function NewUserCtrl($scope, idmUsers) {

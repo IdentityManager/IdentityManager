@@ -52,14 +52,9 @@
 
 <div class="row" ng-show="model.pager">
     <div class="col-sm-8">
-        <ul class="center-block pagination">
-            <li ng-repeat="button in model.pager.buttons"
-                ng-class="!button.enabled ? 'disabled' : (button.current ? 'active':'')">
-                <a href="#/list/{{model.pager.filter}}/{{button.page}}" ng-bind-html="button.text"></a>
-            </li>
-        </ul>
+        <tt-pager-buttons pager="model.pager"></tt-pager-buttons>
     </div>
     <div class="col-sm-4 pager-text">
-        <strong>Page</strong> <span class="badge bg-active">{{model.pager.currentPage}}</span> <strong>of</strong> <span class="badge">{{model.pager.totalPages}}</span>
+        <tt-pager-summary pager="model.pager"></tt-pager-summary>
     </div>
 </div>
