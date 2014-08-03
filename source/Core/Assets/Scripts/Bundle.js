@@ -646,7 +646,7 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
         $scope.model = {};
 
         function loadUser() {
-            idmUsers.getUser($routeParams.subject)
+            return idmUsers.getUser($routeParams.subject)
                 .then(function (result) {
                     $scope.model.user = result;
                 }, feedback.errorHandler);
@@ -687,7 +687,10 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
             idmUsers.removeClaim(subject, type, value)
                 .then(function () {
                     feedback.message = "Claim Removed";
-                    loadUser();
+                    loadUser().then(function () {
+                        $scope.model.type = type;
+                        $scope.model.value = value;
+                    });
                 }, feedback.errorHandler);
         };
 
