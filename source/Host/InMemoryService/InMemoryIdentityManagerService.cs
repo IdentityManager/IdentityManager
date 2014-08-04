@@ -25,8 +25,26 @@ namespace Thinktecture.IdentityManager.Host
         {
             return Task.FromResult(new IdentityManagerMetadata()
             {
-                Claims = new ClaimMetadata[] { 
-                    new ClaimMetadata{
+                UserMetadata = new UserMetadata {
+                    SupportsCreate = true,
+                    SupportsDelete = true,
+                    
+                    SupportsPassword = true,
+                    SupportsEmail = true,
+                    SupportsPhone = true,
+                    SupportsClaims = true,
+
+                    RequiredProperties = new PropertyMetadata[] { 
+                        new PropertyMetadata{
+                            Identifier = "first",
+                            DisplayName = "First Name",
+                            DataType = ClaimDataType.String,
+                        },
+                        new PropertyMetadata{
+                            Identifier = "first",
+                            DisplayName = "Last Name",
+                            DataType = ClaimDataType.String,
+                        },
                     }
                 }
             });

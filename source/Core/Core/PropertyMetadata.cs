@@ -10,12 +10,11 @@ using System.Threading.Tasks;
 
 namespace Thinktecture.IdentityManager.Core
 {
-    public class ClaimMetadata
+    public class PropertyMetadata
     {
-        public string ClaimType { get; set; }
-        public ClaimDataType DataType { get; set; }
+        public string Identifier { get; set; }
         public string DisplayName { get; set; }
-        public bool Required { get; set; }
+        public ClaimDataType DataType { get; set; }
         public IEnumerable<string> AllowedValues { get; set; }
     }
 }

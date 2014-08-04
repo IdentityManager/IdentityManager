@@ -9,9 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Assets;
+using Thinktecture.IdentityManager.Core.Api.Filters;
 
 namespace Thinktecture.IdentityManager.Core.Api.Controllers
 {
+    [SecurityHeaders]
     public class PageController : ApiController
     {
         [HttpGet]

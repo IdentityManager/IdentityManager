@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Core;
 using Thinktecture.IdentityManager.Core.Api.Filters;
+using Thinktecture.IdentityManager.Core.Api.Models;
 using Thinktecture.IdentityManager.Core.Resources;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
-    [RoutePrefix("api/users")]
+    [RoutePrefix(Constants.UserRoutePrefix)]
     [NoCache]
     public class UserController : ApiController
     {
@@ -43,19 +44,21 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return ResponseMessage(response);
         }
 
-        [HttpGet, Route("", Name="getUsers")]
+        [HttpGet, Route("", Name=Constants.RouteNames.GetUsers)]
         public async Task<IHttpActionResult> GetUsersAsync(string filter = null, int start = 0, int count = 100)
         {
             var result = await userManager.QueryUsersAsync(filter, start, count);
             if (result.IsSuccess)
             {
-                return Ok(result.Result);
+                var meta = await userManager.GetMetadataAsync();
+                var resource = new QueryResultResource(result.Result, Url, meta.UserMetadata);
+                return Ok(resource);
             }
 
             return BadRequest(result.ToError());
         }
 
-        [HttpPost, Route("", Name = "createUser")]
+        [HttpPost, Route("", Name = Constants.RouteNames.CreateUser)]
         public async Task<IHttpActionResult> CreateUserAsync(CreateUserModel model)
         {
             if (model == null)
@@ -68,7 +71,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 var result = await this.userManager.CreateUserAsync(model.Username, model.Password);
                 if (result.IsSuccess)
                 {
-                    return Created(Url.Link("user", new { subject = result.Result.Subject }), result.Result);
+                    return Created(Url.Link(Constants.RouteNames.GetUser, new { subject = result.Result.Subject }), new { subject = result.Result.Subject });
                 }
 
                 ModelState.AddErrors(result);
@@ -77,7 +80,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(ModelState.ToError());
         }
 
-        [HttpGet, Route("{subject}", Name="user")]
+        [HttpGet, Route("{subject}", Name = Constants.RouteNames.GetUser)]
         public async Task<IHttpActionResult> GetUserAsync(string subject)
         {
             if (String.IsNullOrWhiteSpace(subject))
@@ -99,13 +102,14 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                     return NotFound();
                 }
 
-                return Ok(result.Result);
+                var meta = await userManager.GetMetadataAsync();
+                return Ok(new UserDetailResource(result.Result, Url, meta.UserMetadata));
             }
 
             return BadRequest(result.ToError());
         }
-        
-        [HttpDelete, Route("{subject}")]
+
+        [HttpDelete, Route("{subject}", Name = Constants.RouteNames.DeleteUser)]
         public async Task<IHttpActionResult> DeleteUserAsync(string subject)
         {
             if (String.IsNullOrWhiteSpace(subject))
@@ -128,7 +132,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
 
-        [HttpPut, Route("{subject}/password")]
+        [HttpPut, Route("{subject}/password", Name = Constants.RouteNames.SetPassword)]
         public async Task<IHttpActionResult> SetPasswordAsync(string subject, PasswordModel model)
         {
             if (String.IsNullOrWhiteSpace(subject))
@@ -156,7 +160,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(ModelState.ToError());
         }
 
-        [HttpPut, Route("{subject}/email")]
+        [HttpPut, Route("{subject}/email", Name = Constants.RouteNames.SetEmail)]
         public async Task<IHttpActionResult> SetEmailAsync(string subject, EmailModel model)
         {
             if (String.IsNullOrWhiteSpace(subject))
@@ -184,7 +188,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(ModelState.ToError());
         }
 
-        [HttpPut, Route("{subject}/phone")]
+        [HttpPut, Route("{subject}/phone", Name = Constants.RouteNames.SetPhone)]
         public async Task<IHttpActionResult> SetPhoneAsync(string subject, PhoneModel model)
         {
             if (String.IsNullOrWhiteSpace(subject))
@@ -211,8 +215,8 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
 
             return BadRequest(ModelState.ToError());
         }
-        
-        [HttpPost, Route("{subject}/claims")]
+
+        [HttpPost, Route("{subject}/claims", Name = Constants.RouteNames.AddClaim)]
         public async Task<IHttpActionResult> AddClaimAsync(string subject, ClaimModel model)
         {
             if (String.IsNullOrWhiteSpace(subject))
@@ -240,7 +244,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(ModelState.ToError());
         }
 
-        [HttpDelete, Route("{subject}/claims/{type}/{value}")]
+        [HttpDelete, Route("{subject}/claims/{type}/{value}", Name = Constants.RouteNames.RemoveClaim)]
         public async Task<IHttpActionResult> RemoveClaimAsync(string subject, string type, string value)
         {
             if (String.IsNullOrWhiteSpace(subject))

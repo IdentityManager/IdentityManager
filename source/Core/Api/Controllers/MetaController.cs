@@ -7,45 +7,44 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Core;
 using Thinktecture.IdentityManager.Core.Api.Filters;
+using Thinktecture.IdentityManager.Core.Api.Models;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
-    [RoutePrefix("api")]
     [NoCache]
+    [RoutePrefix(Constants.MetadataRoutePrefix)]
     public class MetaController : ApiController
     {
         IIdentityManagerService userManager;
-        public MetaController(IIdentityManagerService userManager)
+        IdentityManagerConfiguration config;
+        public MetaController(IdentityManagerConfiguration config, IIdentityManagerService userManager)
         {
+            if (config == null) throw new ArgumentNullException("config");
             if (userManager == null) throw new ArgumentNullException("userManager");
 
+            this.config = config;
             this.userManager = userManager;
         }
 
         [Route("")]
-        public IHttpActionResult Get()
+        public async Task<IHttpActionResult> Get()
         {
-            return Ok(new {
-                metadata = Url.Link("metadata", null),
-                currentUser = Url.Link("currentUser", null),
-                users = Url.Link("getUsers", null),
-                createUser = Url.Link("createUser", null),
-            });
-        }
-
-        [Route("metadata", Name = "metadata")]
-        public async Task<IHttpActionResult> GetMetadataAsync()
-        {
-            return Ok(await userManager.GetMetadataAsync());
-        }
-        
-        [Route("currentuser", Name="currentUser")]
-        public IHttpActionResult GetCurrentUser()
-        {
-            return Ok(new
+            var resource = new Resource
             {
-                username = "Admin User"
-            });
+                Data = new {
+                    metadata = await userManager.GetMetadataAsync(),
+                    currentUser = new
+                    {
+                        username = User.Identity.Name
+                    },
+                },
+                Links = new
+                {
+                    users = Url.Link(Constants.RouteNames.GetUsers, null),
+                    createUser = Url.Link(Constants.RouteNames.CreateUser, null),
+                }
+            };
+            return Ok(resource);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Thinktecture.IdentityManager
 
         public Func<IIdentityManagerService> IdentityManagerFactory { get; set; }
         public SecurityMode SecurityMode { get; set; }
+        public string AuthenticationType { get; set; }
         public bool DisableUserInterface { get; set; }
 
         public EmbeddedAuthentication EmbeddedAuthentication { get; set; }

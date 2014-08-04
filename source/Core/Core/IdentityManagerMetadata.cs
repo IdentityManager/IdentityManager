@@ -8,13 +8,29 @@ namespace Thinktecture.IdentityManager.Core
 {
     public class IdentityManagerMetadata
     {
+        public IdentityManagerMetadata()
+        {
+            this.UserMetadata = new UserMetadata();
+        }
+
+        public UserMetadata UserMetadata { get; set; }
+    }
+
+    public class UserMetadata
+    {
+        public UserMetadata()
+        {
+            this.RequiredProperties = new HashSet<PropertyMetadata>();
+        }
+
+        public bool SupportsCreate { get; set; }
+        public bool SupportsDelete { get; set; }
+
         public bool SupportsPassword { get; set; }
         public bool SupportsEmail { get; set; }
         public bool SupportsPhone { get; set; }
-        
-        public IEnumerable<ClaimMetadata> Claims { get; set; }
-        
-        public bool SupportsRoleDefinitions { get; set; }
-        
+        public bool SupportsClaims { get; set; }
+
+        public ICollection<PropertyMetadata> RequiredProperties { get; set; }
     }
 }

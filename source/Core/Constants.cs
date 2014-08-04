@@ -19,5 +19,25 @@ namespace Thinktecture.IdentityManager.Core
             public const string Subject = "sub";
             public const string Name = "name";
         }
+
+        public const string RoutePrefix = "api";
+        public const string MetadataRoutePrefix = RoutePrefix + "";
+        public const string UserRoutePrefix = RoutePrefix + "/users";
+
+        public class RouteNames
+        {
+            public const string GetUsers = "GetUsers";
+            public const string GetUser = "GetUser";
+
+            public const string CreateUser = "CreateUser";
+            public const string DeleteUser = "DeleteUser";
+
+            public const string SetPassword = "SetPassword";
+            public const string SetEmail = "SetEmail";
+            public const string SetPhone = "SetPhone";
+
+            public const string AddClaim = "AddClaim";
+            public const string RemoveClaim = "RemoveClaim";
+        }
     }
 }

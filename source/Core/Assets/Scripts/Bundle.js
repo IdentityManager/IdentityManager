@@ -248,44 +248,19 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
     var app = angular.module("ttIdm", []);
     
     function idmApi($http, $q, PathBase) {
-        var api;
-        this.start = function () {
-            var q = $q.defer();
-            if (api) {
-                q.resolve(api);
-            }
-            else {
-                $http.get(PathBase + "/api").then(function (resp) {
-                    api = resp.data;
-                    q.resolve(api);
-                }, function (resp) {
-                    q.reject('Error loading API');
-                });
-            }
-            return q.promise;
-        };
+        var api = $q.defer();
+        $http.get(PathBase + "/api").then(function (resp) {
+            angular.copy(resp, api);
+            api.resolve();
+        }, function (resp) {
+            api.reject('Error loading API');
+        });
+        return api;
     }
     idmApi.$inject = ["$http", "$q", "PathBase"];
-    app.service("idmApi", idmApi);
+    app.factory("idmApi", idmApi);
 
-    function idmCurrentUser($http, idmApi) {
-        var user = {
-            username:'Admin'
-        };
-        this.user = user;
-
-        idmApi.start().then(function (config) {
-            $http.get(config.currentUser).then(function (response) {
-                if (response.data.username) {
-                    user.username = response.data.username;
-                }
-            });
-        });
-    }
-    idmCurrentUser.$inject = ["$http", "idmApi"];
-    app.service("idmCurrentUser", idmCurrentUser);
-
-    function idmUsers($http, PathBase, $log) {
+    function idmUsers($http, idmApi, $log) {
         function nop() {
         }
         function mapData(response) {
@@ -302,16 +277,19 @@ function(){this.$get=function(){return{}}});n.directive("ngView",x);n.directive(
         }
 
         this.getUsers = function (filter, start, count) {
-            return $http.get(PathBase + "/api/users", { params: { filter: filter, start: start, count: count } })
-                .then(mapData, errorHandler("Error Getting Users"));
+            idmApi.then(function () {
+                return $http.get(idmApi.users, { params: { filter: filter, start: start, count: count } })
+                    .then(mapData, errorHandler("Error Getting Users"));
+            });
         };
+
         this.getUser = function (subject) {
-            return $http.get(PathBase + "/api/users/" + encodeURIComponent(subject))
+            return $http.get(idmApi.users + "/" + encodeURIComponent(subject))
                 .then(mapData, errorHandler("Error Getting User"));
         };
 
         this.createUser = function (username, password) {
-            return $http.post(PathBase + "/api/users", { username: username, password: password })
+            return $http.post(idmApi.createUser, { username: username, password: password })
                 .then(mapData, errorHandler("Error Creating User"));
         };
         this.deleteUser = function (subject) {
