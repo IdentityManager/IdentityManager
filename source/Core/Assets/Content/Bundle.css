@@ -5858,4 +5858,7 @@ form label.column {
 .line .btn {
   width: 60px;
 }
+.ng-hide {
+  display: none !important;
+}
 

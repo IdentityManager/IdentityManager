@@ -163,7 +163,6 @@
     <Content Include="Assets\Scripts\App\ttIdmUI.min.js">
       <DependentUpon>ttIdmUI.js</DependentUpon>
     </Content>
-    <Content Include="Assets\Scripts\Libs\angular-mocks.js" />
     <Content Include="Assets\Scripts\Libs\angular-route.min.js" />
     <Content Include="Assets\Scripts\Libs\angular.min.js" />
     <Content Include="Assets\Scripts\Libs\bootstrap.min.js" />
@@ -184,7 +183,6 @@
       <DependentUpon>ttIdmUI.min.js</DependentUpon>
     </None>
     <None Include="packages.config" />
-    <None Include="Assets\Scripts\Libs\jquery-2.1.0.intellisense.js" />
     <None Include="..\default.licenseheader">
       <Link>default.licenseheader</Link>
     </None>

@@ -25,13 +25,13 @@
     </div>
 </div>
 
-<div class="row" ng-hide="model.users || model.waiting || model.message">
+<div class="row" ng-hide="model.waiting || model.message || (model.users.length > 0)">
     <div class="col-sm-8">
         <div class="alert alert-info">No Users Found</div>
     </div>
 </div>
 
-<div class="row" ng-show="model.users">
+<div class="row" ng-show="model.users.length > 0">
     <table class="table table-condensed table-responsive table-striped xtable-bordered">
         <thead>
             <tr>
@@ -42,10 +42,10 @@
             </tr>
         </thead>
         <tr ng-repeat="user in model.users">
-            <td><a href="#/edit/{{user.subject}}" class="btn btn-primary btn-xs">edit</a></td>
-            <td>{{user.displayName}}</td>
-            <td>{{user.username}}</td>
-            <td>{{user.subject}}</td>
+            <td><a ng-show="user.links.detail" href="#/edit/{{user.data.subject}}" class="btn btn-primary btn-xs">edit</a></td>
+            <td>{{user.data.displayName}}</td>
+            <td>{{user.data.username}}</td>
+            <td>{{user.data.subject}}</td>
         </tr>
     </table>
 </div>

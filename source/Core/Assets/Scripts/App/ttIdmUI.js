@@ -60,18 +60,22 @@
         $routeProvider
             .when("/", {
                 controller: 'HomeCtrl',
+                resolve: { api: "idmApi" },
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
             .when("/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
+                resolve: { api: "idmApi" },
                 templateUrl: PathBase + '/assets/Templates.users.list.html'
             })
             .when("/create", {
                 controller: 'NewUserCtrl',
+                resolve: { api: "idmApi" },
                 templateUrl: PathBase + '/assets/Templates.users.new.html'
             })
             .when("/edit/:subject", {
                 controller: 'EditUserCtrl',
+                resolve: { api: "idmApi" },
                 templateUrl: PathBase + '/assets/Templates.users.edit.html'
             })
             .otherwise({
@@ -80,30 +84,6 @@
     }
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
-
-    //function ttCompare($document) {
-    //    return {
-    //        restrict: 'A',
-    //        requires: 'ngModel',
-    //        link: function (scope, elem, attrs, ctrl) {
-    //            var other = $document.find(attrs.ttValidateSameAs);
-    //            console.log(ctrl, arguments);
-    //            //ctrl.$parsers.unshift(function (viewValue) {
-    //            //    if (other.val() === viewValue) {
-    //            //        // it is valid
-    //            //        ctrl.$setValidity('ttValidateSameAs', true);
-    //            //        return viewValue;
-    //            //    } else {
-    //            //        // it is invalid, return undefined (no model update)
-    //            //        ctrl.$setValidity('ttValidateSameAs', false);
-    //            //        return undefined;
-    //            //    }
-    //            //});
-    //        }
-    //    }
-    //}
-    //ttCompare.$inject = ["$document"];
-    //app.directive("ttCompare", ttCompare);
 
     function ttPrompt(PathBase) {
         return {
@@ -167,10 +147,15 @@
     idmMessage.$inject = ["PathBase"];
     app.directive("idmMessage", idmMessage);
 
-    function LayoutCtrl($scope, idmCurrentUser) {
-        $scope.model = idmCurrentUser.user;
+    function LayoutCtrl($scope, idmApi) {
+        $scope.model = {};
+
+        idmApi.then(function () {
+            $scope.model.username = idmApi.data.currentUser.username;
+            $scope.model.links = idmApi.links;
+        });
     }
-    LayoutCtrl.$inject = ["$scope", "idmCurrentUser"];
+    LayoutCtrl.$inject = ["$scope", "idmApi"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl($scope) {
@@ -180,7 +165,15 @@
     app.controller("HomeCtrl", HomeCtrl);
 
     function ListUsersCtrl($scope, idmUsers, idmPager, $routeParams, $location) {
-        $scope.model = {};
+        var model = {
+            message : null,
+            users : null,
+            pager : null,
+            waiting : true,
+            filter : $routeParams.filter,
+            page : $routeParams.page || 1
+        };
+        $scope.model = model;
 
         $scope.search = function (filter) {
             var url = "/list";
@@ -190,22 +183,14 @@
             $location.url(url);
         };
 
-        var filter = $routeParams.filter;
-        $scope.model.message = null;
-        $scope.model.filter = filter;
-        $scope.model.users = null;
-        $scope.model.pager = null;
-        $scope.model.waiting = true;
-
         var itemsPerPage = 10;
-        var page = $routeParams.page || 1;
-        var startItem = (page - 1) * itemsPerPage;
+        var startItem = (model.page - 1) * itemsPerPage;
 
-        idmUsers.getUsers(filter, startItem, itemsPerPage).then(function (result) {
+        idmUsers.getUsers(model.filter, startItem, itemsPerPage).then(function (result) {
             $scope.model.waiting = false;
-            $scope.model.users = result.users;
-            if (result.users && result.users.length) {
-                $scope.model.pager = new idmPager(result, itemsPerPage, filter);
+            $scope.model.users = result.data.users;
+            if (result.data.users && result.data.users.length) {
+                $scope.model.pager = new idmPager(result.data, itemsPerPage);
             }
         }, function (error) {
             $scope.model.message = error;
@@ -215,93 +200,93 @@
     ListUsersCtrl.$inject = ["$scope", "idmUsers", "idmPager", "$routeParams", "$location"];
     app.controller("ListUsersCtrl", ListUsersCtrl);
 
-    function NewUserCtrl($scope, idmUsers) {
-        var feedback = new Feedback();
-        $scope.feedback = feedback;
+    //function NewUserCtrl($scope, idmUsers) {
+    //    var feedback = new Feedback();
+    //    $scope.feedback = feedback;
 
-        $scope.model = {
-        };
+    //    $scope.model = {
+    //    };
 
-        $scope.create = function (username, password, confirm) {
-            if (password !== confirm) {
-                feedback.errors = "Password and Confirm do not match.";
-                return;
-            }
+    //    $scope.create = function (username, password, confirm) {
+    //        if (password !== confirm) {
+    //            feedback.errors = "Password and Confirm do not match.";
+    //            return;
+    //        }
 
-            idmUsers.createUser(username, password)
-                .then(function (result) {
-                    $scope.model.last = result.subject;
-                    feedback.message = "Create Success";
-                }, feedback.errorHandler);
-        };
-    }
-    NewUserCtrl.$inject = ["$scope", "idmUsers"];
-    app.controller("NewUserCtrl", NewUserCtrl);
+    //        idmUsers.createUser(username, password)
+    //            .then(function (result) {
+    //                $scope.model.last = result.subject;
+    //                feedback.message = "Create Success";
+    //            }, feedback.errorHandler);
+    //    };
+    //}
+    //NewUserCtrl.$inject = ["$scope", "idmUsers"];
+    //app.controller("NewUserCtrl", NewUserCtrl);
 
-    function EditUserCtrl($scope, idmUsers, $routeParams) {
-        var feedback = new Feedback();
-        $scope.feedback = feedback;
+    //function EditUserCtrl($scope, idmUsers, $routeParams) {
+    //    var feedback = new Feedback();
+    //    $scope.feedback = feedback;
 
-        $scope.model = {};
+    //    $scope.model = {};
 
-        function loadUser() {
-            return idmUsers.getUser($routeParams.subject)
-                .then(function (result) {
-                    $scope.model.user = result;
-                }, feedback.errorHandler);
-        };
-        loadUser();
+    //    function loadUser() {
+    //        return idmUsers.getUser($routeParams.subject)
+    //            .then(function (result) {
+    //                $scope.model.user = result;
+    //            }, feedback.errorHandler);
+    //    };
+    //    loadUser();
 
-        $scope.setPassword = function (subject, password, confirm) {
-            if (password === confirm) {
-                idmUsers.setPassword(subject, password)
-                    .then(function () {
-                        feedback.message = "Password Changed";
-                    }, feedback.errorHandler);
-            }
-            else {
-                feedback.errors = "Password and Confirmation do not match";
-            }
-        };
+    //    $scope.setPassword = function (subject, password, confirm) {
+    //        if (password === confirm) {
+    //            idmUsers.setPassword(subject, password)
+    //                .then(function () {
+    //                    feedback.message = "Password Changed";
+    //                }, feedback.errorHandler);
+    //        }
+    //        else {
+    //            feedback.errors = "Password and Confirmation do not match";
+    //        }
+    //    };
 
-        $scope.setEmail = function (subject, email) {
-            idmUsers.setEmail(subject, email)
-                .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
-        };
+    //    $scope.setEmail = function (subject, email) {
+    //        idmUsers.setEmail(subject, email)
+    //            .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
+    //    };
 
-        $scope.setPhone = function (subject, phone) {
-            idmUsers.setPhone(subject, phone)
-                .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
-        };
+    //    $scope.setPhone = function (subject, phone) {
+    //        idmUsers.setPhone(subject, phone)
+    //            .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
+    //    };
 
-        $scope.addClaim = function (subject, type, value) {
-            idmUsers.addClaim(subject, type, value)
-                .then(function () {
-                    feedback.message = "Claim Added";
-                    loadUser();
-                }, feedback.errorHandler);
-        };
+    //    $scope.addClaim = function (subject, type, value) {
+    //        idmUsers.addClaim(subject, type, value)
+    //            .then(function () {
+    //                feedback.message = "Claim Added";
+    //                loadUser();
+    //            }, feedback.errorHandler);
+    //    };
 
-        $scope.removeClaim = function (subject, type, value) {
-            idmUsers.removeClaim(subject, type, value)
-                .then(function () {
-                    feedback.message = "Claim Removed";
-                    loadUser().then(function () {
-                        $scope.model.type = type;
-                        $scope.model.value = value;
-                    });
-                }, feedback.errorHandler);
-        };
+    //    $scope.removeClaim = function (subject, type, value) {
+    //        idmUsers.removeClaim(subject, type, value)
+    //            .then(function () {
+    //                feedback.message = "Claim Removed";
+    //                loadUser().then(function () {
+    //                    $scope.model.type = type;
+    //                    $scope.model.value = value;
+    //                });
+    //            }, feedback.errorHandler);
+    //    };
 
-        $scope.deleteUser = function (subject) {
-            idmUsers.deleteUser(subject)
-                .then(function () {
-                    feedback.message = "User Deleted";
-                    $scope.model.user = null;
-                }, feedback.errorHandler);
-        };
-    }
-    EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
-    app.controller("EditUserCtrl", EditUserCtrl);
+    //    $scope.deleteUser = function (subject) {
+    //        idmUsers.deleteUser(subject)
+    //            .then(function () {
+    //                feedback.message = "User Deleted";
+    //                $scope.model.user = null;
+    //            }, feedback.errorHandler);
+    //    };
+    //}
+    //EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
+    //app.controller("EditUserCtrl", EditUserCtrl);
 
 })(angular);

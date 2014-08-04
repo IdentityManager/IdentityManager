@@ -5,13 +5,14 @@
     
     function idmApi($http, $q, PathBase) {
         var api = $q.defer();
+        var promise = api.promise;
         $http.get(PathBase + "/api").then(function (resp) {
-            angular.copy(resp, api);
+            angular.extend(promise, resp.data);
             api.resolve();
         }, function (resp) {
             api.reject('Error loading API');
         });
-        return api;
+        return promise;
     }
     idmApi.$inject = ["$http", "$q", "PathBase"];
     app.factory("idmApi", idmApi);
@@ -19,7 +20,7 @@
     function idmUsers($http, idmApi, $log) {
         function nop() {
         }
-        function mapData(response) {
+        function mapResponseData(response) {
             return response.data;
         }
         function errorHandler(msg) {
@@ -33,47 +34,51 @@
         }
 
         this.getUsers = function (filter, start, count) {
-            idmApi.then(function () {
-                return $http.get(idmApi.users, { params: { filter: filter, start: start, count: count } })
-                    .then(mapData, errorHandler("Error Getting Users"));
+            return idmApi.then(function () {
+                return $http.get(idmApi.links.users, { params: { filter: filter, start: start, count: count } })
+                    .then(mapResponseData, errorHandler("Error Getting Users"));
             });
         };
 
-        this.getUser = function (subject) {
-            return $http.get(idmApi.users + "/" + encodeURIComponent(subject))
-                .then(mapData, errorHandler("Error Getting User"));
-        };
+        //idmApi.then(function () {
+        //    this.createUser = function (username, password) {
+        //        return $http.post(idmApi.links.create, { username: username, password: password })
+        //            .then(mapResponseData, errorHandler("Error Creating User"));
+        //    };
+        //});
 
-        this.createUser = function (username, password) {
-            return $http.post(idmApi.createUser, { username: username, password: password })
-                .then(mapData, errorHandler("Error Creating User"));
-        };
-        this.deleteUser = function (subject) {
-            return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject))
-                .then(nop, errorHandler("Error Deleting User"));
-        };
-        this.setPassword = function (subject, password) {
-            return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/password", { password: password })
-                .then(nop,  errorHandler("Error Setting Password"));
-        };
-        this.setEmail = function (subject, email) {
-            return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/email", { email: email })
-                .then(nop,  errorHandler("Error Setting Email"));
-        };
-        this.setPhone = function (subject, phone) {
-            return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/phone", { phone: phone })
-                .then(nop,  errorHandler("Error Setting Phone"));
-        };
-        this.addClaim = function (subject, type, value) {
-            return $http.post(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims", { type: type, value: value })
-                .then(nop,  errorHandler("Error Adding Claim"));
-        };
-        this.removeClaim = function (subject, type, value) {
-            return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
-                .then(nop,  errorHandler("Error Removing Claim"));
-        };
+        //this.getUser = function (subject) {
+        //    return $http.get(idmApi.users + "/" + encodeURIComponent(subject))
+        //        .then(mapData, errorHandler("Error Getting User"));
+        //};
+
+       
+        //this.deleteUser = function (subject) {
+        //    return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject))
+        //        .then(nop, errorHandler("Error Deleting User"));
+        //};
+        //this.setPassword = function (subject, password) {
+        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/password", { password: password })
+        //        .then(nop,  errorHandler("Error Setting Password"));
+        //};
+        //this.setEmail = function (subject, email) {
+        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/email", { email: email })
+        //        .then(nop,  errorHandler("Error Setting Email"));
+        //};
+        //this.setPhone = function (subject, phone) {
+        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/phone", { phone: phone })
+        //        .then(nop,  errorHandler("Error Setting Phone"));
+        //};
+        //this.addClaim = function (subject, type, value) {
+        //    return $http.post(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims", { type: type, value: value })
+        //        .then(nop,  errorHandler("Error Adding Claim"));
+        //};
+        //this.removeClaim = function (subject, type, value) {
+        //    return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
+        //        .then(nop,  errorHandler("Error Removing Claim"));
+        //};
     }
-    idmUsers.$inject = ["$http", "PathBase", "$log"];
+    idmUsers.$inject = ["$http", "idmApi", "$log"];
     app.service("idmUsers", idmUsers);
 
     function ttPagerButtons(PathBase) {
@@ -101,7 +106,7 @@
     app.directive("ttPagerSummary", ttPagerSummary);
 
     function idmPager($sce) {
-        function Pager(result, pageSize, filter) {
+        function Pager(result, pageSize) {
             function PagerButton(text, page, enabled, current) {
                 this.text = $sce.trustAsHtml(text + "");
                 this.page = page;
@@ -113,7 +118,7 @@
             this.count = result.count;
             this.total = result.total;
             this.pageSize = pageSize;
-            this.filter = filter;
+            this.filter = result.filter;
 
             this.totalPages = Math.ceil(this.total / pageSize);
             this.currentPage = (this.start / pageSize) + 1;
