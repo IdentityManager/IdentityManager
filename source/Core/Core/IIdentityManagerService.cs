@@ -16,6 +16,7 @@ namespace Thinktecture.IdentityManager.Core
         Task<IdentityManagerResult<QueryResult>> QueryUsersAsync(string filter, int start, int count);
         Task<IdentityManagerResult<UserDetail>> GetUserAsync(string subject);
 
+        Task<IdentityManagerResult> SetUsernameAsync(string subject, string username);
         Task<IdentityManagerResult> SetPasswordAsync(string subject, string password);
         Task<IdentityManagerResult> SetEmailAsync(string subject, string email);
         Task<IdentityManagerResult> SetPhoneAsync(string subject, string phone);

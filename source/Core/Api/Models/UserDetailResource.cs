@@ -39,9 +39,23 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
             if (url == null) throw new ArgumentNullException("url");
             if (meta == null) throw new ArgumentNullException("meta");
 
-            this["Username"] = user.Username;
+            this["Name"] = user.Username;
             this["Subject"] = user.Subject;
 
+            if (meta.SupportsUsername)
+            {
+                this["Username"] = new Resource
+                {
+                    Data = new UsernameModel{
+                        Value = user.Username
+                    },
+                    Links = new
+                    {
+                        update = url.Link(Constants.RouteNames.SetUsername, new { subject = user.Subject })
+                    }
+                };
+            } 
+            
             if (meta.SupportsPassword)
             {
                 this["Password"] = new Resource
@@ -59,7 +73,7 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                 {
                     Data = new EmailModel
                     {
-                        Email = user.Email
+                        Value = user.Email
                     },
                     Links = new
                     {
@@ -74,7 +88,7 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                 {
                     Data = new PhoneModel
                     {
-                        Phone = user.Phone
+                        Value = user.Phone
                     },
                     Links = new
                     {

@@ -26,6 +26,7 @@ namespace Thinktecture.IdentityManager.Core
         public bool SupportsCreate { get; set; }
         public bool SupportsDelete { get; set; }
 
+        public bool SupportsUsername { get; set; }
         public bool SupportsPassword { get; set; }
         public bool SupportsEmail { get; set; }
         public bool SupportsPhone { get; set; }

@@ -313,6 +313,12 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 };
             }
 
+            if (idmApi.data.metadata.userMetadata.supportsUsername) {
+                svc.setUsername = function (username) {
+                    return $http.put(username.links.update, username.data)
+                        .then(nop, errorHandler("Error Setting Username"));
+                };
+            }
             if (idmApi.data.metadata.userMetadata.supportsPassword) {
                 svc.setPassword = function (password) {
                     return $http.put(password.links.update, password.data)
@@ -670,18 +676,16 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         var feedback = new Feedback();
         $scope.feedback = feedback;
 
-        $scope.model = {};
-
         function loadUser() {
             return idmUsers.getUser($routeParams.subject)
                 .then(function (result) {
-                    $scope.model.user = result;
+                    $scope.user = result;
                 }, feedback.errorHandler);
         };
         loadUser();
 
         $scope.setPassword = function (password, confirm) {
-            if (password.data.password === confirm) {
+            if (password.data.value === confirm) {
                 idmUsers.setPassword(password)
                     .then(function () {
                         feedback.message = "Password Changed";
@@ -690,6 +694,14 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             else {
                 feedback.errors = "Password and Confirmation do not match";
             }
+        };
+
+        $scope.setUsername = function (username) {
+            idmUsers.setUsername(username)
+                .then(feedback.createMessageHandler("Username Changed"), feedback.errorHandler)
+                .then(function () {
+                    $scope.user.data.name = username.data.value;
+                });
         };
 
         $scope.setEmail = function (email) {
@@ -715,7 +727,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 .then(function () {
                     feedback.message = "Claim Removed";
                     loadUser().then(function () {
-                        $scope.model.claim = claim.data;
+                        $scope.claim = claim.data;
                     });
                 }, feedback.errorHandler);
         };
@@ -724,7 +736,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             idmUsers.deleteUser(user)
                 .then(function () {
                     feedback.message = "User Deleted";
-                    $scope.model.user = null;
+                    $scope.user = null;
                 }, feedback.errorHandler);
         };
     }

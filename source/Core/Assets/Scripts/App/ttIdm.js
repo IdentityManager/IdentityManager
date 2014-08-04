@@ -58,6 +58,12 @@
                 };
             }
 
+            if (idmApi.data.metadata.userMetadata.supportsUsername) {
+                svc.setUsername = function (username) {
+                    return $http.put(username.links.update, username.data)
+                        .then(nop, errorHandler("Error Setting Username"));
+                };
+            }
             if (idmApi.data.metadata.userMetadata.supportsPassword) {
                 svc.setPassword = function (password) {
                     return $http.put(password.links.update, password.data)

@@ -7,10 +7,9 @@ using Thinktecture.IdentityManager.Core.Resources;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
-    public class EmailModel
+    public class UsernameModel
     {
-        [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "EmailRequired")]
-        [EmailAddress(ErrorMessage=null, ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "InvalidEmail")]
+        [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "UsernameRequired")]
         public string Value { get; set; }
     }
 }

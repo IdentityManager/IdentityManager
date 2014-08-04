@@ -10,6 +10,6 @@ namespace Thinktecture.IdentityManager.Api.Models
     public class PhoneModel
     {
         [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PhoneRequired")]
-        public string Phone { get; set; }
+        public string Value { get; set; }
     }
 }

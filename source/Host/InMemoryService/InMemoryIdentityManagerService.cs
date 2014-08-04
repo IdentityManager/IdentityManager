@@ -29,6 +29,7 @@ namespace Thinktecture.IdentityManager.Host
                     SupportsCreate = true,
                     SupportsDelete = true,
                     
+                    SupportsUsername = true,
                     SupportsPassword = true,
                     SupportsEmail = true,
                     SupportsPhone = true,
@@ -146,6 +147,23 @@ namespace Thinktecture.IdentityManager.Host
             }));
         }
 
+        public System.Threading.Tasks.Task<IdentityManagerResult> SetUsernameAsync(string subject, string username)
+        {
+            var user = users.SingleOrDefault(x => x.Subject == subject);
+            if (user == null)
+            {
+                return Task.FromResult(new IdentityManagerResult("No user found"));
+            }
+
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                return Task.FromResult(new IdentityManagerResult("Username is required"));
+            }
+
+            user.Username = username;
+            return Task.FromResult(IdentityManagerResult.Success);
+        }
+        
         public System.Threading.Tasks.Task<IdentityManagerResult> SetPasswordAsync(string subject, string password)
         {
             var errors = ValidatePassword(password);

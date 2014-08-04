@@ -10,6 +10,6 @@ namespace Thinktecture.IdentityManager.Api.Models
     public class PasswordModel
     {
         [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PasswordRequired")]
-        public string Password { get; set; }
+        public string Value { get; set; }
     }
 }

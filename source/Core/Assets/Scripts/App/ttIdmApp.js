@@ -164,18 +164,16 @@
         var feedback = new Feedback();
         $scope.feedback = feedback;
 
-        $scope.model = {};
-
         function loadUser() {
             return idmUsers.getUser($routeParams.subject)
                 .then(function (result) {
-                    $scope.model.user = result;
+                    $scope.user = result;
                 }, feedback.errorHandler);
         };
         loadUser();
 
         $scope.setPassword = function (password, confirm) {
-            if (password.data.password === confirm) {
+            if (password.data.value === confirm) {
                 idmUsers.setPassword(password)
                     .then(function () {
                         feedback.message = "Password Changed";
@@ -184,6 +182,14 @@
             else {
                 feedback.errors = "Password and Confirmation do not match";
             }
+        };
+
+        $scope.setUsername = function (username) {
+            idmUsers.setUsername(username)
+                .then(feedback.createMessageHandler("Username Changed"), feedback.errorHandler)
+                .then(function () {
+                    $scope.user.data.name = username.data.value;
+                });
         };
 
         $scope.setEmail = function (email) {
@@ -209,7 +215,7 @@
                 .then(function () {
                     feedback.message = "Claim Removed";
                     loadUser().then(function () {
-                        $scope.model.claim = claim.data;
+                        $scope.claim = claim.data;
                     });
                 }, feedback.errorHandler);
         };
@@ -218,7 +224,7 @@
             idmUsers.deleteUser(user)
                 .then(function () {
                     feedback.message = "User Deleted";
-                    $scope.model.user = null;
+                    $scope.user = null;
                 }, feedback.errorHandler);
         };
     }

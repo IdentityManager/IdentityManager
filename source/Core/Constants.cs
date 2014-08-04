@@ -32,6 +32,7 @@ namespace Thinktecture.IdentityManager.Core
             public const string CreateUser = "CreateUser";
             public const string DeleteUser = "DeleteUser";
 
+            public const string SetUsername = "SetUsername";
             public const string SetPassword = "SetPassword";
             public const string SetEmail = "SetEmail";
             public const string SetPhone = "SetPhone";

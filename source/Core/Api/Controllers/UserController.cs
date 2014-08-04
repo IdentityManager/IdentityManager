@@ -138,8 +138,8 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
 
-        [HttpPut, Route("{subject}/password", Name = Constants.RouteNames.SetPassword)]
-        public async Task<IHttpActionResult> SetPasswordAsync(string subject, PasswordModel model)
+        [HttpPut, Route("{subject}/username", Name = Constants.RouteNames.SetUsername)]
+        public async Task<IHttpActionResult> SetUsernameAsync(string subject, UsernameModel model)
         {
             if (String.IsNullOrWhiteSpace(subject))
             {
@@ -149,12 +149,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             
             if (model == null)
             {
-                ModelState.AddModelError("", Messages.PasswordDataRequired);
+                ModelState.AddModelError("", Messages.UsernameRequired);
             }
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.SetPasswordAsync(subject, model.Password);
+                var result = await this.userManager.SetUsernameAsync(subject, model.Value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -166,6 +166,34 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(ModelState.ToError());
         }
 
+        [HttpPut, Route("{subject}/password", Name = Constants.RouteNames.SetPassword)]
+        public async Task<IHttpActionResult> SetPasswordAsync(string subject, PasswordModel model)
+        {
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                ModelState["subject.String"].Errors.Clear();
+                ModelState.AddModelError("", Messages.SubjectRequired);
+            }
+
+            if (model == null)
+            {
+                ModelState.AddModelError("", Messages.PasswordDataRequired);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var result = await this.userManager.SetPasswordAsync(subject, model.Value);
+                if (result.IsSuccess)
+                {
+                    return NoContent();
+                }
+
+                ModelState.AddErrors(result);
+            }
+
+            return BadRequest(ModelState.ToError());
+        }
+        
         [HttpPut, Route("{subject}/email", Name = Constants.RouteNames.SetEmail)]
         public async Task<IHttpActionResult> SetEmailAsync(string subject, EmailModel model)
         {
@@ -182,7 +210,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.SetEmailAsync(subject, model.Email);
+                var result = await this.userManager.SetEmailAsync(subject, model.Value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -210,7 +238,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.SetPhoneAsync(subject, model.Phone);
+                var result = await this.userManager.SetPhoneAsync(subject, model.Value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
