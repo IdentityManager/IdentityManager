@@ -12,7 +12,7 @@
 </div>
 
 <div ng-show="model.user">
-    <div class="line">
+    <div class="line" ng-show="model.user.data.password">
         <div class="row">
             <form name="setPasswordForm" class="form-inline" ng-submit="setPassword(model.user.data.password, model.confirm)">
                 <div class="col-sm-12">
@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="line">
+    <div class="line" ng-show="model.user.data.email">
         <div class="row">
             <form name="setEmailForm" class="form-inline" ng-submit="setEmail(model.user.data.email)">
                 <div class="col-sm-12">
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div class="line">
+    <div class="line" ng-show="model.user.data.phone">
         <div class="row">
             <form name="setPhoneForm" class="form-inline" ng-submit="setPhone(model.user.data.phone)">
                 <div class="col-sm-12">
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <div class="line">
+    <div class="line" ng-show="model.user.data.claims">
         <div class="row section">
             <div class="col-sm-12">
                 <form name="addClaimForm" class="form-inline" ng-submit="addClaim(model.user.data.claims, model.claim)">
@@ -99,10 +99,10 @@
         </table>
     </div>
 
-    <div class="row section">
-        <form name="deleteUserForm" 
-              class="form-inline" 
-              ng-submit="deleteUser(model.user)" >
+    <div class="row section" ng-show="model.user.links.delete">
+        <form name="deleteUserForm"
+              class="form-inline"
+              ng-submit="deleteUser(model.user)">
             <div class="col-sm-12">
                 <tt-prompt id="m" action="Delete">Are you sure you want to delete user <strong>{{model.user.data.username}}</strong> (<em>{{model.user.data.subject}}</em>)?</tt-prompt>
                 <button type="submit" class="btn btn-primary" tt-confirm-click="#m">Delete User</button>
