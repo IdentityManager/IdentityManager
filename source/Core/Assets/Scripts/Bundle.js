@@ -347,6 +347,40 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     }
     idmUsers.$inject = ["$http", "idmApi", "$log"];
     app.factory("idmUsers", idmUsers);
+})(angular);
+
+(function (angular) {
+    var pathBase = document.getElementById("pathBase").textContent;
+    angular.module("ttIdm").constant("PathBase", pathBase);
+})(angular);
+
+///#source 1 1 /Assets/Scripts/App/ttIdmUI.js
+/// <reference path="../Libs/angular.min.js" />
+/// <reference path="../Libs/angular-route.min.js" />
+
+(function (angular) {
+    var app = angular.module("ttIdmUI", []);
+
+    function ttPrompt(PathBase) {
+        return {
+            restrict: 'E',
+            templateUrl: PathBase + '/assets/Templates.modal.html',
+            replace: true,
+            transclude: true,
+            scope: {
+                id: '@',
+                action: '@'
+            },
+            link: function (scope, elem, attrs, ctrl) {
+                elem.id = scope.id.trim();
+                elem.find(".btn-primary.confirm").on("click", function () {
+                    elem.trigger("confirm");
+                });
+            }
+        }
+    }
+    ttPrompt.$inject = ["PathBase"];
+    app.directive("ttPrompt", ttPrompt);
 
     function ttPagerButtons(PathBase) {
         return {
@@ -427,14 +461,49 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     idmPager.$inject = ["$sce"];
     app.service("idmPager", idmPager);
 
+    function ttConfirmClick() {
+        return {
+            restrict: 'A',
+            link: function (scope, elem, attrs) {
+                var prevent = true;
+                var cb = null;
+                elem.on("click", function (e) {
+                    if (prevent) {
+                        e.preventDefault();
+                        $(attrs.ttConfirmClick).modal('show');
+                        if (!cb) {
+                            cb = function () {
+                                $(this).off("confirm");
+                                prevent = false;
+                                elem.trigger("click");
+                            };
+                            $(attrs.ttConfirmClick).on("confirm", cb);
+                        }
+                    }
+                });
+            }
+        }
+    }
+    ttConfirmClick.$inject = [];
+    app.directive("ttConfirmClick", ttConfirmClick);
+
+    function idmMessage(PathBase) {
+        return {
+            restrict: 'E',
+            scope: {
+                model: "=message"
+            },
+            templateUrl: PathBase + '/assets/Templates.message.html',
+            link: function (scope, elem, attrs) {
+
+            }
+        };
+    }
+    idmMessage.$inject = ["PathBase"];
+    app.directive("idmMessage", idmMessage);
 })(angular);
 
-(function (angular) {
-    var pathBase = document.getElementById("pathBase").textContent;
-    angular.module("ttIdm").constant("PathBase", pathBase);
-})(angular);
-
-///#source 1 1 /Assets/Scripts/App/ttIdmUI.js
+///#source 1 1 /Assets/Scripts/App/ttIdmApp.js
 /// <reference path="../Libs/angular.min.js" />
 /// <reference path="../Libs/angular-route.min.js" />
 
@@ -492,7 +561,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         };
     }
 
-    var app = angular.module("ttIdmUI", ['ngRoute', 'ttIdm']);
+    var app = angular.module("ttIdmApp", ['ngRoute', 'ttIdm', 'ttIdmUI']);
     function config($routeProvider, PathBase) {
         $routeProvider
             .when("/", {
@@ -520,68 +589,6 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     }
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
-
-    function ttPrompt(PathBase) {
-        return {
-            restrict: 'E',
-            templateUrl: PathBase + '/assets/Templates.modal.html',
-            replace: true,
-            transclude: true,
-            scope: {
-                id: '@',
-                action: '@'
-            },
-            link: function (scope, elem, attrs, ctrl) {
-                elem.id = scope.id.trim();
-                elem.find(".btn-primary.confirm").on("click", function () {
-                    elem.trigger("confirm");
-                });
-            }
-        }
-    }
-    ttPrompt.$inject = ["PathBase"];
-    app.directive("ttPrompt", ttPrompt);
-
-    function ttConfirmClick() {
-        return {
-            restrict: 'A',
-            link: function (scope, elem, attrs) {
-                var prevent = true;
-                var cb = null;
-                elem.on("click", function (e) {
-                    if (prevent) {
-                        e.preventDefault();
-                        $(attrs.ttConfirmClick).modal('show');
-                        if (!cb) {
-                            cb = function () {
-                                $(this).off("confirm");
-                                prevent = false;
-                                elem.trigger("click");
-                            };
-                            $(attrs.ttConfirmClick).on("confirm", cb);
-                        }
-                    }
-                });
-            }
-        }
-    }
-    ttConfirmClick.$inject = [];
-    app.directive("ttConfirmClick", ttConfirmClick);
-
-    function idmMessage(PathBase) {
-        return {
-            restrict: 'E',
-            scope: {
-                model: "=message"
-            },
-            templateUrl: PathBase + '/assets/Templates.message.html',
-            link: function (scope, elem, attrs) {
-
-            }
-        };
-    }
-    idmMessage.$inject = ["PathBase"];
-    app.directive("idmMessage", idmMessage);
 
     function LayoutCtrl($scope, idmApi) {
         $scope.model = {};

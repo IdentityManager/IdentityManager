@@ -153,6 +153,10 @@
     </Content>
     <EmbeddedResource Include="Assets\Templates\index.html" />
     <Content Include="Assets\Scripts\App\ttIdm.js" />
+    <Content Include="Assets\Scripts\App\ttIdmApp.js" />
+    <Content Include="Assets\Scripts\App\ttIdmApp.min.js">
+      <DependentUpon>ttIdmApp.js</DependentUpon>
+    </Content>
     <Content Include="Assets\Scripts\App\ttIdmUI.js" />
     <EmbeddedResource Include="Assets\Scripts\Bundle.js">
       <DependentUpon>Bundle.js.bundle</DependentUpon>
@@ -178,6 +182,9 @@
     <None Include="app.config" />
     <None Include="Assets\Scripts\App\ttIdm.min.js.map">
       <DependentUpon>ttIdm.min.js</DependentUpon>
+    </None>
+    <None Include="Assets\Scripts\App\ttIdmApp.min.js.map">
+      <DependentUpon>ttIdmApp.min.js</DependentUpon>
     </None>
     <None Include="Assets\Scripts\App\ttIdmUI.min.js.map">
       <DependentUpon>ttIdmUI.min.js</DependentUpon>

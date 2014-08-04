@@ -2,87 +2,7 @@
 /// <reference path="../Libs/angular-route.min.js" />
 
 (function (angular) {
-
-    function Feedback() {
-        var self = this;
-        var _errors;
-        var _message;
-
-        self.clear = function () {
-            _errors = null;
-            _message = null;
-        };
-
-        Object.defineProperty(this, "message", {
-            get: function () {
-                return _message;
-            },
-            set: function (value) {
-                self.clear();
-                _message = value;
-            }
-        });
-        Object.defineProperty(this, "errors", {
-            get: function () {
-                return _errors;
-            },
-            set: function (value) {
-                self.clear();
-                if (value instanceof Array) {
-                    _errors = value;
-                }
-                else {
-                    _errors = [value];
-                }
-            }
-        });
-
-        self.messageHandler = function (message) {
-            self.message = message;
-        };
-        self.errorHandler = function (errors) {
-            self.errors = errors;
-        };
-        self.createMessageHandler = function (msg) {
-            return function () {
-                self.message = msg;
-            };
-        };
-        self.createErrorHandler = function (msg) {
-            return function (errors) {
-                self.errors = errors || msg;
-            };
-        };
-    }
-
-    var app = angular.module("ttIdmUI", ['ngRoute', 'ttIdm']);
-    function config($routeProvider, PathBase) {
-        $routeProvider
-            .when("/", {
-                controller: 'HomeCtrl',
-                templateUrl: PathBase + '/assets/Templates.home.html'
-            })
-            .when("/users/list/:filter?/:page?", {
-                controller: 'ListUsersCtrl',
-                resolve: { api: "idmUsers" },
-                templateUrl: PathBase + '/assets/Templates.users.list.html'
-            })
-            .when("/users/create", {
-                controller: 'NewUserCtrl',
-                resolve: { api: "idmUsers" },
-                templateUrl: PathBase + '/assets/Templates.users.new.html'
-            })
-            .when("/users/edit/:subject", {
-                controller: 'EditUserCtrl',
-                resolve: { api: "idmUsers" },
-                templateUrl: PathBase + '/assets/Templates.users.edit.html'
-            })
-            .otherwise({
-                redirectTo: '/'
-            });
-    }
-    config.$inject = ["$routeProvider", "PathBase"];
-    app.config(config);
+    var app = angular.module("ttIdmUI", []);
 
     function ttPrompt(PathBase) {
         return {
@@ -104,6 +24,85 @@
     }
     ttPrompt.$inject = ["PathBase"];
     app.directive("ttPrompt", ttPrompt);
+
+    function ttPagerButtons(PathBase) {
+        return {
+            restrict: 'E',
+            templateUrl: PathBase + '/assets/Templates.pager.buttons.html',
+            scope: {
+                pager: '='
+            }
+        }
+    }
+    ttPagerButtons.$inject = ["PathBase"];
+    app.directive("ttPagerButtons", ttPagerButtons);
+
+    function ttPagerSummary(PathBase) {
+        return {
+            restrict: 'E',
+            templateUrl: PathBase + '/assets/Templates.pager.summary.html',
+            scope: {
+                pager: '='
+            }
+        }
+    }
+    ttPagerSummary.$inject = ["PathBase"];
+    app.directive("ttPagerSummary", ttPagerSummary);
+
+    function idmPager($sce) {
+        function Pager(result, pageSize) {
+            function PagerButton(text, page, enabled, current) {
+                this.text = $sce.trustAsHtml(text + "");
+                this.page = page;
+                this.enabled = enabled;
+                this.current = current;
+            }
+
+            this.start = result.start;
+            this.count = result.count;
+            this.total = result.total;
+            this.pageSize = pageSize;
+            this.filter = result.filter;
+
+            this.totalPages = Math.ceil(this.total / pageSize);
+            this.currentPage = (this.start / pageSize) + 1;
+            this.canPrev = this.currentPage > 1;
+            this.canNext = this.currentPage < this.totalPages;
+
+            this.buttons = [];
+
+            var totalButtons = 7; // ensure this is odd
+            var pageSkip = 10;
+            var startButton = 1;
+            if (this.currentPage > Math.floor(totalButtons / 2)) startButton = this.currentPage - Math.floor(totalButtons / 2);
+
+            var endButton = startButton + totalButtons - 1;
+            if (endButton >= this.totalPages) endButton = this.totalPages;
+            if (this.totalPages > totalButtons &&
+                (endButton - startButton + 1) < totalButtons) {
+                startButton = endButton - totalButtons + 1;
+            }
+
+            var prevPage = this.currentPage - pageSkip;
+            if (prevPage < 1) prevPage = 1;
+
+            var nextPage = this.currentPage + pageSkip;
+            if (nextPage > this.totalPages) nextPage = this.totalPages;
+
+            this.buttons.push(new PagerButton("<strong>&lt;&lt;</strong>", 1, endButton > totalButtons));
+            this.buttons.push(new PagerButton("<strong>&lt;</strong>", prevPage, endButton > totalButtons));
+
+            for (var i = startButton; i <= endButton; i++) {
+                this.buttons.push(new PagerButton(i, i, true, i === this.currentPage));
+            }
+
+            this.buttons.push(new PagerButton("<strong>&gt;</strong>", nextPage, endButton < this.totalPages));
+            this.buttons.push(new PagerButton("<strong>&gt;&gt;</strong>", this.totalPages, endButton < this.totalPages));
+        }
+        return Pager;
+    }
+    idmPager.$inject = ["$sce"];
+    app.service("idmPager", idmPager);
 
     function ttConfirmClick() {
         return {
@@ -145,146 +144,4 @@
     }
     idmMessage.$inject = ["PathBase"];
     app.directive("idmMessage", idmMessage);
-
-    function LayoutCtrl($scope, idmApi) {
-        $scope.model = {};
-
-        idmApi.then(function () {
-            $scope.model.username = idmApi.data.currentUser.username;
-            $scope.model.links = idmApi.links;
-        });
-    }
-    LayoutCtrl.$inject = ["$scope", "idmApi"];
-    app.controller("LayoutCtrl", LayoutCtrl);
-
-    function HomeCtrl($scope) {
-        $scope.model = {};
-    }
-    HomeCtrl.$inject = ["$scope"];
-    app.controller("HomeCtrl", HomeCtrl);
-
-    function ListUsersCtrl($scope, idmUsers, idmPager, $routeParams, $location) {
-        var model = {
-            message : null,
-            users : null,
-            pager : null,
-            waiting : true,
-            filter : $routeParams.filter,
-            page : $routeParams.page || 1
-        };
-        $scope.model = model;
-
-        $scope.search = function (filter) {
-            var url = "/list";
-            if (filter) {
-                url += "/" + filter;
-            }
-            $location.url(url);
-        };
-
-        var itemsPerPage = 10;
-        var startItem = (model.page - 1) * itemsPerPage;
-
-        idmUsers.getUsers(model.filter, startItem, itemsPerPage).then(function (result) {
-            $scope.model.waiting = false;
-            $scope.model.users = result.data.users;
-            if (result.data.users && result.data.users.length) {
-                $scope.model.pager = new idmPager(result.data, itemsPerPage);
-            }
-        }, function (error) {
-            $scope.model.message = error;
-            $scope.model.waiting = false;
-        });
-    }
-    ListUsersCtrl.$inject = ["$scope", "idmUsers", "idmPager", "$routeParams", "$location"];
-    app.controller("ListUsersCtrl", ListUsersCtrl);
-
-    function NewUserCtrl($scope, idmUsers) {
-        var feedback = new Feedback();
-        $scope.feedback = feedback;
-
-        $scope.model = {
-        };
-
-        $scope.create = function (username, password, confirm) {
-            if (password !== confirm) {
-                feedback.errors = "Password and Confirm do not match.";
-                return;
-            }
-
-            idmUsers.createUser(username, password)
-                .then(function (result) {
-                    $scope.model.last = result;
-                    feedback.message = "Create Success";
-                }, feedback.errorHandler);
-        };
-    }
-    NewUserCtrl.$inject = ["$scope", "idmUsers"];
-    app.controller("NewUserCtrl", NewUserCtrl);
-
-    function EditUserCtrl($scope, idmUsers, $routeParams) {
-        var feedback = new Feedback();
-        $scope.feedback = feedback;
-
-        $scope.model = {};
-
-        function loadUser() {
-            return idmUsers.getUser($routeParams.subject)
-                .then(function (result) {
-                    $scope.model.user = result;
-                }, feedback.errorHandler);
-        };
-        loadUser();
-
-        $scope.setPassword = function (password, confirm) {
-            if (password.data.password === confirm) {
-                idmUsers.setPassword(password)
-                    .then(function () {
-                        feedback.message = "Password Changed";
-                    }, feedback.errorHandler);
-            }
-            else {
-                feedback.errors = "Password and Confirmation do not match";
-            }
-        };
-
-        $scope.setEmail = function (email) {
-            idmUsers.setEmail(email)
-                .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
-        };
-
-        $scope.setPhone = function (phone) {
-            idmUsers.setPhone(phone)
-                .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
-        };
-
-        $scope.addClaim = function (claims, claim) {
-            idmUsers.addClaim(claims, claim)
-                .then(function () {
-                    feedback.message = "Claim Added";
-                    loadUser();
-                }, feedback.errorHandler);
-        };
-
-        $scope.removeClaim = function (claim) {
-            idmUsers.removeClaim(claim)
-                .then(function () {
-                    feedback.message = "Claim Removed";
-                    loadUser().then(function () {
-                        $scope.model.claim = claim.data;
-                    });
-                }, feedback.errorHandler);
-        };
-
-        $scope.deleteUser = function (user) {
-            idmUsers.deleteUser(user)
-                .then(function () {
-                    feedback.message = "User Deleted";
-                    $scope.model.user = null;
-                }, feedback.errorHandler);
-        };
-    }
-    EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
-    app.controller("EditUserCtrl", EditUserCtrl);
-
 })(angular);
