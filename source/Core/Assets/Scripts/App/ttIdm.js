@@ -33,19 +33,22 @@
             }
         }
 
-        this.getUsers = function (filter, start, count) {
+        var svc = this;
+        svc.getUsers = function (filter, start, count) {
             return idmApi.then(function () {
                 return $http.get(idmApi.links.users, { params: { filter: filter, start: start, count: count } })
                     .then(mapResponseData, errorHandler("Error Getting Users"));
             });
         };
 
-        //idmApi.then(function () {
-        //    this.createUser = function (username, password) {
-        //        return $http.post(idmApi.links.create, { username: username, password: password })
-        //            .then(mapResponseData, errorHandler("Error Creating User"));
-        //    };
-        //});
+        idmApi.then(function () {
+            if (idmApi.links.createUser) {
+                svc.createUser = function (username, password) {
+                    return $http.post(idmApi.links.createUser, { username: username, password: password })
+                        .then(mapResponseData, errorHandler("Error Creating User"));
+                };
+            }
+        });
 
         //this.getUser = function (subject) {
         //    return $http.get(idmApi.users + "/" + encodeURIComponent(subject))

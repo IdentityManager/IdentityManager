@@ -200,28 +200,28 @@
     ListUsersCtrl.$inject = ["$scope", "idmUsers", "idmPager", "$routeParams", "$location"];
     app.controller("ListUsersCtrl", ListUsersCtrl);
 
-    //function NewUserCtrl($scope, idmUsers) {
-    //    var feedback = new Feedback();
-    //    $scope.feedback = feedback;
+    function NewUserCtrl($scope, idmUsers) {
+        var feedback = new Feedback();
+        $scope.feedback = feedback;
 
-    //    $scope.model = {
-    //    };
+        $scope.model = {
+        };
 
-    //    $scope.create = function (username, password, confirm) {
-    //        if (password !== confirm) {
-    //            feedback.errors = "Password and Confirm do not match.";
-    //            return;
-    //        }
+        $scope.create = function (username, password, confirm) {
+            if (password !== confirm) {
+                feedback.errors = "Password and Confirm do not match.";
+                return;
+            }
 
-    //        idmUsers.createUser(username, password)
-    //            .then(function (result) {
-    //                $scope.model.last = result.subject;
-    //                feedback.message = "Create Success";
-    //            }, feedback.errorHandler);
-    //    };
-    //}
-    //NewUserCtrl.$inject = ["$scope", "idmUsers"];
-    //app.controller("NewUserCtrl", NewUserCtrl);
+            idmUsers.createUser(username, password)
+                .then(function (result) {
+                    $scope.model.last = result;
+                    feedback.message = "Create Success";
+                }, feedback.errorHandler);
+        };
+    }
+    NewUserCtrl.$inject = ["$scope", "idmUsers"];
+    app.controller("NewUserCtrl", NewUserCtrl);
 
     //function EditUserCtrl($scope, idmUsers, $routeParams) {
     //    var feedback = new Feedback();
