@@ -33,56 +33,65 @@
             }
         }
 
-        var svc = this;
-        svc.getUsers = function (filter, start, count) {
-            return idmApi.then(function () {
+        var svc = idmApi.then(function () {
+            svc.getUsers = function (filter, start, count) {
                 return $http.get(idmApi.links.users, { params: { filter: filter, start: start, count: count } })
                     .then(mapResponseData, errorHandler("Error Getting Users"));
-            });
-        };
+            };
 
-        idmApi.then(function () {
+            svc.getUser = function (subject) {
+                return $http.get(idmApi.links.users + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting User"));
+            };
+
             if (idmApi.links.createUser) {
                 svc.createUser = function (username, password) {
                     return $http.post(idmApi.links.createUser, { username: username, password: password })
                         .then(mapResponseData, errorHandler("Error Creating User"));
                 };
             }
+
+            if (idmApi.data.metadata.userMetadata.supportsDelete) {
+                svc.deleteUser = function (user) {
+                    return $http.delete(user.links.delete)
+                        .then(nop, errorHandler("Error Deleting User"));
+                };
+            }
+
+            if (idmApi.data.metadata.userMetadata.supportsPassword) {
+                svc.setPassword = function (password) {
+                    return $http.put(password.links.update, password.data)
+                        .then(nop,  errorHandler("Error Setting Password"));
+                };
+            }
+            if (idmApi.data.metadata.userMetadata.supportsEmail) {
+                svc.setEmail = function (email) {
+                    return $http.put(email.links.update, email.data)
+                        .then(nop,  errorHandler("Error Setting Email"));
+                };
+            }
+            if (idmApi.data.metadata.userMetadata.supportsPhone) {
+                svc.setPhone = function (phone) {
+                    return $http.put(phone.links.update, phone.data)
+                        .then(nop,  errorHandler("Error Setting Phone"));
+                };
+            }
+            if (idmApi.data.metadata.userMetadata.supportsClaims) {
+                svc.addClaim = function (claims, claim) {
+                    return $http.post(claims.links.create, claim)
+                        .then(nop,  errorHandler("Error Adding Claim"));
+                };
+                svc.removeClaim = function (claim) {
+                    return $http.delete(claim.links.delete)
+                        .then(nop,  errorHandler("Error Removing Claim"));
+                };
+            }
         });
 
-        //this.getUser = function (subject) {
-        //    return $http.get(idmApi.users + "/" + encodeURIComponent(subject))
-        //        .then(mapData, errorHandler("Error Getting User"));
-        //};
-
-       
-        //this.deleteUser = function (subject) {
-        //    return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject))
-        //        .then(nop, errorHandler("Error Deleting User"));
-        //};
-        //this.setPassword = function (subject, password) {
-        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/password", { password: password })
-        //        .then(nop,  errorHandler("Error Setting Password"));
-        //};
-        //this.setEmail = function (subject, email) {
-        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/email", { email: email })
-        //        .then(nop,  errorHandler("Error Setting Email"));
-        //};
-        //this.setPhone = function (subject, phone) {
-        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/phone", { phone: phone })
-        //        .then(nop,  errorHandler("Error Setting Phone"));
-        //};
-        //this.addClaim = function (subject, type, value) {
-        //    return $http.post(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims", { type: type, value: value })
-        //        .then(nop,  errorHandler("Error Adding Claim"));
-        //};
-        //this.removeClaim = function (subject, type, value) {
-        //    return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
-        //        .then(nop,  errorHandler("Error Removing Claim"));
-        //};
+        return svc;
     }
     idmUsers.$inject = ["$http", "idmApi", "$log"];
-    app.service("idmUsers", idmUsers);
+    app.factory("idmUsers", idmUsers);
 
     function ttPagerButtons(PathBase) {
         return {

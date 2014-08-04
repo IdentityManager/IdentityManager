@@ -42,7 +42,7 @@
             </tr>
         </thead>
         <tr ng-repeat="user in model.users">
-            <td><a ng-show="user.links.detail" href="#/edit/{{user.data.subject}}" class="btn btn-primary btn-xs">edit</a></td>
+            <td><a ng-show="user.links.detail" href="#/users/edit/{{user.data.subject}}" class="btn btn-primary btn-xs">edit</a></td>
             <td>{{user.data.displayName}}</td>
             <td>{{user.data.username}}</td>
             <td>{{user.data.subject}}</td>

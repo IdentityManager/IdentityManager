@@ -60,22 +60,21 @@
         $routeProvider
             .when("/", {
                 controller: 'HomeCtrl',
-                resolve: { api: "idmApi" },
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
-            .when("/list/:filter?/:page?", {
+            .when("/users/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
-                resolve: { api: "idmApi" },
+                resolve: { api: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.list.html'
             })
-            .when("/create", {
+            .when("/users/create", {
                 controller: 'NewUserCtrl',
-                resolve: { api: "idmApi" },
+                resolve: { api: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.new.html'
             })
-            .when("/edit/:subject", {
+            .when("/users/edit/:subject", {
                 controller: 'EditUserCtrl',
-                resolve: { api: "idmApi" },
+                resolve: { api: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.edit.html'
             })
             .otherwise({
@@ -223,70 +222,69 @@
     NewUserCtrl.$inject = ["$scope", "idmUsers"];
     app.controller("NewUserCtrl", NewUserCtrl);
 
-    //function EditUserCtrl($scope, idmUsers, $routeParams) {
-    //    var feedback = new Feedback();
-    //    $scope.feedback = feedback;
+    function EditUserCtrl($scope, idmUsers, $routeParams) {
+        var feedback = new Feedback();
+        $scope.feedback = feedback;
 
-    //    $scope.model = {};
+        $scope.model = {};
 
-    //    function loadUser() {
-    //        return idmUsers.getUser($routeParams.subject)
-    //            .then(function (result) {
-    //                $scope.model.user = result;
-    //            }, feedback.errorHandler);
-    //    };
-    //    loadUser();
+        function loadUser() {
+            return idmUsers.getUser($routeParams.subject)
+                .then(function (result) {
+                    $scope.model.user = result;
+                }, feedback.errorHandler);
+        };
+        loadUser();
 
-    //    $scope.setPassword = function (subject, password, confirm) {
-    //        if (password === confirm) {
-    //            idmUsers.setPassword(subject, password)
-    //                .then(function () {
-    //                    feedback.message = "Password Changed";
-    //                }, feedback.errorHandler);
-    //        }
-    //        else {
-    //            feedback.errors = "Password and Confirmation do not match";
-    //        }
-    //    };
+        $scope.setPassword = function (password, confirm) {
+            if (password.data.password === confirm) {
+                idmUsers.setPassword(password)
+                    .then(function () {
+                        feedback.message = "Password Changed";
+                    }, feedback.errorHandler);
+            }
+            else {
+                feedback.errors = "Password and Confirmation do not match";
+            }
+        };
 
-    //    $scope.setEmail = function (subject, email) {
-    //        idmUsers.setEmail(subject, email)
-    //            .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
-    //    };
+        $scope.setEmail = function (email) {
+            idmUsers.setEmail(email)
+                .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
+        };
 
-    //    $scope.setPhone = function (subject, phone) {
-    //        idmUsers.setPhone(subject, phone)
-    //            .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
-    //    };
+        $scope.setPhone = function (phone) {
+            idmUsers.setPhone(phone)
+                .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
+        };
 
-    //    $scope.addClaim = function (subject, type, value) {
-    //        idmUsers.addClaim(subject, type, value)
-    //            .then(function () {
-    //                feedback.message = "Claim Added";
-    //                loadUser();
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.addClaim = function (claims, claim) {
+            idmUsers.addClaim(claims, claim)
+                .then(function () {
+                    feedback.message = "Claim Added";
+                    loadUser();
+                }, feedback.errorHandler);
+        };
 
-    //    $scope.removeClaim = function (subject, type, value) {
-    //        idmUsers.removeClaim(subject, type, value)
-    //            .then(function () {
-    //                feedback.message = "Claim Removed";
-    //                loadUser().then(function () {
-    //                    $scope.model.type = type;
-    //                    $scope.model.value = value;
-    //                });
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.removeClaim = function (claim) {
+            idmUsers.removeClaim(claim)
+                .then(function () {
+                    feedback.message = "Claim Removed";
+                    loadUser().then(function () {
+                        $scope.model.claim = claim.data;
+                    });
+                }, feedback.errorHandler);
+        };
 
-    //    $scope.deleteUser = function (subject) {
-    //        idmUsers.deleteUser(subject)
-    //            .then(function () {
-    //                feedback.message = "User Deleted";
-    //                $scope.model.user = null;
-    //            }, feedback.errorHandler);
-    //    };
-    //}
-    //EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
-    //app.controller("EditUserCtrl", EditUserCtrl);
+        $scope.deleteUser = function (user) {
+            idmUsers.deleteUser(user)
+                .then(function () {
+                    feedback.message = "User Deleted";
+                    $scope.model.user = null;
+                }, feedback.errorHandler);
+        };
+    }
+    EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
+    app.controller("EditUserCtrl", EditUserCtrl);
 
 })(angular);

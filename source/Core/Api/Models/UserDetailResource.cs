@@ -39,6 +39,9 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
             if (url == null) throw new ArgumentNullException("url");
             if (meta == null) throw new ArgumentNullException("meta");
 
+            this["Username"] = user.Username;
+            this["Subject"] = user.Subject;
+
             if (meta.SupportsPassword)
             {
                 this["Password"] = new Resource

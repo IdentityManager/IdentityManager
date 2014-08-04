@@ -1,7 +1,7 @@
 ﻿<div class="page-header">
     <h1>
-        Edit User <span ng-show="model.user">: {{model.user.username}}</span>
-        <small class="subject">{{model.user.subject}}</small>
+        Edit User <span ng-show="model.user.data">: {{model.user.data.username}}</span>
+        <small class="subject">{{model.user.data.subject}}</small>
     </h1>
 </div>
 
@@ -14,11 +14,11 @@
 <div ng-show="model.user">
     <div class="line">
         <div class="row">
-            <form name="setPasswordForm" class="form-inline" ng-submit="setPassword(model.user.subject, model.password, model.confirm)">
+            <form name="setPasswordForm" class="form-inline" ng-submit="setPassword(model.user.data.password, model.confirm)">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="password" class="column">Set Password</label>
-                        <input type="password" class="form-control user-edit-regular" id="password" placeholder="Password" required autofocus ng-model="model.password">
+                        <input type="password" class="form-control user-edit-regular" id="password" placeholder="Password" required autofocus ng-model="model.user.data.password.data.password">
                     </div>
                     <div class="form-group">
                         <input type="password" class="form-control user-edit-regular" id="confirm" placeholder="Confirm" required ng-model="model.confirm">
@@ -31,11 +31,11 @@
 
     <div class="line">
         <div class="row">
-            <form name="setEmailForm" class="form-inline" ng-submit="setEmail(model.user.subject, model.user.email)">
+            <form name="setEmailForm" class="form-inline" ng-submit="setEmail(model.user.data.email)">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="email" class="column">Set Email</label>
-                        <input type="email" class="form-control user-edit-wide" id="email" required placeholder="Email" ng-model="model.user.email">
+                        <input type="email" class="form-control user-edit-wide" id="email" required placeholder="Email" ng-model="model.user.data.email.data.email">
                     </div>
                     <button type="submit" class="btn btn-primary" ng-disabled="setEmailForm.$invalid">Set</button>
                 </div>
@@ -45,11 +45,11 @@
 
     <div class="line">
         <div class="row">
-            <form name="setPhoneForm" class="form-inline" ng-submit="setPhone(model.user.subject, model.user.phone)">
+            <form name="setPhoneForm" class="form-inline" ng-submit="setPhone(model.user.data.phone)">
                 <div class="col-sm-12">
                     <div class="form-group">
                         <label for="phone" class="column">Set Phone</label>
-                        <input type="tel" class="form-control user-edit-wide" id="phone" required placeholder="Phone" ng-model="model.user.phone">
+                        <input type="tel" class="form-control user-edit-wide" id="phone" required placeholder="Phone" ng-model="model.user.data.phone.data.phone">
                     </div>
                     <button type="submit" class="btn btn-primary" ng-disabled="setPhoneForm.$invalid">Set</button>
                 </div>
@@ -60,13 +60,13 @@
     <div class="line">
         <div class="row section">
             <div class="col-sm-12">
-                <form name="addClaimForm" class="form-inline" ng-submit="addClaim(model.user.subject, model.type, model.value)">
+                <form name="addClaimForm" class="form-inline" ng-submit="addClaim(model.user.data.claims, model.claim)">
                     <div class="form-group">
                         <label for="type" class="column">Add Claim</label>
-                        <input type="text" class="form-control user-edit-regular" id="type" placeholder="Type" required autofocus ng-model="model.type">
+                        <input type="text" class="form-control user-edit-regular" id="type" placeholder="Type" required autofocus ng-model="model.claim.type">
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control user-edit-regular" id="value" placeholder="Value" required ng-model="model.value">
+                        <input type="text" class="form-control user-edit-regular" id="value" placeholder="Value" required ng-model="model.claim.value">
                     </div>
                     <button type="submit" class="btn btn-primary" ng-disabled="addClaimForm.$invalid">Add</button>
                 </form>
@@ -74,14 +74,14 @@
         </div>
 
         <div class="row">
-            <div ng-hide="model.user.claims" class="col-sm-8">
+            <div ng-hide="model.user.data.claims.data.length" class="col-sm-8">
                 <div class="alert alert-info">
                     <p>No Claims For User</p>
                 </div>
             </div>
         </div>
 
-        <table class="table table-condensed table-responsive table-striped xtable-bordered" ng-show="model.user.claims">
+        <table class="table table-condensed table-responsive table-striped xtable-bordered" ng-show="model.user.data.claims.data.length">
             <thead>
                 <tr>
                     <th></th>
@@ -89,12 +89,12 @@
                     <th>Value</th>
                 </tr>
             </thead>
-            <tr ng-repeat="claim in model.user.claims">
+            <tr ng-repeat="claim in model.user.data.claims.data">
                 <td>
-                    <button class="btn btn-warning btn-xs" ng-click="removeClaim(model.user.subject, claim.type, claim.value)">delete</button>
+                    <button class="btn btn-warning btn-xs" ng-click="removeClaim(claim)">delete</button>
                 </td>
-                <td>{{claim.type}}</td>
-                <td>{{claim.value}}</td>
+                <td>{{claim.data.type}}</td>
+                <td>{{claim.data.value}}</td>
             </tr>
         </table>
     </div>
@@ -102,9 +102,9 @@
     <div class="row section">
         <form name="deleteUserForm" 
               class="form-inline" 
-              ng-submit="deleteUser(model.user.subject)" >
+              ng-submit="deleteUser(model.user)" >
             <div class="col-sm-12">
-                <tt-prompt id="m" action="Delete">Are you sure you want to delete user <strong>{{model.user.username}}</strong> (<em>{{model.user.subject}}</em>)?</tt-prompt>
+                <tt-prompt id="m" action="Delete">Are you sure you want to delete user <strong>{{model.user.data.username}}</strong> (<em>{{model.user.data.subject}}</em>)?</tt-prompt>
                 <button type="submit" class="btn btn-primary" tt-confirm-click="#m">Delete User</button>
             </div>
         </form>

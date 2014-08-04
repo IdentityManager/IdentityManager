@@ -288,56 +288,65 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             }
         }
 
-        var svc = this;
-        svc.getUsers = function (filter, start, count) {
-            return idmApi.then(function () {
+        var svc = idmApi.then(function () {
+            svc.getUsers = function (filter, start, count) {
                 return $http.get(idmApi.links.users, { params: { filter: filter, start: start, count: count } })
                     .then(mapResponseData, errorHandler("Error Getting Users"));
-            });
-        };
+            };
 
-        idmApi.then(function () {
+            svc.getUser = function (subject) {
+                return $http.get(idmApi.links.users + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting User"));
+            };
+
             if (idmApi.links.createUser) {
                 svc.createUser = function (username, password) {
                     return $http.post(idmApi.links.createUser, { username: username, password: password })
                         .then(mapResponseData, errorHandler("Error Creating User"));
                 };
             }
+
+            if (idmApi.data.metadata.userMetadata.supportsDelete) {
+                svc.deleteUser = function (user) {
+                    return $http.delete(user.links.delete)
+                        .then(nop, errorHandler("Error Deleting User"));
+                };
+            }
+
+            if (idmApi.data.metadata.userMetadata.supportsPassword) {
+                svc.setPassword = function (password) {
+                    return $http.put(password.links.update, password.data)
+                        .then(nop,  errorHandler("Error Setting Password"));
+                };
+            }
+            if (idmApi.data.metadata.userMetadata.supportsEmail) {
+                svc.setEmail = function (email) {
+                    return $http.put(email.links.update, email.data)
+                        .then(nop,  errorHandler("Error Setting Email"));
+                };
+            }
+            if (idmApi.data.metadata.userMetadata.supportsPhone) {
+                svc.setPhone = function (phone) {
+                    return $http.put(phone.links.update, phone.data)
+                        .then(nop,  errorHandler("Error Setting Phone"));
+                };
+            }
+            if (idmApi.data.metadata.userMetadata.supportsClaims) {
+                svc.addClaim = function (claims, claim) {
+                    return $http.post(claims.links.create, claim)
+                        .then(nop,  errorHandler("Error Adding Claim"));
+                };
+                svc.removeClaim = function (claim) {
+                    return $http.delete(claim.links.delete)
+                        .then(nop,  errorHandler("Error Removing Claim"));
+                };
+            }
         });
 
-        //this.getUser = function (subject) {
-        //    return $http.get(idmApi.users + "/" + encodeURIComponent(subject))
-        //        .then(mapData, errorHandler("Error Getting User"));
-        //};
-
-       
-        //this.deleteUser = function (subject) {
-        //    return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject))
-        //        .then(nop, errorHandler("Error Deleting User"));
-        //};
-        //this.setPassword = function (subject, password) {
-        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/password", { password: password })
-        //        .then(nop,  errorHandler("Error Setting Password"));
-        //};
-        //this.setEmail = function (subject, email) {
-        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/email", { email: email })
-        //        .then(nop,  errorHandler("Error Setting Email"));
-        //};
-        //this.setPhone = function (subject, phone) {
-        //    return $http.put(PathBase + "/api/users/" + encodeURIComponent(subject) + "/phone", { phone: phone })
-        //        .then(nop,  errorHandler("Error Setting Phone"));
-        //};
-        //this.addClaim = function (subject, type, value) {
-        //    return $http.post(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims", { type: type, value: value })
-        //        .then(nop,  errorHandler("Error Adding Claim"));
-        //};
-        //this.removeClaim = function (subject, type, value) {
-        //    return $http.delete(PathBase + "/api/users/" + encodeURIComponent(subject) + "/claims/" + encodeURIComponent(type) + "/" + encodeURIComponent(value))
-        //        .then(nop,  errorHandler("Error Removing Claim"));
-        //};
+        return svc;
     }
     idmUsers.$inject = ["$http", "idmApi", "$log"];
-    app.service("idmUsers", idmUsers);
+    app.factory("idmUsers", idmUsers);
 
     function ttPagerButtons(PathBase) {
         return {
@@ -488,22 +497,21 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         $routeProvider
             .when("/", {
                 controller: 'HomeCtrl',
-                resolve: { api: "idmApi" },
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
-            .when("/list/:filter?/:page?", {
+            .when("/users/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
-                resolve: { api: "idmApi" },
+                resolve: { api: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.list.html'
             })
-            .when("/create", {
+            .when("/users/create", {
                 controller: 'NewUserCtrl',
-                resolve: { api: "idmApi" },
+                resolve: { api: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.new.html'
             })
-            .when("/edit/:subject", {
+            .when("/users/edit/:subject", {
                 controller: 'EditUserCtrl',
-                resolve: { api: "idmApi" },
+                resolve: { api: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.edit.html'
             })
             .otherwise({
@@ -651,71 +659,70 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     NewUserCtrl.$inject = ["$scope", "idmUsers"];
     app.controller("NewUserCtrl", NewUserCtrl);
 
-    //function EditUserCtrl($scope, idmUsers, $routeParams) {
-    //    var feedback = new Feedback();
-    //    $scope.feedback = feedback;
+    function EditUserCtrl($scope, idmUsers, $routeParams) {
+        var feedback = new Feedback();
+        $scope.feedback = feedback;
 
-    //    $scope.model = {};
+        $scope.model = {};
 
-    //    function loadUser() {
-    //        return idmUsers.getUser($routeParams.subject)
-    //            .then(function (result) {
-    //                $scope.model.user = result;
-    //            }, feedback.errorHandler);
-    //    };
-    //    loadUser();
+        function loadUser() {
+            return idmUsers.getUser($routeParams.subject)
+                .then(function (result) {
+                    $scope.model.user = result;
+                }, feedback.errorHandler);
+        };
+        loadUser();
 
-    //    $scope.setPassword = function (subject, password, confirm) {
-    //        if (password === confirm) {
-    //            idmUsers.setPassword(subject, password)
-    //                .then(function () {
-    //                    feedback.message = "Password Changed";
-    //                }, feedback.errorHandler);
-    //        }
-    //        else {
-    //            feedback.errors = "Password and Confirmation do not match";
-    //        }
-    //    };
+        $scope.setPassword = function (password, confirm) {
+            if (password.data.password === confirm) {
+                idmUsers.setPassword(password)
+                    .then(function () {
+                        feedback.message = "Password Changed";
+                    }, feedback.errorHandler);
+            }
+            else {
+                feedback.errors = "Password and Confirmation do not match";
+            }
+        };
 
-    //    $scope.setEmail = function (subject, email) {
-    //        idmUsers.setEmail(subject, email)
-    //            .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
-    //    };
+        $scope.setEmail = function (email) {
+            idmUsers.setEmail(email)
+                .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
+        };
 
-    //    $scope.setPhone = function (subject, phone) {
-    //        idmUsers.setPhone(subject, phone)
-    //            .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
-    //    };
+        $scope.setPhone = function (phone) {
+            idmUsers.setPhone(phone)
+                .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
+        };
 
-    //    $scope.addClaim = function (subject, type, value) {
-    //        idmUsers.addClaim(subject, type, value)
-    //            .then(function () {
-    //                feedback.message = "Claim Added";
-    //                loadUser();
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.addClaim = function (claims, claim) {
+            idmUsers.addClaim(claims, claim)
+                .then(function () {
+                    feedback.message = "Claim Added";
+                    loadUser();
+                }, feedback.errorHandler);
+        };
 
-    //    $scope.removeClaim = function (subject, type, value) {
-    //        idmUsers.removeClaim(subject, type, value)
-    //            .then(function () {
-    //                feedback.message = "Claim Removed";
-    //                loadUser().then(function () {
-    //                    $scope.model.type = type;
-    //                    $scope.model.value = value;
-    //                });
-    //            }, feedback.errorHandler);
-    //    };
+        $scope.removeClaim = function (claim) {
+            idmUsers.removeClaim(claim)
+                .then(function () {
+                    feedback.message = "Claim Removed";
+                    loadUser().then(function () {
+                        $scope.model.claim = claim.data;
+                    });
+                }, feedback.errorHandler);
+        };
 
-    //    $scope.deleteUser = function (subject) {
-    //        idmUsers.deleteUser(subject)
-    //            .then(function () {
-    //                feedback.message = "User Deleted";
-    //                $scope.model.user = null;
-    //            }, feedback.errorHandler);
-    //    };
-    //}
-    //EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
-    //app.controller("EditUserCtrl", EditUserCtrl);
+        $scope.deleteUser = function (user) {
+            idmUsers.deleteUser(user)
+                .then(function () {
+                    feedback.message = "User Deleted";
+                    $scope.model.user = null;
+                }, feedback.errorHandler);
+        };
+    }
+    EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
+    app.controller("EditUserCtrl", EditUserCtrl);
 
 })(angular);
 
