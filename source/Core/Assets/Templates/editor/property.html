@@ -28,7 +28,8 @@
                        id="{{property.meta.type}}"
                        placeholder="{{property.meta.name}}"
                        ng-model="property.data"
-                       ng-required="property.meta.required">
+                       ng-required="property.meta.required"
+                       tt-confirm="property.data">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
         </div>

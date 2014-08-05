@@ -348,6 +348,18 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 (function (angular) {
     var app = angular.module("ttIdmUI", []);
 
+    function ttConfirm() {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function (scope, elem, attrs, ctrl) {
+                console.log(ctrl);
+            }
+        }
+    }
+    ttConfirm.$inject = [];
+    app.directive("ttConfirm", ttConfirm);
+
     function ttPropertyEditor(PathBase){
         return {
             restrict:'E',
