@@ -1,7 +1,7 @@
 ﻿<form class="form-inline" ng-submit="setProperty(property)" name="form">
     <div class="col-sm-12" ng-show="property.meta.dataType != 1">
         <div class="form-group">
-            <label for="{{property.meta.type}}" class="column">Set {{property.meta.name}}</label>
+            <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
             <input type="text"
                    class="form-control user-edit-wide"
                    id="{{property.meta.type}}"
@@ -13,7 +13,7 @@
     </div>
     <div class="col-sm-12" ng-show="property.meta.dataType == 1">
         <div class="form-group">
-            <label for="{{property.meta.type}}" class="column">Set {{property.meta.name}}</label>
+            <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
             <input type="password"
                    class="form-control user-edit-regular"
                    id="{{property.meta.type}}"
