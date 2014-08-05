@@ -26,9 +26,7 @@ namespace Thinktecture.IdentityManager.Core
         public bool SupportsCreate { get; set; }
         public bool SupportsDelete { get; set; }
 
-        public bool SupportsRoles { get; set; }
         public bool SupportsClaims { get; set; }
-
         public ICollection<PropertyMetadata> Properties { get; set; }
     }
 }

@@ -36,14 +36,14 @@
         <thead>
             <tr>
                 <th></th>
-                <th>Display Name</th>
+                <th>Name</th>
                 <th>Username</th>
                 <th>Subject</th>
             </tr>
         </thead>
         <tr ng-repeat="user in model.users">
             <td><a ng-show="user.links.detail" href="#/users/edit/{{user.data.subject}}" class="btn btn-primary btn-xs">edit</a></td>
-            <td>{{user.data.displayName}}</td>
+            <td>{{user.data.name}}</td>
             <td>{{user.data.username}}</td>
             <td>{{user.data.subject}}</td>
         </tr>

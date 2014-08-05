@@ -55,10 +55,8 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                         update = url.Link(Constants.RouteNames.UpdateProperty, new { subject = user.Subject, type = p.Type }),
                     }
                 };
-            this["Properties"] = new Resource
-            {
-                Data = props.ToArray(),
-            };
+            // TODO: validate props against metadata props
+            this["Properties"] = props.ToArray();
 
             if (meta.SupportsClaims)
             {

@@ -313,30 +313,11 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 };
             }
 
-            if (idmApi.data.metadata.userMetadata.supportsUsername) {
-                svc.setUsername = function (username) {
-                    return $http.put(username.links.update, username.data)
-                        .then(nop, errorHandler("Error Setting Username"));
-                };
-            }
-            if (idmApi.data.metadata.userMetadata.supportsPassword) {
-                svc.setPassword = function (password) {
-                    return $http.put(password.links.update, password.data)
-                        .then(nop,  errorHandler("Error Setting Password"));
-                };
-            }
-            if (idmApi.data.metadata.userMetadata.supportsEmail) {
-                svc.setEmail = function (email) {
-                    return $http.put(email.links.update, email.data)
-                        .then(nop,  errorHandler("Error Setting Email"));
-                };
-            }
-            if (idmApi.data.metadata.userMetadata.supportsPhone) {
-                svc.setPhone = function (phone) {
-                    return $http.put(phone.links.update, phone.data)
-                        .then(nop,  errorHandler("Error Setting Phone"));
-                };
-            }
+            svc.updateProperty = function (property) {
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler("Error Setting Password"));
+            };
+
             if (idmApi.data.metadata.userMetadata.supportsClaims) {
                 svc.addClaim = function (claims, claim) {
                     return $http.post(claims.links.create, claim)
@@ -373,7 +354,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             templateUrl: PathBase + '/assets/Templates.editor.property.html',
             replace: true,
             scope: {
-                resource: '@'
+                property: '='
             },
             link: function (scope, elem, attrs, ctrl) {
             }
@@ -640,7 +621,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         $scope.model = model;
 
         $scope.search = function (filter) {
-            var url = "/list";
+            var url = "/users/list";
             if (filter) {
                 url += "/" + filter;
             }
@@ -699,34 +680,21 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         };
         loadUser();
 
-        $scope.setPassword = function (password, confirm) {
-            if (password.data.value === confirm) {
-                idmUsers.setPassword(password)
-                    .then(function () {
-                        feedback.message = "Password Changed";
-                    }, feedback.errorHandler);
-            }
-            else {
-                feedback.errors = "Password and Confirmation do not match";
-            }
-        };
+        //$scope.setPassword = function (password, confirm) {
+        //    if (password.data.value === confirm) {
+        //        idmUsers.setPassword(password)
+        //            .then(function () {
+        //                feedback.message = "Password Changed";
+        //            }, feedback.errorHandler);
+        //    }
+        //    else {
+        //        feedback.errors = "Password and Confirmation do not match";
+        //    }
+        //};
 
-        $scope.setUsername = function (username) {
-            idmUsers.setUsername(username)
-                .then(feedback.createMessageHandler("Username Changed"), feedback.errorHandler)
-                .then(function () {
-                    $scope.user.data.name = username.data.value;
-                });
-        };
-
-        $scope.setEmail = function (email) {
-            idmUsers.setEmail(email)
-                .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
-        };
-
-        $scope.setPhone = function (phone) {
-            idmUsers.setPhone(phone)
-                .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
+        $scope.setProperty = function (property) {
+            idmUsers.setProperty(property)
+                .then(feedback.createMessageHandler(property.meta.name + " Changed"), feedback.errorHandler);
         };
 
         $scope.addClaim = function (claims, claim) {

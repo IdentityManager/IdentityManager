@@ -29,6 +29,7 @@ namespace Thinktecture.IdentityManager.Host
                 {
                     SupportsCreate = true,
                     SupportsDelete = true,
+                    SupportsClaims = true,
                     Properties = new HashSet<PropertyMetadata>
                     {
                         new PropertyMetadata {
@@ -125,7 +126,7 @@ namespace Thinktecture.IdentityManager.Host
                 {
                     Subject = u.Subject,
                     Username = u.Username,
-                    Name = u.Claims.Where(x => x.Type == "name").Select(x => x.Value).FirstOrDefault(),
+                    Name = u.Claims.Where(x => x.Type == Constants.ClaimTypes.Name).Select(x => x.Value).FirstOrDefault(),
                 };
 
             var result = userResults.Skip(start).Take(count);
@@ -150,11 +151,11 @@ namespace Thinktecture.IdentityManager.Host
             var props = new List<UserClaim>()
             {
                 new UserClaim{Type=Constants.ClaimTypes.Username, Value=user.Username},
-                new UserClaim{Type=Constants.ClaimTypes.Name, Value=user.Claims.Where(x=>x.Type==Constants.ClaimTypes.Name).Select(x=>x.Value).SingleOrDefault()},
+                new UserClaim{Type=Constants.ClaimTypes.Name, Value=user.Claims.GetValue(Constants.ClaimTypes.Name)},
                 new UserClaim{Type=Constants.ClaimTypes.Password, Value=""},
                 new UserClaim{Type=Constants.ClaimTypes.Email, Value=user.Email},
                 new UserClaim{Type=Constants.ClaimTypes.Phone, Value=user.Mobile},
-                new UserClaim{Type="role.admin", Value=user.Claims.Any(x=>x.Type == Constants.ClaimTypes.Role && x.Value== "Admin").ToString().ToLower()},
+                new UserClaim{Type="role.admin", Value=user.Claims.HasValue(Constants.ClaimTypes.Role, "Admin").ToString().ToLower()},
                 new UserClaim{Type="first", Value=user.FirstName},
                 new UserClaim{Type="last", Value=user.LastName},
             };
@@ -164,7 +165,7 @@ namespace Thinktecture.IdentityManager.Host
             {
                 Subject = user.Subject,
                 Username = user.Username,
-                Name = user.Claims.Where(x => x.Type == Constants.ClaimTypes.Name).Select(x => x.Value).SingleOrDefault(),
+                Name = user.Claims.GetValue(Constants.ClaimTypes.Name),
                 Properties = props,
                 Claims = claims
             }));
@@ -188,12 +189,7 @@ namespace Thinktecture.IdentityManager.Host
             {
                 case Constants.ClaimTypes.Name:
                     {
-                        var claim = user.Claims.SingleOrDefault(x => x.Type == Constants.ClaimTypes.Name);
-                        if (claim != null)
-                        {
-                            user.Claims.Remove(claim);
-                        }
-                        user.Claims.Add(new Claim(Constants.ClaimTypes.Name, value));
+                        user.Claims.SetValue(Constants.ClaimTypes.Name, value);
                     }
                     break;
                 case Constants.ClaimTypes.Password:
@@ -208,14 +204,13 @@ namespace Thinktecture.IdentityManager.Host
                 case "role.admin":
                     {
                         var val = Boolean.Parse(value);
-                        var claim = user.Claims.SingleOrDefault(x => x.Type == Constants.ClaimTypes.Role && x.Value == "Admin");
-                        if (val && claim == null)
+                        if (val)
                         {
-                            user.Claims.Add(new Claim(claim.Type, value));
+                            user.Claims.AddClaim(Constants.ClaimTypes.Role, "admin");
                         }
-                        else if (!val && claim != null)
+                        else
                         {
-                            user.Claims.Remove(claim);
+                            user.Claims.RemoveClaim(Constants.ClaimTypes.Role, "admin");
                         }
                     }
                     break;
@@ -260,12 +255,8 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult("No user found"));
             }
 
-            var claims = user.Claims.Where(x => x.Type == type && x.Value == value);
-            if (!claims.Any())
-            {
-                user.Claims.Add(new Claim(type, value));
-            }
-
+            user.Claims.AddClaim(type, value);
+            
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
@@ -277,11 +268,7 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult("No user found"));
             }
 
-            var claims = user.Claims.Where(x => x.Type == type && x.Value == value);
-            foreach (var claim in claims.ToArray())
-            {
-                user.Claims.Remove(claim);
-            }
+            user.Claims.RemoveClaims(type, value);
 
             return Task.FromResult(IdentityManagerResult.Success);
         }

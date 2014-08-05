@@ -58,30 +58,11 @@
                 };
             }
 
-            if (idmApi.data.metadata.userMetadata.supportsUsername) {
-                svc.setUsername = function (username) {
-                    return $http.put(username.links.update, username.data)
-                        .then(nop, errorHandler("Error Setting Username"));
-                };
-            }
-            if (idmApi.data.metadata.userMetadata.supportsPassword) {
-                svc.setPassword = function (password) {
-                    return $http.put(password.links.update, password.data)
-                        .then(nop,  errorHandler("Error Setting Password"));
-                };
-            }
-            if (idmApi.data.metadata.userMetadata.supportsEmail) {
-                svc.setEmail = function (email) {
-                    return $http.put(email.links.update, email.data)
-                        .then(nop,  errorHandler("Error Setting Email"));
-                };
-            }
-            if (idmApi.data.metadata.userMetadata.supportsPhone) {
-                svc.setPhone = function (phone) {
-                    return $http.put(phone.links.update, phone.data)
-                        .then(nop,  errorHandler("Error Setting Phone"));
-                };
-            }
+            svc.updateProperty = function (property) {
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler("Error Setting Password"));
+            };
+
             if (idmApi.data.metadata.userMetadata.supportsClaims) {
                 svc.addClaim = function (claims, claim) {
                     return $http.post(claims.links.create, claim)

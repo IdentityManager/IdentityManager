@@ -115,7 +115,9 @@
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IIdentityManagerService.cs" />
     <Compile Include="Core\UserDetail.cs" />
-    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\ClaimsExtensions.cs" />
+    <Compile Include="Extensions\ModelStateDictionaryExtensions.cs" />
+    <Compile Include="Extensions\IdentityManagerResultExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
     <Compile Include="Core\UserClaim.cs" />

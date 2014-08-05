@@ -113,7 +113,7 @@
         $scope.model = model;
 
         $scope.search = function (filter) {
-            var url = "/list";
+            var url = "/users/list";
             if (filter) {
                 url += "/" + filter;
             }
@@ -172,34 +172,21 @@
         };
         loadUser();
 
-        $scope.setPassword = function (password, confirm) {
-            if (password.data.value === confirm) {
-                idmUsers.setPassword(password)
-                    .then(function () {
-                        feedback.message = "Password Changed";
-                    }, feedback.errorHandler);
-            }
-            else {
-                feedback.errors = "Password and Confirmation do not match";
-            }
-        };
+        //$scope.setPassword = function (password, confirm) {
+        //    if (password.data.value === confirm) {
+        //        idmUsers.setPassword(password)
+        //            .then(function () {
+        //                feedback.message = "Password Changed";
+        //            }, feedback.errorHandler);
+        //    }
+        //    else {
+        //        feedback.errors = "Password and Confirmation do not match";
+        //    }
+        //};
 
-        $scope.setUsername = function (username) {
-            idmUsers.setUsername(username)
-                .then(feedback.createMessageHandler("Username Changed"), feedback.errorHandler)
-                .then(function () {
-                    $scope.user.data.name = username.data.value;
-                });
-        };
-
-        $scope.setEmail = function (email) {
-            idmUsers.setEmail(email)
-                .then(feedback.createMessageHandler("Email Changed"), feedback.errorHandler);
-        };
-
-        $scope.setPhone = function (phone) {
-            idmUsers.setPhone(phone)
-                .then(feedback.createMessageHandler("Phone Changed"), feedback.errorHandler);
+        $scope.setProperty = function (property) {
+            idmUsers.setProperty(property)
+                .then(feedback.createMessageHandler(property.meta.name + " Changed"), feedback.errorHandler);
         };
 
         $scope.addClaim = function (claims, claim) {

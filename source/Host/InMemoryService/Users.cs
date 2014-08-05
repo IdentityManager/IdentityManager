@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
+using Thinktecture.IdentityManager.Core;
 
 namespace Thinktecture.IdentityManager.Host
 {
@@ -24,11 +25,11 @@ namespace Thinktecture.IdentityManager.Host
                     Email = "alice@email.com",
                     Mobile = "123",
                     Claims = new HashSet<Claim>{
-                        new Claim("name", "Alice Smith"),
+                        new Claim(Constants.ClaimTypes.Name, "Alice Smith"),
+                        new Claim(Constants.ClaimTypes.Role, "admin"),
+                        new Claim(Constants.ClaimTypes.Role, "employee"),
+                        new Claim(Constants.ClaimTypes.Role, "manager"),
                         new Claim("department", "sales"),
-                        new Claim("role", "employee"),
-                        new Claim("role", "admin"),
-                        new Claim("role", "manager"),
                     }
                 },
                 new InMemoryUser{
@@ -37,10 +38,10 @@ namespace Thinktecture.IdentityManager.Host
                     Password = "bob",
                     Email = "bob@email.com",
                     Claims = new HashSet<Claim>{
-                        new Claim("name", "Bob Smith"),
+                        new Claim(Constants.ClaimTypes.Name, "Bob Smith"),
+                        new Claim(Constants.ClaimTypes.Role, "employee"),
+                        new Claim(Constants.ClaimTypes.Role, "developer"),
                         new Claim("department", "IT"),
-                        new Claim("role", "employee"),
-                        new Claim("role", "developer"),
                     }
                 },
             };

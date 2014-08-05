@@ -9,7 +9,7 @@ using Thinktecture.IdentityManager.Core.Api.Models;
 
 namespace System.Web.Http
 {
-    static class Extensions
+    static class ModelStateDictionaryExtensions
     {
         public static void AddErrors(this ModelStateDictionary modelState, IdentityManagerResult result)
         {
@@ -29,16 +29,6 @@ namespace System.Web.Http
             return new ErrorModel
             {
                 Errors = modelState.GetErrorMessages()
-            };
-        }
-
-        public static ErrorModel ToError(this IdentityManagerResult result)
-        {
-            if (result == null) throw new ArgumentNullException("result");
-
-            return new ErrorModel
-            {
-                Errors = result.Errors.ToArray()
             };
         }
 
