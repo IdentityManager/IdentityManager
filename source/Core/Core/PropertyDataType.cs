@@ -10,9 +10,12 @@ using System.Threading.Tasks;
 
 namespace Thinktecture.IdentityManager.Core
 {
-    public enum ClaimDataType
+    public enum PropertyDataType
     {
         String,
+        Password,
+        Email,
+        Url,
         Number,
         Boolean,
     }

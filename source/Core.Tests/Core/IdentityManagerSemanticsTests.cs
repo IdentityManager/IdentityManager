@@ -96,59 +96,59 @@ namespace Core.Tests.Core
             Assert.False(result.IsSuccess);
         }
 
-        [Fact]
-        public void SetPasswordAsync_SetsPassword()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.SetPasswordAsync(id, "pass2").Result;
-            Assert.True(result.IsSuccess);
-            Assert.True(ValidatePassword("alice", "pass2"));
-        }
-        [Fact]
-        public void SetPasswordAsync_NoSubject_ReturnsError()
-        {
-            var result = subject.SetPasswordAsync("", "pass").Result;
-            Assert.False(result.IsSuccess);
-        }
-        [Fact]
-        public void SetPasswordAsync_NoPassword_ReturnsError()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.SetPasswordAsync(id, "").Result;
-            Assert.False(result.IsSuccess);
-        }
+        //[Fact]
+        //public void SetPasswordAsync_SetsPassword()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.SetPasswordAsync(id, "pass2").Result;
+        //    Assert.True(result.IsSuccess);
+        //    Assert.True(ValidatePassword("alice", "pass2"));
+        //}
+        //[Fact]
+        //public void SetPasswordAsync_NoSubject_ReturnsError()
+        //{
+        //    var result = subject.SetPasswordAsync("", "pass").Result;
+        //    Assert.False(result.IsSuccess);
+        //}
+        //[Fact]
+        //public void SetPasswordAsync_NoPassword_ReturnsError()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.SetPasswordAsync(id, "").Result;
+        //    Assert.False(result.IsSuccess);
+        //}
 
-        [Fact]
-        public void SetEmailAsync_SetsEmail()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.SetEmailAsync(id, "alice@foo.com").Result;
-            Assert.True(result.IsSuccess);
-            var user = subject.GetUserAsync(id).Result.Result;
-            Assert.Equal("alice@foo.com", user.Email);
-        }
-        [Fact]
-        public void SetEmailAsync_NoSubject_ReturnsError()
-        {
-            var result = subject.SetEmailAsync("", "alice@foo.com").Result;
-            Assert.False(result.IsSuccess);
-        }
+        //[Fact]
+        //public void SetEmailAsync_SetsEmail()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.SetEmailAsync(id, "alice@foo.com").Result;
+        //    Assert.True(result.IsSuccess);
+        //    var user = subject.GetUserAsync(id).Result.Result;
+        //    Assert.Equal("alice@foo.com", user.Email);
+        //}
+        //[Fact]
+        //public void SetEmailAsync_NoSubject_ReturnsError()
+        //{
+        //    var result = subject.SetEmailAsync("", "alice@foo.com").Result;
+        //    Assert.False(result.IsSuccess);
+        //}
         
-        [Fact]
-        public void SetPhoneAsync_SetsPhone()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.SetPhoneAsync(id, "123").Result;
-            Assert.True(result.IsSuccess);
-            var user = subject.GetUserAsync(id).Result.Result;
-            Assert.Equal("123", user.Phone);
-        }
-        [Fact]
-        public void SetPhoneAsync_NoSubject_ReturnsError()
-        {
-            var result = subject.SetPhoneAsync("", "123").Result;
-            Assert.False(result.IsSuccess);
-        }
+        //[Fact]
+        //public void SetPhoneAsync_SetsPhone()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.SetPhoneAsync(id, "123").Result;
+        //    Assert.True(result.IsSuccess);
+        //    var user = subject.GetUserAsync(id).Result.Result;
+        //    Assert.Equal("123", user.Phone);
+        //}
+        //[Fact]
+        //public void SetPhoneAsync_NoSubject_ReturnsError()
+        //{
+        //    var result = subject.SetPhoneAsync("", "123").Result;
+        //    Assert.False(result.IsSuccess);
+        //}
         
         public void AddClaimAsync_AddsClaim()
         {

@@ -11,4 +11,9 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
         public object Data { get; set; }
         public object Links { get; set; }
     }
+
+    public class Property : Resource
+    {
+        public object Meta { get; set; }
+    }
 }

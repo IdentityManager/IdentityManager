@@ -12,9 +12,9 @@ namespace Thinktecture.IdentityManager.Core
 {
     public class PropertyMetadata
     {
-        public string Identifier { get; set; }
-        public string DisplayName { get; set; }
-        public ClaimDataType DataType { get; set; }
-        public IEnumerable<string> AllowedValues { get; set; }
+        public string Type { get; set; }
+        public string Name { get; set; }
+        public PropertyDataType DataType { get; set; }
+        public bool Required { get; set; }
     }
 }

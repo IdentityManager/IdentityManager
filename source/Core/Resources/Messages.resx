@@ -150,6 +150,12 @@
   <data name="PhoneRequired" xml:space="preserve">
     <value>Phone is required.</value>
   </data>
+  <data name="PropertyInvalid" xml:space="preserve">
+    <value>{0} is not a known property.</value>
+  </data>
+  <data name="PropertyRequired" xml:space="preserve">
+    <value>{0} is required.</value>
+  </data>
   <data name="SubjectRequired" xml:space="preserve">
     <value>Subject is required.</value>
   </data>

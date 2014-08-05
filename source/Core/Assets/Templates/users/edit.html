@@ -12,7 +12,14 @@
 </div>
 
 <div ng-show="user">
-    <div class="line" ng-show="user.data.password">
+
+    <div class="row" ng-repeat="prop in properties">
+        <tt-resource-editor resource="prop"></tt-resource-editor>
+    </div>
+</div>
+
+
+    <!--<div class="line" ng-show="user.data.password">
         <div class="row">
             <form name="setPasswordForm" class="form-inline" ng-submit="setPassword(user.data.password, confirm)">
                 <div class="col-sm-12">
@@ -111,7 +118,7 @@
                 <td>{{claim.data.value}}</td>
             </tr>
         </table>
-    </div>
+    </div>-->
 
     <div class="row section" ng-show="user.links.delete">
         <form name="deleteUserForm"

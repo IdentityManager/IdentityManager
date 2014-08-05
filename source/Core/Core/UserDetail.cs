@@ -8,9 +8,7 @@ namespace Thinktecture.IdentityManager.Core
 {
     public class UserDetail : UserResult
     {
-        public string Email { get; set; }
-        public string Phone { get; set; }
-
+        public IEnumerable<UserClaim> Properties { get; set; }
         public IEnumerable<UserClaim> Claims { get; set; }
     }
 }

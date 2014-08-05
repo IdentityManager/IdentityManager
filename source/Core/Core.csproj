@@ -93,7 +93,6 @@
     <Compile Include="Api\Controllers\PageController.cs" />
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Filters\SecurityHeadersAttribute.cs" />
-    <Compile Include="Api\Models\UsernameModel.cs" />
     <Compile Include="Api\Models\ErrorModel.cs" />
     <Compile Include="Api\Models\Resource.cs" />
     <Compile Include="Api\Models\UserDetailResource.cs" />
@@ -110,11 +109,8 @@
     <Compile Include="Api\Controllers\UserController.cs" />
     <Compile Include="Api\Models\ClaimModel.cs" />
     <Compile Include="Api\Models\CreateUserModel.cs" />
-    <Compile Include="Api\Models\EmailModel.cs" />
-    <Compile Include="Api\Models\PasswordModel.cs" />
-    <Compile Include="Api\Models\PhoneModel.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Core\ClaimDataType.cs" />
+    <Compile Include="Core\PropertyDataType.cs" />
     <Compile Include="Core\PropertyMetadata.cs" />
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IIdentityManagerService.cs" />
@@ -137,6 +133,7 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Templates\editor\property.html" />
     <EmbeddedResource Include="Assets\Templates\pager\buttons.html" />
     <EmbeddedResource Include="Assets\Templates\pager\summary.html" />
     <EmbeddedResource Include="Assets\Templates\modal.html" />
@@ -249,9 +246,7 @@
     <None Include="Assets\Scripts\Bundle.js.bundle" />
     <None Include="Thinktecture.IdentityManager.nuspec" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Templates\editor\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

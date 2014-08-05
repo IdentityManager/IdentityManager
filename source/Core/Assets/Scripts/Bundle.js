@@ -367,6 +367,21 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 (function (angular) {
     var app = angular.module("ttIdmUI", []);
 
+    function ttPropertyEditor(PathBase){
+        return {
+            restrict:'E',
+            templateUrl: PathBase + '/assets/Templates.editor.property.html',
+            replace: true,
+            scope: {
+                resource: '@'
+            },
+            link: function (scope, elem, attrs, ctrl) {
+            }
+        };
+    }
+    ttPropertyEditor.$inject = ["PathBase"];
+    app.directive("ttPropertyEditor", ttPropertyEditor);
+
     function ttPrompt(PathBase) {
         return {
             restrict: 'E',

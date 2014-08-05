@@ -39,63 +39,26 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
             if (url == null) throw new ArgumentNullException("url");
             if (meta == null) throw new ArgumentNullException("meta");
 
-            this["Name"] = user.Username;
+            this["Username"] = user.Username;
+            this["Name"] = user.Name;
             this["Subject"] = user.Subject;
 
-            if (meta.SupportsUsername)
-            {
-                this["Username"] = new Resource
+            var props =
+                from p in user.Properties
+                let m = (from m in meta.Properties where m.Type == p.Type select m).Single()
+                select new Property
                 {
-                    Data = new UsernameModel{
-                        Value = user.Username
-                    },
+                    Data = p.Value,
+                    Meta = m,
                     Links = new
                     {
-                        update = url.Link(Constants.RouteNames.SetUsername, new { subject = user.Subject })
+                        update = url.Link(Constants.RouteNames.UpdateProperty, new { subject = user.Subject, type = p.Type }),
                     }
                 };
-            } 
-            
-            if (meta.SupportsPassword)
+            this["Properties"] = new Resource
             {
-                this["Password"] = new Resource
-                {
-                    Links = new
-                    {
-                        update = url.Link(Constants.RouteNames.SetPassword, new { subject = user.Subject })
-                    }
-                };
-            }
-
-            if (meta.SupportsEmail)
-            {
-                this["Email"] = new Resource
-                {
-                    Data = new EmailModel
-                    {
-                        Value = user.Email
-                    },
-                    Links = new
-                    {
-                        update = url.Link(Constants.RouteNames.SetEmail, new { subject = user.Subject })
-                    }
-                };
-            }
-
-            if (meta.SupportsPhone)
-            {
-                this["Phone"] = new Resource
-                {
-                    Data = new PhoneModel
-                    {
-                        Value = user.Phone
-                    },
-                    Links = new
-                    {
-                        update = url.Link(Constants.RouteNames.SetPhone, new { subject = user.Subject })
-                    }
-                };
-            }
+                Data = props.ToArray(),
+            };
 
             if (meta.SupportsClaims)
             {
@@ -104,14 +67,16 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                     select new Resource
                     {
                         Data = c,
-                        Links = new {
+                        Links = new
+                        {
                             delete = url.Link(Constants.RouteNames.RemoveClaim, new { subject = user.Subject, type = c.Type, value = c.Value })
                         }
                     };
                 this["Claims"] = new Resource
                 {
                     Data = claims.ToArray(),
-                    Links = new {
+                    Links = new
+                    {
                         create = url.Link(Constants.RouteNames.AddClaim, new { subject = user.Subject })
                     }
                 };

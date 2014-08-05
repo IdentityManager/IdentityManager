@@ -17,7 +17,12 @@ namespace Thinktecture.IdentityManager.Core
         public class ClaimTypes
         {
             public const string Subject = "sub";
+            public const string Username = "username";
             public const string Name = "name";
+            public const string Password = "password";
+            public const string Email = "email";
+            public const string Phone = "phone";
+            public const string Role = "role";
         }
 
         public const string RoutePrefix = "api";
@@ -32,10 +37,7 @@ namespace Thinktecture.IdentityManager.Core
             public const string CreateUser = "CreateUser";
             public const string DeleteUser = "DeleteUser";
 
-            public const string SetUsername = "SetUsername";
-            public const string SetPassword = "SetPassword";
-            public const string SetEmail = "SetEmail";
-            public const string SetPhone = "SetPhone";
+            public const string UpdateProperty = "UpdateProperty";
 
             public const string AddClaim = "AddClaim";
             public const string RemoveClaim = "RemoveClaim";

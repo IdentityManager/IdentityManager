@@ -3,6 +3,7 @@
  * see license
  */
 using System;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
@@ -36,12 +37,17 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         {
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
         }
-        
+
         public IHttpActionResult Created(string location)
         {
             var response = Request.CreateResponse(HttpStatusCode.Created);
             response.Headers.Location = new Uri(location);
             return ResponseMessage(response);
+        }
+        
+        public IHttpActionResult Forbidden<T>(T data)
+        {
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.Forbidden, data));
         }
 
         [HttpGet, Route("", Name=Constants.RouteNames.GetUsers)]
@@ -138,36 +144,8 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
 
-        [HttpPut, Route("{subject}/username", Name = Constants.RouteNames.SetUsername)]
-        public async Task<IHttpActionResult> SetUsernameAsync(string subject, UsernameModel model)
-        {
-            if (String.IsNullOrWhiteSpace(subject))
-            {
-                ModelState["subject.String"].Errors.Clear();
-                ModelState.AddModelError("", Messages.SubjectRequired);
-            }
-            
-            if (model == null)
-            {
-                ModelState.AddModelError("", Messages.UsernameRequired);
-            }
-
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.SetUsernameAsync(subject, model.Value);
-                if (result.IsSuccess)
-                {
-                    return NoContent();
-                }
-
-                ModelState.AddErrors(result);
-            }
-
-            return BadRequest(ModelState.ToError());
-        }
-
-        [HttpPut, Route("{subject}/password", Name = Constants.RouteNames.SetPassword)]
-        public async Task<IHttpActionResult> SetPasswordAsync(string subject, PasswordModel model)
+        [HttpPut, Route("{subject}/properties/{type}", Name = Constants.RouteNames.UpdateProperty)]
+        public async Task<IHttpActionResult> UpdatePropertyAsync(string subject, string type, [FromBody] string value)
         {
             if (String.IsNullOrWhiteSpace(subject))
             {
@@ -175,70 +153,21 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 ModelState.AddModelError("", Messages.SubjectRequired);
             }
 
-            if (model == null)
+            var meta = await this.userManager.GetMetadataAsync();
+            var prop = meta.UserMetadata.Properties.SingleOrDefault(x => x.Type == type);
+            if (prop == null)
             {
-                ModelState.AddModelError("", Messages.PasswordDataRequired);
+                ModelState.AddModelError("", String.Format(Messages.PropertyInvalid, type));
+                return Forbidden(ModelState.ToError());
+            }
+            else if (prop.Required && String.IsNullOrWhiteSpace(value))
+            {
+                ModelState.AddModelError("", String.Format(Messages.PropertyRequired, prop.Name));
             }
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.SetPasswordAsync(subject, model.Value);
-                if (result.IsSuccess)
-                {
-                    return NoContent();
-                }
-
-                ModelState.AddErrors(result);
-            }
-
-            return BadRequest(ModelState.ToError());
-        }
-        
-        [HttpPut, Route("{subject}/email", Name = Constants.RouteNames.SetEmail)]
-        public async Task<IHttpActionResult> SetEmailAsync(string subject, EmailModel model)
-        {
-            if (String.IsNullOrWhiteSpace(subject))
-            {
-                ModelState["subject.String"].Errors.Clear();
-                ModelState.AddModelError("", Messages.SubjectRequired);
-            }
-            
-            if (model == null)
-            {
-                ModelState.AddModelError("", Messages.EmailDataRequired);
-            }
-
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.SetEmailAsync(subject, model.Value);
-                if (result.IsSuccess)
-                {
-                    return NoContent();
-                }
-
-                ModelState.AddErrors(result);
-            }
-
-            return BadRequest(ModelState.ToError());
-        }
-
-        [HttpPut, Route("{subject}/phone", Name = Constants.RouteNames.SetPhone)]
-        public async Task<IHttpActionResult> SetPhoneAsync(string subject, PhoneModel model)
-        {
-            if (String.IsNullOrWhiteSpace(subject))
-            {
-                ModelState["subject.String"].Errors.Clear();
-                ModelState.AddModelError("", Messages.SubjectRequired);
-            }
-            
-            if (model == null)
-            {
-                ModelState.AddModelError("", Messages.PhoneDataRequired);
-            }
-
-            if (ModelState.IsValid)
-            {
-                var result = await this.userManager.SetPhoneAsync(subject, model.Value);
+                var result = await this.userManager.SetPropertyAsync(subject, type, value);
                 if (result.IsSuccess)
                 {
                     return NoContent();

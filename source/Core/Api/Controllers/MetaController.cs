@@ -42,7 +42,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             var resource = new Resource
             {
                 Data = new {
-                    metadata = meta,
+                    //metadata = meta,
                     currentUser = new
                     {
                         username = User.Identity.Name

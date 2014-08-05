@@ -25,26 +25,49 @@ namespace Thinktecture.IdentityManager.Host
         {
             return Task.FromResult(new IdentityManagerMetadata()
             {
-                UserMetadata = new UserMetadata {
+                UserMetadata = new UserMetadata
+                {
                     SupportsCreate = true,
                     SupportsDelete = true,
-                    
-                    SupportsUsername = true,
-                    SupportsPassword = true,
-                    SupportsEmail = true,
-                    SupportsPhone = true,
-                    SupportsClaims = true,
-
-                    RequiredProperties = new PropertyMetadata[] { 
-                        new PropertyMetadata{
-                            Identifier = "first",
-                            DisplayName = "First Name",
-                            DataType = ClaimDataType.String,
+                    Properties = new HashSet<PropertyMetadata>
+                    {
+                        new PropertyMetadata {
+                            Name = "Username",
+                            Type = Constants.ClaimTypes.Username,
+                            Required = true,
                         },
-                        new PropertyMetadata{
-                            Identifier = "first",
-                            DisplayName = "Last Name",
-                            DataType = ClaimDataType.String,
+                        new PropertyMetadata {
+                            Name = "Full Name",
+                            Type = Constants.ClaimTypes.Name,
+                            Required = true,
+                        },
+                        new PropertyMetadata {
+                            Name = "Password",
+                            Type = Constants.ClaimTypes.Password,
+                            DataType = PropertyDataType.Password,
+                            Required = true,
+                        },
+                        new PropertyMetadata {
+                            Name = "Email",
+                            Type = Constants.ClaimTypes.Email,
+                            DataType = PropertyDataType.Email,
+                        },
+                        new PropertyMetadata {
+                            Name = "Phone",
+                            Type = Constants.ClaimTypes.Phone,
+                        },
+                        new PropertyMetadata {
+                            Name = "Is Administrator",
+                            Type = "role.admin",
+                            DataType = PropertyDataType.Boolean
+                        },
+                        new PropertyMetadata {
+                            Name = "First Name",
+                            Type = "first",
+                        },
+                        new PropertyMetadata {
+                            Name = "Last Name",
+                            Type = "last",
                         },
                     }
                 }
@@ -53,7 +76,7 @@ namespace Thinktecture.IdentityManager.Host
 
         public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password)
         {
-            string[] errors = ValidatePassword(password);
+            string[] errors = ValidateProperty(Constants.ClaimTypes.Password, password);
             if (errors != null)
             {
                 return Task.FromResult(new IdentityManagerResult<CreateResult>(errors));
@@ -69,22 +92,9 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult() { Subject = user.Subject }));
         }
 
-        private string[] ValidatePassword(string password)
-        {
-            if (String.IsNullOrWhiteSpace(password))
-            {
-                return new string[] { "Password required" };
-            }
-            if(password.Length < 3)
-            {
-                return new string[] { "Password must have at least 3 characters" };
-            }
-            return null;
-        }
-
         public System.Threading.Tasks.Task<IdentityManagerResult> DeleteUserAsync(string subject)
         {
-            var user = users.SingleOrDefault(x=>x.Subject == subject);
+            var user = users.SingleOrDefault(x => x.Subject == subject);
             if (user != null)
             {
                 users.Remove(user);
@@ -100,31 +110,32 @@ namespace Thinktecture.IdentityManager.Host
             if (!String.IsNullOrWhiteSpace(filter))
             {
                 filter = filter.ToLower();
-                query = 
+                query =
                     from u in query
                     let name = (from c in u.Claims where c.Type == "name" select c.Value).SingleOrDefault()
-                    where 
+                    where
                         u.Username.ToLower().Contains(filter) ||
                         (name != null && name.ToLower().Contains(filter))
                     select u;
             }
 
-            var userResults = 
+            var userResults =
                 from u in query.Distinct()
                 select new UserResult
                 {
-                    Subject = u.Subject, 
+                    Subject = u.Subject,
                     Username = u.Username,
-                    DisplayName = u.Claims.Where(x => x.Type == "name").Select(x => x.Value).FirstOrDefault(),
+                    Name = u.Claims.Where(x => x.Type == "name").Select(x => x.Value).FirstOrDefault(),
                 };
 
             var result = userResults.Skip(start).Take(count);
-            return Task.FromResult(new IdentityManagerResult<QueryResult>(new QueryResult { 
+            return Task.FromResult(new IdentityManagerResult<QueryResult>(new QueryResult
+            {
                 Filter = filter,
-                Start = start, 
-                Count = result.Count(), 
+                Start = start,
+                Count = result.Count(),
                 Users = result,
-                Total = userResults.Count(), 
+                Total = userResults.Count(),
             }));
         }
 
@@ -136,18 +147,30 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult<UserDetail>((UserDetail)null));
             }
 
+            var props = new List<UserClaim>()
+            {
+                new UserClaim{Type=Constants.ClaimTypes.Username, Value=user.Username},
+                new UserClaim{Type=Constants.ClaimTypes.Name, Value=user.Claims.Where(x=>x.Type==Constants.ClaimTypes.Name).Select(x=>x.Value).SingleOrDefault()},
+                new UserClaim{Type=Constants.ClaimTypes.Password, Value=""},
+                new UserClaim{Type=Constants.ClaimTypes.Email, Value=user.Email},
+                new UserClaim{Type=Constants.ClaimTypes.Phone, Value=user.Mobile},
+                new UserClaim{Type="role.admin", Value=user.Claims.Any(x=>x.Type == Constants.ClaimTypes.Role && x.Value== "Admin").ToString().ToLower()},
+                new UserClaim{Type="first", Value=user.FirstName},
+                new UserClaim{Type="last", Value=user.LastName},
+            };
+            var claims = user.Claims.Where(x=>!(x.Type == Constants.ClaimTypes.Role && x.Value == "Admin")).Select(x => new UserClaim { Type = x.Type, Value = x.Value });
+
             return Task.FromResult(new IdentityManagerResult<UserDetail>(new UserDetail
             {
                 Subject = user.Subject,
                 Username = user.Username,
-                DisplayName = user.Claims.Where(x=>x.Type=="name").Select(x=>x.Value).FirstOrDefault(),
-                Email = user.Email,
-                Phone = user.Mobile,
-                Claims = user.Claims.Select(x => new UserClaim { Type = x.Type, Value = x.Value })
+                Name = user.Claims.Where(x => x.Type == Constants.ClaimTypes.Name).Select(x => x.Value).SingleOrDefault(),
+                Properties = props,
+                Claims = claims
             }));
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult> SetUsernameAsync(string subject, string username)
+        public System.Threading.Tasks.Task<IdentityManagerResult> SetPropertyAsync(string subject, string type, string value)
         {
             var user = users.SingleOrDefault(x => x.Subject == subject);
             if (user == null)
@@ -155,54 +178,78 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult("No user found"));
             }
 
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                return Task.FromResult(new IdentityManagerResult("Username is required"));
-            }
-
-            user.Username = username;
-            return Task.FromResult(IdentityManagerResult.Success);
-        }
-        
-        public System.Threading.Tasks.Task<IdentityManagerResult> SetPasswordAsync(string subject, string password)
-        {
-            var errors = ValidatePassword(password);
+            var errors = ValidateProperty(type, value);
             if (errors != null)
             {
                 return Task.FromResult(new IdentityManagerResult(errors));
             }
-            var user = users.SingleOrDefault(x => x.Subject == subject);
-            if (user == null)
+
+            switch(type)
             {
-                return Task.FromResult(new IdentityManagerResult("No user found"));
+                case Constants.ClaimTypes.Name:
+                    {
+                        var claim = user.Claims.SingleOrDefault(x => x.Type == Constants.ClaimTypes.Name);
+                        if (claim != null)
+                        {
+                            user.Claims.Remove(claim);
+                        }
+                        user.Claims.Add(new Claim(Constants.ClaimTypes.Name, value));
+                    }
+                    break;
+                case Constants.ClaimTypes.Password:
+                    user.Password = value;
+                    break;
+                case Constants.ClaimTypes.Email:
+                    user.Email = value;
+                    break;
+                case Constants.ClaimTypes.Phone:
+                    user.Mobile = value;
+                    break;
+                case "role.admin":
+                    {
+                        var val = Boolean.Parse(value);
+                        var claim = user.Claims.SingleOrDefault(x => x.Type == Constants.ClaimTypes.Role && x.Value == "Admin");
+                        if (val && claim == null)
+                        {
+                            user.Claims.Add(new Claim(claim.Type, value));
+                        }
+                        else if (!val && claim != null)
+                        {
+                            user.Claims.Remove(claim);
+                        }
+                    }
+                    break;
+                case "first":
+                    user.FirstName = value;
+                    break;
+                case "last":
+                    user.LastName = value;
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid Property Type");
             }
 
-            user.Password = password;
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult> SetEmailAsync(string subject, string email)
+        private string[] ValidateProperty(string type, string value)
         {
-            var user = users.SingleOrDefault(x => x.Subject == subject);
-            if (user == null)
+            switch (type)
             {
-                return Task.FromResult(new IdentityManagerResult("No user found"));
-            }
-
-            user.Email = email;
-            return Task.FromResult(IdentityManagerResult.Success);
-        }
-
-        public System.Threading.Tasks.Task<IdentityManagerResult> SetPhoneAsync(string subject, string phone)
-        {
-            var user = users.SingleOrDefault(x => x.Subject == subject);
-            if (user == null)
-            {
-                return Task.FromResult(new IdentityManagerResult("No user found"));
-            }
-
-            user.Mobile = phone;
-            return Task.FromResult(IdentityManagerResult.Success);
+                case ClaimTypes.CookiePath:
+                    {
+                        if (String.IsNullOrWhiteSpace(value))
+                        {
+                            return new string[] { "Password required" };
+                        }
+                        if (value.Length < 3)
+                        {
+                            return new string[] { "Password must have at least 3 characters" };
+                        }
+                    }
+                    break;
+            } 
+            return null;
         }
 
         public System.Threading.Tasks.Task<IdentityManagerResult> AddClaimAsync(string subject, string type, string value)
@@ -231,7 +278,7 @@ namespace Thinktecture.IdentityManager.Host
             }
 
             var claims = user.Claims.Where(x => x.Type == type && x.Value == value);
-            foreach(var claim in claims.ToArray())
+            foreach (var claim in claims.ToArray())
             {
                 user.Claims.Remove(claim);
             }

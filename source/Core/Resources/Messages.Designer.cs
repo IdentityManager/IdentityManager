@@ -160,6 +160,24 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is not a known property..
+        /// </summary>
+        public static string PropertyInvalid {
+            get {
+                return ResourceManager.GetString("PropertyInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is required..
+        /// </summary>
+        public static string PropertyRequired {
+            get {
+                return ResourceManager.GetString("PropertyRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Subject is required..
         /// </summary>
         public static string SubjectRequired {

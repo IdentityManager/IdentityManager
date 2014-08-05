@@ -27,6 +27,7 @@ namespace Thinktecture.IdentityManager.Host
                         new Claim("name", "Alice Smith"),
                         new Claim("department", "sales"),
                         new Claim("role", "employee"),
+                        new Claim("role", "admin"),
                         new Claim("role", "manager"),
                     }
                 },

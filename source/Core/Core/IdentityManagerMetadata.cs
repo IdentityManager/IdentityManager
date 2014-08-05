@@ -20,18 +20,15 @@ namespace Thinktecture.IdentityManager.Core
     {
         public UserMetadata()
         {
-            this.RequiredProperties = new HashSet<PropertyMetadata>();
+            this.Properties = new HashSet<PropertyMetadata>();
         }
 
         public bool SupportsCreate { get; set; }
         public bool SupportsDelete { get; set; }
 
-        public bool SupportsUsername { get; set; }
-        public bool SupportsPassword { get; set; }
-        public bool SupportsEmail { get; set; }
-        public bool SupportsPhone { get; set; }
+        public bool SupportsRoles { get; set; }
         public bool SupportsClaims { get; set; }
 
-        public ICollection<PropertyMetadata> RequiredProperties { get; set; }
+        public ICollection<PropertyMetadata> Properties { get; set; }
     }
 }

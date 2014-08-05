@@ -10,6 +10,6 @@ namespace Thinktecture.IdentityManager.Core
     {
         public string Subject { get; set; }
         public string Username { get; set; }
-        public string DisplayName { get; set; }
+        public string Name { get; set; }
     }
 }
