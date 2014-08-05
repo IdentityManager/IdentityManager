@@ -144,12 +144,7 @@
         $scope.model = {
         };
 
-        $scope.create = function (username, password, confirm) {
-            if (password !== confirm) {
-                feedback.errors = "Password and Confirm do not match.";
-                return;
-            }
-
+        $scope.create = function (username, password) {
             idmUsers.createUser(username, password)
                 .then(function (result) {
                     $scope.model.last = result;

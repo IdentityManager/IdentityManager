@@ -16,7 +16,8 @@
                        id="confirm_{{property.meta.type}}"
                        placeholder="Confirm {{property.meta.name}}"
                        required
-                       ng-model="confirm">
+                       ng-model="confirm"
+                       tt-match="property.data">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
         </div>
@@ -28,8 +29,7 @@
                        id="{{property.meta.type}}"
                        placeholder="{{property.meta.name}}"
                        ng-model="property.data"
-                       ng-required="property.meta.required"
-                       tt-confirm="property.data">
+                       ng-required="property.meta.required">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
         </div>

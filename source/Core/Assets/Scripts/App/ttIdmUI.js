@@ -4,17 +4,30 @@
 (function (angular) {
     var app = angular.module("ttIdmUI", []);
 
-    function ttConfirm() {
+    function ttMatch() {
         return {
             restrict: 'A',
             require: 'ngModel',
             link: function (scope, elem, attrs, ctrl) {
-                console.log(ctrl);
+                function check() {
+                    if (elem.val() === scope.$eval(attrs.ttMatch)) {
+                        ctrl.$setValidity('ttMatch', true);
+                    }
+                    else {
+                        ctrl.$setValidity('ttMatch', false);
+                    }
+                }
+                elem.on("input", function () {
+                    check();
+                });
+                scope.$watch(attrs.ttMatch, function (val) {
+                    check();
+                });
             }
         }
     }
-    ttConfirm.$inject = [];
-    app.directive("ttConfirm", ttConfirm);
+    ttMatch.$inject = [];
+    app.directive("ttMatch", ttMatch);
 
     function ttPropertyEditor(PathBase){
         return {
