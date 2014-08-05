@@ -1,36 +1,36 @@
 ﻿<form class="form-inline" ng-submit="setProperty(property)" name="form">
-    <div class="col-sm-12" ng-show="property.meta.dataType != 1">
-        <div class="form-group">
-            <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
-            <input type="text"
-                   class="form-control user-edit-wide"
-                   id="{{property.meta.type}}"
-                   placeholder="{{property.meta.name}}"
-                   ng-model="property.data"
-                   ng-required="property.meta.required">
+    <div ng-switch on="property.meta.dataType" class="col-sm-12">
+        <div ng-switch-when="1">
+            <div class="form-group">
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
+                <input type="password"
+                       class="form-control user-edit-regular"
+                       id="{{property.meta.type}}"
+                       placeholder="{{property.meta.name}}"
+                       required
+                       ng-model="property.data">
+            </div>
+            <div class="form-group">
+                <input type="password"
+                       class="form-control user-edit-regular"
+                       id="confirm_{{property.meta.type}}"
+                       placeholder="Confirm {{property.meta.name}}"
+                       required
+                       ng-model="confirm">
+            </div>
+            <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
         </div>
-        <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
+        <div ng-switch-default>
+            <div class="form-group">
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
+                <input type="text"
+                       class="form-control user-edit-wide"
+                       id="{{property.meta.type}}"
+                       placeholder="{{property.meta.name}}"
+                       ng-model="property.data"
+                       ng-required="property.meta.required">
+            </div>
+            <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
+        </div>
     </div>
-    <!--<div class="col-sm-12" ng-show="property.meta.dataType == 1">
-        <div class="form-group">
-            <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
-            <input type="password"
-                   class="form-control user-edit-regular"
-                   id="{{property.meta.type}}"
-                   placeholder="{{property.meta.name}}"
-                   required
-                   ng-model="property.data">
-        </div>
-        <div class="form-group">
-            <input type="password"
-                   class="form-control user-edit-regular"
-                   id="confirm_{{property.meta.type}}"
-                   placeholder="Confirm {{property.meta.name}}"
-                   required
-                   ng-model="confirm">
-        </div>
-        <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
-    </div>-->
 </form>
-
-
