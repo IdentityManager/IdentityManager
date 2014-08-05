@@ -9,9 +9,9 @@
                    ng-model="property.data"
                    ng-required="property.meta.required">
         </div>
-        <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
     </div>
-    <div class="col-sm-12" ng-show="property.meta.dataType == 1">
+    <!--<div class="col-sm-12" ng-show="property.meta.dataType == 1">
         <div class="form-group">
             <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
             <input type="password"
@@ -24,13 +24,13 @@
         <div class="form-group">
             <input type="password"
                    class="form-control user-edit-regular"
-                   id="confirm"
+                   id="confirm_{{property.meta.type}}"
                    placeholder="Confirm {{property.meta.name}}"
                    required
                    ng-model="confirm">
         </div>
         <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
-    </div>
+    </div>-->
 </form>
 
 

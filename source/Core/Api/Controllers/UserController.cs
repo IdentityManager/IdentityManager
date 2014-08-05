@@ -145,13 +145,15 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [HttpPut, Route("{subject}/properties/{type}", Name = Constants.RouteNames.UpdateProperty)]
-        public async Task<IHttpActionResult> UpdatePropertyAsync(string subject, string type, [FromBody] string value)
+        public async Task<IHttpActionResult> SetPropertyAsync(string subject, string type)
         {
             if (String.IsNullOrWhiteSpace(subject))
             {
                 ModelState["subject.String"].Errors.Clear();
                 ModelState.AddModelError("", Messages.SubjectRequired);
             }
+
+            string value = await Request.Content.ReadAsStringAsync();
 
             var meta = await this.userManager.GetMetadataAsync();
             var prop = meta.UserMetadata.Properties.SingleOrDefault(x => x.Type == type);

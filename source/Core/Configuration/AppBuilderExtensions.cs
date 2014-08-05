@@ -4,6 +4,7 @@
  */
 
 using System;
+using Microsoft.Owin;
 using System.Linq;
 using Thinktecture.IdentityManager;
 using Microsoft.Owin.Extensions;
@@ -57,6 +58,7 @@ namespace Owin
             var httpConfig = new HttpConfiguration();
             WebApiConfig.Configure(httpConfig, config);
             app.UseWebApi(httpConfig);
+            app.UseStageMarker(PipelineStage.MapHandler);
         }
     }
 }

@@ -313,9 +313,9 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 };
             }
 
-            svc.updateProperty = function (property) {
+            svc.setProperty = function (property) {
                 return $http.put(property.links.update, property.data)
-                    .then(nop, errorHandler("Error Setting Password"));
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };
 
             if (idmApi.data.metadata.userMetadata.supportsClaims) {
@@ -354,7 +354,8 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             templateUrl: PathBase + '/assets/Templates.editor.property.html',
             replace: true,
             scope: {
-                property: '='
+                property: '=',
+                setProperty: '=setProperty'
             },
             link: function (scope, elem, attrs, ctrl) {
             }

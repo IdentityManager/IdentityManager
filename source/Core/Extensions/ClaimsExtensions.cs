@@ -82,7 +82,7 @@ namespace System.Security.Claims
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
             if (String.IsNullOrWhiteSpace(value)) throw new ArgumentNullException("value");
 
-            var claim = claims.SingleOrDefault(x => x.Type == type);
+            var claim = claims.SingleOrDefault(x => x.Type == type && x.Value == value);
             if (claim != null)
             {
                 claims.Remove(claim);

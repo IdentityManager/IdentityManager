@@ -10,7 +10,8 @@
             templateUrl: PathBase + '/assets/Templates.editor.property.html',
             replace: true,
             scope: {
-                property: '='
+                property: '=',
+                setProperty: '=setProperty'
             },
             link: function (scope, elem, attrs, ctrl) {
             }

@@ -58,9 +58,9 @@
                 };
             }
 
-            svc.updateProperty = function (property) {
+            svc.setProperty = function (property) {
                 return $http.put(property.links.update, property.data)
-                    .then(nop, errorHandler("Error Setting Password"));
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };
 
             if (idmApi.data.metadata.userMetadata.supportsClaims) {

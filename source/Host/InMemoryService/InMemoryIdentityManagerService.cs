@@ -155,11 +155,11 @@ namespace Thinktecture.IdentityManager.Host
                 new UserClaim{Type=Constants.ClaimTypes.Password, Value=""},
                 new UserClaim{Type=Constants.ClaimTypes.Email, Value=user.Email},
                 new UserClaim{Type=Constants.ClaimTypes.Phone, Value=user.Mobile},
-                new UserClaim{Type="role.admin", Value=user.Claims.HasValue(Constants.ClaimTypes.Role, "Admin").ToString().ToLower()},
+                new UserClaim{Type="role.admin", Value=user.Claims.HasValue(Constants.ClaimTypes.Role, "admin").ToString().ToLower()},
                 new UserClaim{Type="first", Value=user.FirstName},
                 new UserClaim{Type="last", Value=user.LastName},
             };
-            var claims = user.Claims.Where(x=>!(x.Type == Constants.ClaimTypes.Role && x.Value == "Admin")).Select(x => new UserClaim { Type = x.Type, Value = x.Value });
+            var claims = user.Claims.Where(x=>!(x.Type == Constants.ClaimTypes.Role && x.Value == "admin")).Select(x => new UserClaim { Type = x.Type, Value = x.Value });
 
             return Task.FromResult(new IdentityManagerResult<UserDetail>(new UserDetail
             {
@@ -187,6 +187,9 @@ namespace Thinktecture.IdentityManager.Host
 
             switch(type)
             {
+                case Constants.ClaimTypes.Username:
+                    user.Username = value;
+                    break;
                 case Constants.ClaimTypes.Name:
                     {
                         user.Claims.SetValue(Constants.ClaimTypes.Name, value);
