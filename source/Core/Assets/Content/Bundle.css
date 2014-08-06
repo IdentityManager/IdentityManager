@@ -5861,4 +5861,8 @@ form label.column {
 .ng-hide {
   display: none !important;
 }
+.form-group label input[type="checkbox"] {
+  position: relative;
+  left: 44px;
+}
 

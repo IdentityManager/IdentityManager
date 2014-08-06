@@ -12,11 +12,11 @@ namespace Thinktecture.IdentityManager.Core
 {
     public enum PropertyDataType
     {
-        String,
-        Password,
-        Email,
-        Url,
-        Number,
-        Boolean,
+        String = 0,
+        Password = 1,
+        Email = 2,
+        Url = 3,
+        Number = 4,
+        Boolean = 5,
     }
 }

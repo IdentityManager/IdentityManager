@@ -715,7 +715,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 
         $scope.setProperty = function (property) {
             idmUsers.setProperty(property)
-                .then(feedback.createMessageHandler(property.meta.name + " Changed"), feedback.errorHandler);
+                .then(feedback.createMessageHandler(property.meta.name + " Changed to: " + property.data), feedback.errorHandler);
         };
 
         $scope.addClaim = function (claims, claim) {

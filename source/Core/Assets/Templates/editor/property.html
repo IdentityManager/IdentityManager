@@ -21,6 +21,20 @@
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
         </div>
+        <div ng-switch-when="5">
+            <div class="form-group">
+                <label for="{{property.meta.type}}" class="column">
+                    {{property.meta.name}}
+                    <input type="checkbox"
+                           class="user-edit-regular"
+                           id="{{property.meta.type}}"
+                           ng-model="property.data"
+                           ng-true-value="'true'"
+                           ng-false-value="'false'"
+                           ng-change="setProperty(property)">
+                </label>
+            </div>
+        </div>
         <div ng-switch-default>
             <div class="form-group">
                 <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
