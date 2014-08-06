@@ -6,7 +6,7 @@
     <div class="col-sm-6">
         <idm-message message="feedback"></idm-message>
 
-        <form class="form" ng-submit="create(uid, pwd)" name="form">
+        <form class="form" ng-submit="create(uid, pwd)" name="form" ng-show="create">
             <div class="form-group">
                 <label for="uid">Username</label>
                 <input type="text" id="uid" class="form-control" ng-model="uid" autofocus required>

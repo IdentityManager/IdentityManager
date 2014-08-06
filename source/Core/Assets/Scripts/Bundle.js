@@ -671,22 +671,24 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     ListUsersCtrl.$inject = ["$scope", "idmUsers", "idmPager", "$routeParams", "$location"];
     app.controller("ListUsersCtrl", ListUsersCtrl);
 
-    function NewUserCtrl($scope, idmUsers) {
+    function NewUserCtrl($scope, idmUsers, idmApi) {
         var feedback = new Feedback();
         $scope.feedback = feedback;
-
-        $scope.model = {
-        };
-
-        $scope.create = function (username, password) {
-            idmUsers.createUser(username, password)
-                .then(function (result) {
-                    $scope.model.last = result;
-                    feedback.message = "Create Success";
-                }, feedback.errorHandler);
-        };
+        if (!idmApi.data.metadata.userMetadata.supportsCreate) {
+            feedback.errors = "Create Not Supported";
+            return;
+        }
+        else {
+            $scope.create = function (username, password) {
+                idmUsers.createUser(username, password)
+                    .then(function (result) {
+                        $scope.model.last = result;
+                        feedback.message = "Create Success";
+                    }, feedback.errorHandler);
+            };
+        }
     }
-    NewUserCtrl.$inject = ["$scope", "idmUsers"];
+    NewUserCtrl.$inject = ["$scope", "idmUsers", "idmApi"];
     app.controller("NewUserCtrl", NewUserCtrl);
 
     function EditUserCtrl($scope, idmUsers, $routeParams) {
