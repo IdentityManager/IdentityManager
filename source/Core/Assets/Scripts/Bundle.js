@@ -687,7 +687,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 }).map(function(item){
                     return {
                         meta : item,
-                        data : undefined
+                        data : item.dataType === 5 ? false : undefined
                     };
                 });
             $scope.properties = required;

@@ -17,23 +17,37 @@
             </div>
             <div class="form-group">
                 <label for="confirm">Confirm Password</label>
-                <input type="password" id="confirm" 
-                       class="form-control" ng-model="confirm" 
+                <input type="password" id="confirm"
+                       class="form-control" ng-model="confirm"
                        required tt-match="pwd">
             </div>
             <div class="form-group" ng-repeat="property in properties">
-                <label for="{{property.meta.type}}">{{property.meta.name}}</label>
-                <input type="text"
-                       id="{{property.meta.type}}"
-                       class="form-control"
-                       required
-                       ng-model="property.data">
+                <div ng-switch on="property.meta.dataType">
+                    <div ng-switch-when="5">
+                        <label for="{{property.meta.type}}">
+                            {{property.meta.name}}
+                            <input type="checkbox"
+                                   id="{{property.meta.type}}"
+                                   ng-true-value="'true'"
+                                   ng-false-value="'false'"
+                                   ng-model="property.data">
+                        </label>
+                    </div>
+                    <div ng-switch-default>
+                        <label for="{{property.meta.type}}">{{property.meta.name}}</label>
+                        <input type="text"
+                               id="{{property.meta.type}}"
+                               class="form-control"
+                               required
+                               ng-model="property.data">
+                    </div>
+                </div>
             </div>
             <div>
                 <button class="btn btn-primary" ng-disabled="form.$invalid">Create</button>
                 <a ng-show="model.last"
-                    class="btn btn-default"
-                    href="#/users/edit/{{model.last.data.subject}}">Edit User {{model.last.data.subject}}</a>
+                   class="btn btn-default"
+                   href="#/users/edit/{{model.last.data.subject}}">Edit User {{model.last.data.subject}}</a>
             </div>
         </form>
     </div>

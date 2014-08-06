@@ -153,7 +153,7 @@
                 }).map(function(item){
                     return {
                         meta : item,
-                        data : undefined
+                        data : item.dataType === 5 ? false : undefined
                     };
                 });
             $scope.properties = required;

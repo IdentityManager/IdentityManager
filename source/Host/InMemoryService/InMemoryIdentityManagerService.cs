@@ -52,12 +52,10 @@ namespace Thinktecture.IdentityManager.Host
                             Name = "Email",
                             Type = Constants.ClaimTypes.Email,
                             DataType = PropertyDataType.Email,
-                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Phone",
                             Type = Constants.ClaimTypes.Phone,
-                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Is Administrator",
@@ -68,18 +66,15 @@ namespace Thinktecture.IdentityManager.Host
                         new PropertyMetadata {
                             Name = "First Name",
                             Type = "first",
-                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Last Name",
                             Type = "last",
-                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Gravatar Url",
                             Type = "gravatar",
                             DataType = PropertyDataType.Url,
-                            Required = true,
                         },
                     }
                 }
