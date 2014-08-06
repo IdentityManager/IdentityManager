@@ -1,6 +1,7 @@
 ﻿<div class="page-header">
     <h1>
         Edit User <span ng-show="user.data.name">: {{user.data.name}}</span>
+        <span ng-show="!user.data.name && user.data.username">: {{user.data.username}}</span>
         <small class="subject">{{user.data.subject}}</small>
     </h1>
 </div>

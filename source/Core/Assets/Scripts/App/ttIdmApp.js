@@ -181,7 +181,10 @@
 
         $scope.setProperty = function (property) {
             idmUsers.setProperty(property)
-                .then(feedback.createMessageHandler(property.meta.name + " Changed to: " + property.data), feedback.errorHandler);
+                .then(function () {
+                    feedback.message = property.meta.name + " Changed to: " + property.data;
+                    loadUser();
+                }, feedback.errorHandler);
         };
 
         $scope.addClaim = function (claims, claim) {

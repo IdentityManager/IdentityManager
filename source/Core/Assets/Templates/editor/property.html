@@ -2,7 +2,7 @@
     <div ng-switch on="property.meta.dataType" class="col-sm-12">
         <div ng-switch-when="1">
             <div class="form-group">
-                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
                 <input type="password"
                        class="form-control user-edit-regular"
                        id="{{property.meta.type}}"
@@ -25,6 +25,7 @@
             <div class="form-group">
                 <label for="{{property.meta.type}}" class="column">
                     {{property.meta.name}}
+                    <span ng-show="property.meta.required">*</span>
                     <input type="checkbox"
                            class="user-edit-regular"
                            id="{{property.meta.type}}"
@@ -37,7 +38,7 @@
         </div>
         <div ng-switch-default>
             <div class="form-group">
-                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
                 <input type="text"
                        class="form-control user-edit-wide"
                        id="{{property.meta.type}}"
