@@ -115,11 +115,38 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value is not a valid boolen..
+        /// </summary>
+        public static string InvalidBoolean {
+            get {
+                return ResourceManager.GetString("InvalidBoolean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The email must be in a valid format..
         /// </summary>
         public static string InvalidEmail {
             get {
                 return ResourceManager.GetString("InvalidEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value is not a valid number..
+        /// </summary>
+        public static string InvalidNumber {
+            get {
+                return ResourceManager.GetString("InvalidNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value is not a valid URL..
+        /// </summary>
+        public static string InvalidUrl {
+            get {
+                return ResourceManager.GetString("InvalidUrl", resourceCulture);
             }
         }
         

@@ -135,8 +135,17 @@
   <data name="EmailRequired" xml:space="preserve">
     <value>Email is required.</value>
   </data>
+  <data name="InvalidBoolean" xml:space="preserve">
+    <value>The value is not a valid boolen.</value>
+  </data>
   <data name="InvalidEmail" xml:space="preserve">
     <value>The email must be in a valid format.</value>
+  </data>
+  <data name="InvalidNumber" xml:space="preserve">
+    <value>The value is not a valid number.</value>
+  </data>
+  <data name="InvalidUrl" xml:space="preserve">
+    <value>The value is not a valid URL.</value>
   </data>
   <data name="PasswordDataRequired" xml:space="preserve">
     <value>Password data required.</value>

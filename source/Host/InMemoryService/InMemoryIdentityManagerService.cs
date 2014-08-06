@@ -70,6 +70,11 @@ namespace Thinktecture.IdentityManager.Host
                             Name = "Last Name",
                             Type = "last",
                         },
+                        new PropertyMetadata {
+                            Name = "Gravatar Url",
+                            Type = "gravatar",
+                            DataType = PropertyDataType.Url
+                        },
                     }
                 }
             });
@@ -158,6 +163,7 @@ namespace Thinktecture.IdentityManager.Host
                 new UserClaim{Type="role.admin", Value=user.Claims.HasValue(Constants.ClaimTypes.Role, "admin").ToString().ToLower()},
                 new UserClaim{Type="first", Value=user.FirstName},
                 new UserClaim{Type="last", Value=user.LastName},
+                new UserClaim{Type="gravatar", Value=user.Claims.GetValue("gravatar")},
             };
             var claims = user.Claims.Where(x=>!(x.Type == Constants.ClaimTypes.Role && x.Value == "admin")).Select(x => new UserClaim { Type = x.Type, Value = x.Value });
 
@@ -222,6 +228,11 @@ namespace Thinktecture.IdentityManager.Host
                     break;
                 case "last":
                     user.LastName = value;
+                    break;
+                case "gravatar":
+                    {
+                        user.Claims.SetValue("gravatar", value);
+                    }
                     break;
                 default:
                     throw new InvalidOperationException("Invalid Property Type");
