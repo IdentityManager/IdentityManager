@@ -17,7 +17,9 @@
             </div>
             <div class="form-group">
                 <label for="confirm">Confirm Password</label>
-                <input type="password" id="confirm" class="form-control" ng-model="confirm" required>
+                <input type="password" id="confirm" 
+                       class="form-control" ng-model="confirm" 
+                       required tt-match="pwd">
             </div>
             <div>
                 <button class="btn btn-primary" ng-disabled="form.$invalid">Create</button>
