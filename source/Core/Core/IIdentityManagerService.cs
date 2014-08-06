@@ -2,6 +2,7 @@
  * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
  * see license
  */
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Thinktecture.IdentityManager.Core
@@ -10,7 +11,7 @@ namespace Thinktecture.IdentityManager.Core
     {
         Task<IdentityManagerMetadata> GetMetadataAsync();
         
-        Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password);
+        Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password, IEnumerable<UserClaim> properties = null);
         Task<IdentityManagerResult> DeleteUserAsync(string subject);
         
         Task<IdentityManagerResult<QueryResult>> QueryUsersAsync(string filter, int start, int count);

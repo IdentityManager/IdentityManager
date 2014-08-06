@@ -78,9 +78,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 ModelState.AddModelError("", Messages.UserDataRequired);
             }
 
+            ValidateProperties(meta.UserMetadata, model.Properties);
+
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.CreateUserAsync(model.Username, model.Password);
+                var claims = model.Properties.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
+                var result = await this.userManager.CreateUserAsync(model.Username, model.Password, claims);
                 if (result.IsSuccess)
                 {
                     var url = Url.Link(Constants.RouteNames.GetUser, new { subject = result.Result.Subject });
@@ -183,57 +186,6 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(ModelState.ToError());
         }
 
-        private void ValidateProperty(string type, string value, UserMetadata userMetadata)
-        {
-            var prop = userMetadata.Properties.SingleOrDefault(x => x.Type == type);
-            if (prop == null)
-            {
-                ModelState.AddModelError("", String.Format(Messages.PropertyInvalid, type));
-            }
-            else if (prop.Required && String.IsNullOrWhiteSpace(value))
-            {
-                ModelState.AddModelError("", String.Format(Messages.PropertyRequired, prop.Name));
-            }
-            else if (!String.IsNullOrWhiteSpace(value))
-            {
-                if (prop.DataType == PropertyDataType.Boolean)
-                {
-                    bool val;
-                    if (!Boolean.TryParse(value, out val))
-                    {
-                        ModelState.AddModelError("", Messages.InvalidBoolean);
-                    }
-                }
-
-                if (prop.DataType == PropertyDataType.Email)
-                {
-                    if (!value.Contains("@"))
-                    {
-                        ModelState.AddModelError("", Messages.InvalidEmail);
-                    }
-                }
-
-                if (prop.DataType == PropertyDataType.Number)
-                {
-                    double d;
-                    if (!Double.TryParse(value, out d))
-                    {
-                        ModelState.AddModelError("", Messages.InvalidNumber);
-                    }
-                }
-                
-                if (prop.DataType == PropertyDataType.Url)
-                {
-                    Uri uri;
-                    if (!Uri.TryCreate(value, UriKind.Absolute, out uri) || 
-                        (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-                    {
-                        ModelState.AddModelError("", Messages.InvalidUrl);
-                    }
-                }
-            }
-        }
-
         [HttpPost, Route("{subject}/claims", Name = Constants.RouteNames.AddClaim)]
         public async Task<IHttpActionResult> AddClaimAsync(string subject, ClaimModel model)
         {
@@ -305,6 +257,89 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             }
 
             return BadRequest(result.ToError());
+        }
+        
+        private void ValidateProperties(UserMetadata userMetadata, Property[] properties)
+        {
+            if (userMetadata == null) throw new ArgumentNullException("userMetadata");
+
+            properties = properties ?? new Property[0];
+
+            var required = userMetadata.Properties
+                .Where(x => x.Required && x.Type != Constants.ClaimTypes.Username && x.Type != Constants.ClaimTypes.Password)
+                .Select(x => x.Type)
+                .ToArray();
+            var provided = properties.Select(x => x.Type).ToArray();
+            var missing = required.Except(provided);
+            if (missing.Any())
+            {
+                var types = missing.Aggregate((x, y) => x + ", " + y);
+                ModelState.AddModelError("", String.Format(Messages.MissingRequiredProperties, types));
+            }
+            
+            foreach (var property in properties)
+            {
+                ValidateProperty(property.Type, property.Value, userMetadata);
+            }
+        }
+
+        private void ValidateProperty(string type, string value, UserMetadata userMetadata)
+        {
+            if (userMetadata == null) throw new ArgumentNullException("userMetadata");
+
+            if (String.IsNullOrWhiteSpace(type))
+            {
+                ModelState.AddModelError("", Messages.PropertyTypeRequired);
+                return;
+            }
+
+            var prop = userMetadata.Properties.SingleOrDefault(x => x.Type == type);
+            if (prop == null)
+            {
+                ModelState.AddModelError("", String.Format(Messages.PropertyInvalid, type));
+            }
+            else if (prop.Required && String.IsNullOrWhiteSpace(value))
+            {
+                ModelState.AddModelError("", String.Format(Messages.PropertyRequired, prop.Name));
+            }
+            else if (!String.IsNullOrWhiteSpace(value))
+            {
+                if (prop.DataType == PropertyDataType.Boolean)
+                {
+                    bool val;
+                    if (!Boolean.TryParse(value, out val))
+                    {
+                        ModelState.AddModelError("", String.Format(Messages.InvalidBoolean, prop.Name));
+                    }
+                }
+
+                if (prop.DataType == PropertyDataType.Email)
+                {
+                    if (!value.Contains("@"))
+                    {
+                        ModelState.AddModelError("", String.Format(Messages.InvalidEmail, prop.Name));
+                    }
+                }
+
+                if (prop.DataType == PropertyDataType.Number)
+                {
+                    double d;
+                    if (!Double.TryParse(value, out d))
+                    {
+                        ModelState.AddModelError("", String.Format(Messages.InvalidNumber, prop.Name));
+                    }
+                }
+
+                if (prop.DataType == PropertyDataType.Url)
+                {
+                    Uri uri;
+                    if (!Uri.TryCreate(value, UriKind.Absolute, out uri) ||
+                        (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+                    {
+                        ModelState.AddModelError("", String.Format(Messages.InvalidUrl, prop.Name));
+                    }
+                }
+            }
         }
     }
 }

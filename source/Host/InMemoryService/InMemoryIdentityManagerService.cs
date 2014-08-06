@@ -52,40 +52,54 @@ namespace Thinktecture.IdentityManager.Host
                             Name = "Email",
                             Type = Constants.ClaimTypes.Email,
                             DataType = PropertyDataType.Email,
+                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Phone",
                             Type = Constants.ClaimTypes.Phone,
+                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Is Administrator",
                             Type = "role.admin",
-                            DataType = PropertyDataType.Boolean
+                            DataType = PropertyDataType.Boolean,
+                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "First Name",
                             Type = "first",
+                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Last Name",
                             Type = "last",
+                            Required = true,
                         },
                         new PropertyMetadata {
                             Name = "Gravatar Url",
                             Type = "gravatar",
-                            DataType = PropertyDataType.Url
+                            DataType = PropertyDataType.Url,
+                            Required = true,
                         },
                     }
                 }
             });
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password)
+        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password, IEnumerable<UserClaim> properties)
         {
-            string[] errors = ValidateProperty(Constants.ClaimTypes.Password, password);
-            if (errors != null)
+            var errors = new List<string>();
+            errors.AddRange(ValidateProperty(Constants.ClaimTypes.Username, username));
+            errors.AddRange(ValidateProperty(Constants.ClaimTypes.Password, password));
+            
+            foreach(var prop in properties)
             {
-                return Task.FromResult(new IdentityManagerResult<CreateResult>(errors));
+                errors.AddRange(ValidateProperty(prop.Type, prop.Value));
+            }
+
+            if (errors.Count > 0)
+            {
+                return Task.FromResult(new IdentityManagerResult<CreateResult>(errors.ToArray()));
             }
 
             var user = new InMemoryUser()
@@ -93,6 +107,12 @@ namespace Thinktecture.IdentityManager.Host
                 Username = username,
                 Password = password
             };
+
+            foreach (var prop in properties)
+            {
+                SetProperty(prop.Type, prop.Value, user);
+            }
+
             users.Add(user);
 
             return Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult() { Subject = user.Subject }));
@@ -187,12 +207,19 @@ namespace Thinktecture.IdentityManager.Host
             }
 
             var errors = ValidateProperty(type, value);
-            if (errors != null)
+            if (errors.Any())
             {
                 return Task.FromResult(new IdentityManagerResult(errors));
             }
 
-            switch(type)
+            SetProperty(type, value, user);
+
+            return Task.FromResult(IdentityManagerResult.Success);
+        }
+
+        private static void SetProperty(string type, string value, InMemoryUser user)
+        {
+            switch (type)
             {
                 case Constants.ClaimTypes.Username:
                     user.Username = value;
@@ -238,15 +265,25 @@ namespace Thinktecture.IdentityManager.Host
                 default:
                     throw new InvalidOperationException("Invalid Property Type");
             }
-
-            return Task.FromResult(IdentityManagerResult.Success);
         }
 
         private string[] ValidateProperty(string type, string value)
         {
             switch (type)
             {
-                case ClaimTypes.CookiePath:
+                case Constants.ClaimTypes.Username:
+                    {
+                        if (String.IsNullOrWhiteSpace(value))
+                        {
+                            return new string[] { "Username required" };
+                        }
+                        if (this.users.Any(x=>x.Username == value))
+                        {
+                            return new string[] { "That Username is already in use" };
+                        }
+                    }
+                    break;
+                case Constants.ClaimTypes.Password:
                     {
                         if (String.IsNullOrWhiteSpace(value))
                         {
@@ -259,7 +296,7 @@ namespace Thinktecture.IdentityManager.Host
                     }
                     break;
             } 
-            return null;
+            return new string[0];
         }
 
         public System.Threading.Tasks.Task<IdentityManagerResult> AddClaimAsync(string subject, string type, string value)

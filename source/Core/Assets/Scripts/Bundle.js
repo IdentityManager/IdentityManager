@@ -300,8 +300,8 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             };
 
             if (idmApi.links.createUser) {
-                svc.createUser = function (username, password) {
-                    return $http.post(idmApi.links.createUser, { username: username, password: password })
+                svc.createUser = function (username, password, properties) {
+                    return $http.post(idmApi.links.createUser, { username: username, password: password, properties: properties })
                         .then(mapResponseData, errorHandler("Error Creating User"));
                 };
             }
@@ -679,8 +679,26 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             return;
         }
         else {
-            $scope.create = function (username, password) {
-                idmUsers.createUser(username, password)
+            var required = idmApi.data.metadata.userMetadata.properties
+                .filter(function (item) {
+                    return item.required &&
+                        item.type != "username" &&
+                        item.type != "password";
+                }).map(function(item){
+                    return {
+                        meta : item,
+                        data : undefined
+                    };
+                });
+            $scope.properties = required;
+            $scope.create = function (username, password, properties) {
+                var props = properties.map(function (item) {
+                    return {
+                        type: item.meta.type,
+                        value: item.data
+                    };
+                });
+                idmUsers.createUser(username, password, props)
                     .then(function (result) {
                         $scope.model.last = result;
                         feedback.message = "Create Success";

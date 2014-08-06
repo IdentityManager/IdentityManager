@@ -13,5 +13,14 @@ namespace Thinktecture.IdentityManager.Api.Models
         public string Username { get; set; }
         [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PasswordRequired")]
         public string Password { get; set; }
+
+        public Property[] Properties { get; set; }
+    }
+
+    public class Property
+    {
+        [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PropertyTypeRequired")]
+        public string Type { get; set; }
+        public string Value { get; set; }
     }
 }

@@ -115,7 +115,7 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value is not a valid boolen..
+        ///   Looks up a localized string similar to {0} is not a valid boolen..
         /// </summary>
         public static string InvalidBoolean {
             get {
@@ -124,7 +124,7 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The email must be in a valid format..
+        ///   Looks up a localized string similar to {0} is not a valid email..
         /// </summary>
         public static string InvalidEmail {
             get {
@@ -133,7 +133,7 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value is not a valid number..
+        ///   Looks up a localized string similar to {0} is not a valid number..
         /// </summary>
         public static string InvalidNumber {
             get {
@@ -142,11 +142,20 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The value is not a valid URL..
+        ///   Looks up a localized string similar to {0} is not a valid URL..
         /// </summary>
         public static string InvalidUrl {
             get {
                 return ResourceManager.GetString("InvalidUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing required properties: {0}.
+        /// </summary>
+        public static string MissingRequiredProperties {
+            get {
+                return ResourceManager.GetString("MissingRequiredProperties", resourceCulture);
             }
         }
         
@@ -187,7 +196,7 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} is not a known property..
+        ///   Looks up a localized string similar to {0} is an invalid property name..
         /// </summary>
         public static string PropertyInvalid {
             get {
@@ -201,6 +210,15 @@ namespace Thinktecture.IdentityManager.Core.Resources {
         public static string PropertyRequired {
             get {
                 return ResourceManager.GetString("PropertyRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Property type is required..
+        /// </summary>
+        public static string PropertyTypeRequired {
+            get {
+                return ResourceManager.GetString("PropertyTypeRequired", resourceCulture);
             }
         }
         

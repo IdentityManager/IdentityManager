@@ -145,8 +145,26 @@
             return;
         }
         else {
-            $scope.create = function (username, password) {
-                idmUsers.createUser(username, password)
+            var required = idmApi.data.metadata.userMetadata.properties
+                .filter(function (item) {
+                    return item.required &&
+                        item.type != "username" &&
+                        item.type != "password";
+                }).map(function(item){
+                    return {
+                        meta : item,
+                        data : undefined
+                    };
+                });
+            $scope.properties = required;
+            $scope.create = function (username, password, properties) {
+                var props = properties.map(function (item) {
+                    return {
+                        type: item.meta.type,
+                        value: item.data
+                    };
+                });
+                idmUsers.createUser(username, password, props)
                     .then(function (result) {
                         $scope.model.last = result;
                         feedback.message = "Create Success";

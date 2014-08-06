@@ -45,8 +45,8 @@
             };
 
             if (idmApi.links.createUser) {
-                svc.createUser = function (username, password) {
-                    return $http.post(idmApi.links.createUser, { username: username, password: password })
+                svc.createUser = function (username, password, properties) {
+                    return $http.post(idmApi.links.createUser, { username: username, password: password, properties: properties })
                         .then(mapResponseData, errorHandler("Error Creating User"));
                 };
             }
