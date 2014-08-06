@@ -16,59 +16,57 @@
 
     <ul class="nav nav-tabs" role="tablist">
         <li class="{{!tab ?'active':''}}"><a ng-click="tab=0" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Properties</a></li>
-        <li class="{{tab==1?'active':''}}"><a ng-click="tab=1" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Claims</a></li>
+        <li class="{{tab==1?'active':''}}" ng-show="user.data.claims"><a ng-click="tab=1" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Claims</a></li>
     </ul>
 
     <div class="tab-content">
-        <div class="tab-pane {{!tab ?'active':''}}" id="properties">
+        <div class="tab-pane {{!tab ?'active':''}}">
             <div class="line" ng-repeat="property in user.data.properties">
                 <div class="row">
                     <tt-property-editor property="property" set-property="setProperty"></tt-property-editor>
                 </div>
             </div>
         </div>
-        <div class="tab-pane {{tab==1?'active':''}}" id="claims">
-            <div ng-show="user.data.claims">
-                <div class="row section">
-                    <div class="col-sm-12">
-                        <form name="addClaimForm" class="form-inline" ng-submit="addClaim(user.data.claims, claim)">
-                            <div class="form-group">
-                                <label for="type" class="column">Add Claim</label>
-                                <input type="text" class="form-control user-edit-regular" id="type" placeholder="Type" required autofocus ng-model="claim.type">
-                            </div>
-                            <div class="form-group">
-                                <input type="text" class="form-control user-edit-regular" id="value" placeholder="Value" required ng-model="claim.value">
-                            </div>
-                            <button type="submit" class="btn btn-primary" ng-disabled="addClaimForm.$invalid">Add</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div ng-hide="user.data.claims.data.length" class="col-sm-8">
-                        <div class="alert alert-info">
-                            <p>No Claims For User</p>
+        <div class="tab-pane {{tab==1?'active':''}}" ng-show="user.data.claims">
+            <div class="row section">
+                <div class="col-sm-12">
+                    <form name="addClaimForm" class="form-inline" ng-submit="addClaim(user.data.claims, claim)">
+                        <div class="form-group">
+                            <label for="type" class="column">Add Claim</label>
+                            <input type="text" class="form-control user-edit-regular" id="type" placeholder="Type" required autofocus ng-model="claim.type">
                         </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control user-edit-regular" id="value" placeholder="Value" required ng-model="claim.value">
+                        </div>
+                        <button type="submit" class="btn btn-primary" ng-disabled="addClaimForm.$invalid">Add</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row">
+                <div ng-hide="user.data.claims.data.length" class="col-sm-8">
+                    <div class="alert alert-info">
+                        <p>No Claims For User</p>
                     </div>
                 </div>
-
-                <table class="table table-condensed table-responsive table-striped xtable-bordered" ng-show="user.data.claims.data.length">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Type</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tr ng-repeat="claim in user.data.claims.data">
-                        <td>
-                            <button class="btn btn-warning btn-xs" ng-click="removeClaim(claim)">delete</button>
-                        </td>
-                        <td>{{claim.data.type}}</td>
-                        <td>{{claim.data.value}}</td>
-                    </tr>
-                </table>
             </div>
+
+            <table class="table table-condensed table-responsive table-striped xtable-bordered" ng-show="user.data.claims.data.length">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Type</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tr ng-repeat="claim in user.data.claims.data">
+                    <td>
+                        <button class="btn btn-warning btn-xs" ng-click="removeClaim(claim)">delete</button>
+                    </td>
+                    <td>{{claim.data.type}}</td>
+                    <td>{{claim.data.value}}</td>
+                </tr>
+            </table>
         </div>
     </div>
 

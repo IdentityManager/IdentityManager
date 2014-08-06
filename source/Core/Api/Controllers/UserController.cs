@@ -45,9 +45,9 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return ResponseMessage(response);
         }
         
-        public IHttpActionResult Forbidden<T>(T data)
+        public IHttpActionResult MethodNotAllowed()
         {
-            return ResponseMessage(Request.CreateResponse(HttpStatusCode.Forbidden, data));
+            return ResponseMessage(Request.CreateResponse(HttpStatusCode.MethodNotAllowed));
         }
 
         [HttpGet, Route("", Name=Constants.RouteNames.GetUsers)]
@@ -67,6 +67,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpPost, Route("", Name = Constants.RouteNames.CreateUser)]
         public async Task<IHttpActionResult> CreateUserAsync(CreateUserModel model)
         {
+            var meta = await userManager.GetMetadataAsync();
+            if (!meta.UserMetadata.SupportsCreate)
+            {
+                return MethodNotAllowed();
+            } 
+            
             if (model == null)
             {
                 ModelState.AddModelError("", Messages.UserDataRequired);
@@ -124,6 +130,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpDelete, Route("{subject}", Name = Constants.RouteNames.DeleteUser)]
         public async Task<IHttpActionResult> DeleteUserAsync(string subject)
         {
+            var meta = await userManager.GetMetadataAsync();
+            if (!meta.UserMetadata.SupportsDelete)
+            {
+                return MethodNotAllowed();
+            }
+
             if (String.IsNullOrWhiteSpace(subject))
             {
                 ModelState["subject.String"].Errors.Clear();
@@ -225,6 +237,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpPost, Route("{subject}/claims", Name = Constants.RouteNames.AddClaim)]
         public async Task<IHttpActionResult> AddClaimAsync(string subject, ClaimModel model)
         {
+            var meta = await userManager.GetMetadataAsync();
+            if (!meta.UserMetadata.SupportsClaims)
+            {
+                return NotFound();
+            }
+            
             if (String.IsNullOrWhiteSpace(subject))
             {
                 ModelState["subject.String"].Errors.Clear();
@@ -253,6 +271,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpDelete, Route("{subject}/claims/{type}/{value}", Name = Constants.RouteNames.RemoveClaim)]
         public async Task<IHttpActionResult> RemoveClaimAsync(string subject, string type, string value)
         {
+            var meta = await userManager.GetMetadataAsync();
+            if (!meta.UserMetadata.SupportsClaims)
+            {
+                return NotFound();
+            }
+            
             if (String.IsNullOrWhiteSpace(subject))
             {
                 ModelState["subject.String"].Errors.Clear();

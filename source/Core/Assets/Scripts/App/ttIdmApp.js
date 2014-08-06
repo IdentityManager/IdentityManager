@@ -167,18 +167,6 @@
         };
         loadUser();
 
-        //$scope.setPassword = function (password, confirm) {
-        //    if (password.data.value === confirm) {
-        //        idmUsers.setPassword(password)
-        //            .then(function () {
-        //                feedback.message = "Password Changed";
-        //            }, feedback.errorHandler);
-        //    }
-        //    else {
-        //        feedback.errors = "Password and Confirmation do not match";
-        //    }
-        //};
-
         $scope.setProperty = function (property) {
             idmUsers.setProperty(property)
                 .then(function () {
