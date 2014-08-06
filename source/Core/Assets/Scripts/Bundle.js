@@ -721,7 +721,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         $scope.addClaim = function (claims, claim) {
             idmUsers.addClaim(claims, claim)
                 .then(function () {
-                    feedback.message = "Claim Added";
+                    feedback.message = "Claim Added : " + claim.type + ", " + claim.value;
                     loadUser();
                 }, feedback.errorHandler);
         };
@@ -729,7 +729,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         $scope.removeClaim = function (claim) {
             idmUsers.removeClaim(claim)
                 .then(function () {
-                    feedback.message = "Claim Removed";
+                    feedback.message = "Claim Removed : " + claim.data.type + ", " + claim.data.value;
                     loadUser().then(function () {
                         $scope.claim = claim.data;
                     });

@@ -187,7 +187,7 @@
         $scope.addClaim = function (claims, claim) {
             idmUsers.addClaim(claims, claim)
                 .then(function () {
-                    feedback.message = "Claim Added";
+                    feedback.message = "Claim Added : " + claim.type + ", " + claim.value;
                     loadUser();
                 }, feedback.errorHandler);
         };
@@ -195,7 +195,7 @@
         $scope.removeClaim = function (claim) {
             idmUsers.removeClaim(claim)
                 .then(function () {
-                    feedback.message = "Claim Removed";
+                    feedback.message = "Claim Removed : " + claim.data.type + ", " + claim.data.value;
                     loadUser().then(function () {
                         $scope.claim = claim.data;
                     });

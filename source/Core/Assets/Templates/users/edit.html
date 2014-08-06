@@ -12,117 +12,69 @@
 </div>
 
 <div ng-show="user">
-    <div class="line" ng-repeat="property in user.data.properties">
-        <div class="row">
-            <tt-property-editor property="property" set-property="setProperty"></tt-property-editor>
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="{{!tab ?'active':''}}"><a ng-click="tab=0" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Properties</a></li>
+        <li class="{{tab==1?'active':''}}"><a ng-click="tab=1" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Claims</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane {{!tab ?'active':''}}" id="properties">
+            <div class="line" ng-repeat="property in user.data.properties">
+                <div class="row">
+                    <tt-property-editor property="property" set-property="setProperty"></tt-property-editor>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane {{tab==1?'active':''}}" id="claims">
+            <div ng-show="user.data.claims">
+                <div class="row section">
+                    <div class="col-sm-12">
+                        <form name="addClaimForm" class="form-inline" ng-submit="addClaim(user.data.claims, claim)">
+                            <div class="form-group">
+                                <label for="type" class="column">Add Claim</label>
+                                <input type="text" class="form-control user-edit-regular" id="type" placeholder="Type" required autofocus ng-model="claim.type">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control user-edit-regular" id="value" placeholder="Value" required ng-model="claim.value">
+                            </div>
+                            <button type="submit" class="btn btn-primary" ng-disabled="addClaimForm.$invalid">Add</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div ng-hide="user.data.claims.data.length" class="col-sm-8">
+                        <div class="alert alert-info">
+                            <p>No Claims For User</p>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table table-condensed table-responsive table-striped xtable-bordered" ng-show="user.data.claims.data.length">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Type</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tr ng-repeat="claim in user.data.claims.data">
+                        <td>
+                            <button class="btn btn-warning btn-xs" ng-click="removeClaim(claim)">delete</button>
+                        </td>
+                        <td>{{claim.data.type}}</td>
+                        <td>{{claim.data.value}}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 
-        <!--<div class="line" ng-show="user.data.password">
-            <div class="row">
-                <form name="setPasswordForm" class="form-inline" ng-submit="setPassword(user.data.password, confirm)">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label for="password" class="column">Set Password</label>
-                            <input type="password" class="form-control user-edit-regular" id="password" placeholder="Password" required autofocus ng-model="user.data.password.data.value">
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control user-edit-regular" id="confirm" placeholder="Confirm" required ng-model="confirm">
-                        </div>
-                        <button type="submit" class="btn btn-primary" ng-disabled="setPasswordForm.$invalid">Set</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="line" ng-show="user.data.username">
-            <div class="row">
-                <form name="setUsernameForm" class="form-inline" ng-submit="setUsername(user.data.username)">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label for="username" class="column">Set Username</label>
-                            <input type="text" class="form-control user-edit-wide" id="username" required placeholder="Username" ng-model="user.data.username.data.value">
-                        </div>
-                        <button type="submit" class="btn btn-primary" ng-disabled="setUsernameForm.$invalid">Set</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="line" ng-show="user.data.email">
-            <div class="row">
-                <form name="setEmailForm" class="form-inline" ng-submit="setEmail(user.data.email)">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label for="email" class="column">Set Email</label>
-                            <input type="email" class="form-control user-edit-wide" id="email" required placeholder="Email" ng-model="user.data.email.data.value">
-                        </div>
-                        <button type="submit" class="btn btn-primary" ng-disabled="setEmailForm.$invalid">Set</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="line" ng-show="user.data.phone">
-            <div class="row">
-                <form name="setPhoneForm" class="form-inline" ng-submit="setPhone(user.data.phone)">
-                    <div class="col-sm-12">
-                        <div class="form-group">
-                            <label for="phone" class="column">Set Phone</label>
-                            <input type="tel" class="form-control user-edit-wide" id="phone" required placeholder="Phone" ng-model="user.data.phone.data.value">
-                        </div>
-                        <button type="submit" class="btn btn-primary" ng-disabled="setPhoneForm.$invalid">Set</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="line" ng-show="user.data.claims">
-            <div class="row section">
-                <div class="col-sm-12">
-                    <form name="addClaimForm" class="form-inline" ng-submit="addClaim(user.data.claims, claim)">
-                        <div class="form-group">
-                            <label for="type" class="column">Add Claim</label>
-                            <input type="text" class="form-control user-edit-regular" id="type" placeholder="Type" required autofocus ng-model="claim.type">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control user-edit-regular" id="value" placeholder="Value" required ng-model="claim.value">
-                        </div>
-                        <button type="submit" class="btn btn-primary" ng-disabled="addClaimForm.$invalid">Add</button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="row">
-                <div ng-hide="user.data.claims.data.length" class="col-sm-8">
-                    <div class="alert alert-info">
-                        <p>No Claims For User</p>
-                    </div>
-                </div>
-            </div>
-
-            <table class="table table-condensed table-responsive table-striped xtable-bordered" ng-show="user.data.claims.data.length">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Type</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tr ng-repeat="claim in user.data.claims.data">
-                    <td>
-                        <button class="btn btn-warning btn-xs" ng-click="removeClaim(claim)">delete</button>
-                    </td>
-                    <td>{{claim.data.type}}</td>
-                    <td>{{claim.data.value}}</td>
-                </tr>
-            </table>
-        </div>-->
-
     <div class="row section" ng-show="user.links.delete">
         <form name="deleteUserForm"
-                class="form-inline"
-                ng-submit="deleteUser(user)">
+              class="form-inline"
+              ng-submit="deleteUser(user)">
             <div class="col-sm-12">
                 <tt-prompt id="m" action="Delete">Are you sure you want to delete user <strong>{{user.data.name}}</strong> (<em>{{user.data.subject}}</em>)?</tt-prompt>
                 <button type="submit" class="btn btn-primary" tt-confirm-click="#m">Delete User</button>
