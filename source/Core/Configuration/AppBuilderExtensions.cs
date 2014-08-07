@@ -8,7 +8,6 @@ using Microsoft.Owin;
 using System.Linq;
 using Thinktecture.IdentityManager;
 using Microsoft.Owin.Extensions;
-using Microsoft.Owin;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using System.Web.Http;

@@ -50,13 +50,26 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return ResponseMessage(Request.CreateResponse(HttpStatusCode.MethodNotAllowed));
         }
 
-        [HttpGet, Route("", Name=Constants.RouteNames.GetUsers)]
+        IdentityManagerMetadata _metadata;
+        async Task<IdentityManagerMetadata> GetMetadataAsync()
+        {
+            if (_metadata == null)
+            {
+                _metadata = await userManager.GetMetadataAsync();
+                if (_metadata == null) throw new InvalidOperationException("GetMetadataAsync returned null");
+                _metadata.Validate();
+            }
+
+            return _metadata;
+        }
+        
+        [HttpGet, Route("", Name = Constants.RouteNames.GetUsers)]
         public async Task<IHttpActionResult> GetUsersAsync(string filter = null, int start = 0, int count = 100)
         {
             var result = await userManager.QueryUsersAsync(filter, start, count);
             if (result.IsSuccess)
             {
-                var meta = await userManager.GetMetadataAsync();
+                var meta = await GetMetadataAsync();
                 var resource = new QueryResultResource(result.Result, Url, meta.UserMetadata);
                 return Ok(resource);
             }
@@ -67,7 +80,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpPost, Route("", Name = Constants.RouteNames.CreateUser)]
         public async Task<IHttpActionResult> CreateUserAsync(CreateUserModel model)
         {
-            var meta = await userManager.GetMetadataAsync();
+            var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsCreate)
             {
                 return MethodNotAllowed();
@@ -123,7 +136,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                     return NotFound();
                 }
 
-                var meta = await userManager.GetMetadataAsync();
+                var meta = await GetMetadataAsync();
                 return Ok(new UserDetailResource(result.Result, Url, meta.UserMetadata));
             }
 
@@ -133,7 +146,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpDelete, Route("{subject}", Name = Constants.RouteNames.DeleteUser)]
         public async Task<IHttpActionResult> DeleteUserAsync(string subject)
         {
-            var meta = await userManager.GetMetadataAsync();
+            var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsDelete)
             {
                 return MethodNotAllowed();
@@ -169,7 +182,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             }
 
             string value = await Request.Content.ReadAsStringAsync();
-            var meta = await this.userManager.GetMetadataAsync();
+            var meta = await this.GetMetadataAsync();
             ValidateProperty(type, value, meta.UserMetadata);
 
             if (ModelState.IsValid)
@@ -189,7 +202,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpPost, Route("{subject}/claims", Name = Constants.RouteNames.AddClaim)]
         public async Task<IHttpActionResult> AddClaimAsync(string subject, ClaimModel model)
         {
-            var meta = await userManager.GetMetadataAsync();
+            var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsClaims)
             {
                 return NotFound();
@@ -223,7 +236,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpDelete, Route("{subject}/claims/{type}/{value}", Name = Constants.RouteNames.RemoveClaim)]
         public async Task<IHttpActionResult> RemoveClaimAsync(string subject, string type, string value)
         {
-            var meta = await userManager.GetMetadataAsync();
+            var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsClaims)
             {
                 return NotFound();

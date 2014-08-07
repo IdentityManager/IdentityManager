@@ -2,6 +2,8 @@
  * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
  * see license
  */
+using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Thinktecture.IdentityManager.Core
@@ -14,6 +16,12 @@ namespace Thinktecture.IdentityManager.Core
         }
 
         public UserMetadata UserMetadata { get; set; }
+
+        internal void Validate()
+        {
+            if (UserMetadata == null) throw new InvalidOperationException("UserMetadata not assigned.");
+            UserMetadata.Validate();
+        }
     }
 
     public class UserMetadata
@@ -28,5 +36,11 @@ namespace Thinktecture.IdentityManager.Core
 
         public bool SupportsClaims { get; set; }
         public ICollection<PropertyMetadata> Properties { get; set; }
+
+        internal void Validate()
+        {
+            if (Properties == null) throw new InvalidOperationException("Properties not assigned.");
+            foreach (var prop in Properties) prop.Validate();
+        }
     }
 }

@@ -23,14 +23,7 @@ namespace Thinktecture.IdentityManager.Host
 
         public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
         {
-            return Task.FromResult(new IdentityManagerMetadata()
-            {
-                UserMetadata = new UserMetadata
-                {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    SupportsClaims = true,
-                    Properties = new HashSet<PropertyMetadata>
+            var props = new HashSet<PropertyMetadata>
                     {
                         new PropertyMetadata {
                             Name = "Username",
@@ -75,8 +68,16 @@ namespace Thinktecture.IdentityManager.Host
                             Name = "Gravatar Url",
                             Type = "gravatar",
                             DataType = PropertyDataType.Url,
-                        },
-                    }
+                        }
+                    };
+            return Task.FromResult(new IdentityManagerMetadata()
+            {
+                UserMetadata = new UserMetadata
+                {
+                    SupportsCreate = true,
+                    SupportsDelete = true,
+                    SupportsClaims = true,
+                    //Properties = props
                 }
             });
         }

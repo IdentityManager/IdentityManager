@@ -27,10 +27,23 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             this.userManager = userManager;
         }
 
+        IdentityManagerMetadata _metadata;
+        async Task<IdentityManagerMetadata> GetMetadataAsync()
+        {
+            if (_metadata == null)
+            {
+                _metadata = await this.userManager.GetMetadataAsync();
+                if (_metadata == null) throw new InvalidOperationException("GetMetadataAsync returned null");
+                _metadata.Validate();
+            }
+
+            return _metadata;
+        }
+
         [Route("")]
         public async Task<IHttpActionResult> Get()
         {
-            var meta = await userManager.GetMetadataAsync();
+            var meta = await GetMetadataAsync();
 
             var links = new Dictionary<string, string>();
             links["users"] = Url.Link(Constants.RouteNames.GetUsers, null);

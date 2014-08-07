@@ -16,5 +16,11 @@ namespace Thinktecture.IdentityManager.Core
         public string Name { get; set; }
         public PropertyDataType DataType { get; set; }
         public bool Required { get; set; }
+
+        internal void Validate()
+        {
+            if (String.IsNullOrWhiteSpace(Type)) throw new InvalidOperationException("PropertyMetadata Type is not assigned");
+            if (String.IsNullOrWhiteSpace(Name)) throw new InvalidOperationException("PropertyMetadata Name is not assigned");
+        }
     }
 }
