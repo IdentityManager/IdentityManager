@@ -183,6 +183,9 @@
             return idmUsers.getUser($routeParams.subject)
                 .then(function (result) {
                     $scope.user = result;
+                    if (!result.data.properties) {
+                        $scope.tab = 1;
+                    }
                 }, feedback.errorHandler);
         };
         loadUser();

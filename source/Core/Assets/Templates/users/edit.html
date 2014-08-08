@@ -15,7 +15,7 @@
 <div ng-show="user">
 
     <ul class="nav nav-tabs" role="tablist">
-        <li class="{{!tab ?'active':''}}"><a ng-click="tab=0" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Properties</a></li>
+        <li class="{{!tab ?'active':''}}" ng-show="user.data.properties"><a ng-click="tab=0" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Properties</a></li>
         <li class="{{tab==1?'active':''}}" ng-show="user.data.claims"><a ng-click="tab=1" href="#/users/edit/{{user.data.subject}}" role="tab" data-toggle="tab">Claims</a></li>
     </ul>
 

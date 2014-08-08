@@ -57,7 +57,10 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                     }
                 };
             // TODO: validate props against metadata props
-            this["Properties"] = props.ToArray();
+            if (props != null && props.Any())
+            {
+                this["Properties"] = props.ToArray();
+            }
 
             if (meta.SupportsClaims)
             {

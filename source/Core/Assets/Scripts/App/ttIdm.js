@@ -2,6 +2,26 @@
 
 (function (angular) {
     var app = angular.module("ttIdm", []);
+
+    function config($httpProvider) {
+        //$httpProvider.defaults.headers.get['Angular'] = 'Cool';
+        //$httpProvider.interceptors.push(function ($q) {
+        //    return {
+        //        'request': function (config) {
+        //            console.log(config);
+        //            return config;
+        //        }, 'response': function (response) {
+        //            console.log(response);
+        //            return response;
+        //        }, 'responseError': function (rejection) {
+        //            console.log(rejection);
+        //            return $q.reject(rejection);
+        //        }
+        //    };
+        //});
+    };
+    config.$inject = ["$httpProvider"];
+    app.config(config);
     
     function idmApi($http, $q, PathBase) {
         var api = $q.defer();
