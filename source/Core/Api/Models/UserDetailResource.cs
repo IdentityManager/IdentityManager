@@ -43,26 +43,30 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
             this["Name"] = user.Name;
             this["Subject"] = user.Subject;
 
-            var props =
-                from p in user.Properties
-                let m = (from m in meta.Properties where m.Type == p.Type select m).SingleOrDefault()
-                where m != null
-                select new Property
-                {
-                    Data = p.Value,
-                    Meta = m,
-                    Links = new
-                    {
-                        update = url.Link(Constants.RouteNames.UpdateProperty, new { subject = user.Subject, type = p.Type }),
-                    }
-                };
-            // TODO: validate props against metadata props
-            if (props != null && props.Any())
+            if (user.Properties != null)
             {
-                this["Properties"] = props.ToArray();
+                var props =
+                    from p in user.Properties
+                    let m = (from m in meta.Properties where m.Type == p.Type select m).SingleOrDefault()
+                    where m != null
+                    select new Property
+                    {
+                        Data = p.Value,
+                        Meta = m,
+                        Links = new
+                        {
+                            update = url.Link(Constants.RouteNames.UpdateProperty, new { subject = user.Subject, type = p.Type }),
+                        }
+                    };
+                
+                // TODO: validate props against metadata props
+                if (props.Any())
+                {
+                    this["Properties"] = props.ToArray();
+                }
             }
 
-            if (meta.SupportsClaims)
+            if (meta.SupportsClaims && user.Claims != null)
             {
                 var claims =
                     from c in user.Claims.ToArray()
@@ -74,6 +78,7 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                             delete = url.Link(Constants.RouteNames.RemoveClaim, new { subject = user.Subject, type = c.Type, value = c.Value })
                         }
                     };
+                
                 this["Claims"] = new Resource
                 {
                     Data = claims.ToArray(),
