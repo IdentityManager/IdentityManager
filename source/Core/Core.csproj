@@ -110,6 +110,7 @@
     <Compile Include="Api\Models\ClaimModel.cs" />
     <Compile Include="Api\Models\CreateUserModel.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\UserMetadata.cs" />
     <Compile Include="Core\PropertyDataType.cs" />
     <Compile Include="Core\PropertyMetadata.cs" />
     <Compile Include="Core\CreateResult.cs" />
