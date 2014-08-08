@@ -97,7 +97,6 @@
     <Compile Include="Api\Models\Resource.cs" />
     <Compile Include="Api\Models\UserDetailResource.cs" />
     <Compile Include="Api\Models\QueryResultResource.cs" />
-    <Compile Include="Api\Validation\NoUrlCharactersAttribute.cs" />
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
@@ -119,6 +118,7 @@
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\ModelStateDictionaryExtensions.cs" />
     <Compile Include="Extensions\IdentityManagerResultExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
     <Compile Include="Core\UserClaim.cs" />

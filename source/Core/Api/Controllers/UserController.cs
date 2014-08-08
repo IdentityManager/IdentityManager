@@ -236,31 +236,20 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpDelete, Route("{subject}/claims/{type}/{value}", Name = Constants.RouteNames.RemoveClaim)]
         public async Task<IHttpActionResult> RemoveClaimAsync(string subject, string type, string value)
         {
+            type = type.FromBase64UrlEncoded();
+            value = value.FromBase64UrlEncoded();
+
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsClaims)
             {
                 return NotFound();
             }
             
-            if (String.IsNullOrWhiteSpace(subject))
+            if (String.IsNullOrWhiteSpace(subject) || 
+                String.IsNullOrWhiteSpace(type) || 
+                String.IsNullOrWhiteSpace(value))
             {
-                ModelState["subject.String"].Errors.Clear();
-                ModelState.AddModelError("", Messages.SubjectRequired);
-            }
-            if (String.IsNullOrWhiteSpace(type))
-            {
-                ModelState["type.String"].Errors.Clear();
-                ModelState.AddModelError("", Messages.ClaimTypeRequired);
-            }
-            if (String.IsNullOrWhiteSpace(value))
-            {
-                ModelState["value.String"].Errors.Clear();
-                ModelState.AddModelError("", Messages.ClaimValueRequired);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState.ToError());
+                return NotFound();
             }
 
             var result = await this.userManager.RemoveClaimAsync(subject, type, value);

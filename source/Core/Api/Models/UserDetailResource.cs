@@ -75,7 +75,10 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                         Data = c,
                         Links = new
                         {
-                            delete = url.Link(Constants.RouteNames.RemoveClaim, new { subject = user.Subject, type = c.Type, value = c.Value })
+                            delete = url.Link(Constants.RouteNames.RemoveClaim, new { 
+                                subject = user.Subject, 
+                                type = c.Type.ToBase64UrlEncoded(), 
+                                value = c.Value.ToBase64UrlEncoded() })
                         }
                     };
                 

@@ -12,10 +12,7 @@ namespace Thinktecture.IdentityManager.Core
     {
         public IdentityManagerMetadata()
         {
-            this.UserMetadata = new UserMetadata()
-            {
-                Properties = Enumerable.Empty<PropertyMetadata>()
-            };
+            this.UserMetadata = new UserMetadata();
         }
 
         public UserMetadata UserMetadata { get; set; }

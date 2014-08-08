@@ -77,7 +77,7 @@ namespace Thinktecture.IdentityManager.Host
                     SupportsCreate = true,
                     SupportsDelete = true,
                     SupportsClaims = true,
-                    //Properties = props
+                    Properties = props
                 }
             });
         }

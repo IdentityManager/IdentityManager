@@ -89,7 +89,6 @@
     <Compile Include="Api\FakeIdentityManager.cs" />
     <Compile Include="Api\MetadataControllerTests.cs" />
     <Compile Include="Api\UserControllerTests.cs" />
-    <Compile Include="Api\Validation\NoUrlCharactersAttributeTests.cs" />
     <Compile Include="Api\WebApiTestBase.cs" />
     <Compile Include="Core\IdentityManagerResult`1Tests.cs" />
     <Compile Include="Core\IdentityManagerSemanticsTests.cs" />

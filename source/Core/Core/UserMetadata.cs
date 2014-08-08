@@ -18,7 +18,7 @@ namespace Thinktecture.IdentityManager.Core
 
         internal void Validate()
         {
-            if (Properties == null) throw new InvalidOperationException("Properties not assigned.");
+            if (Properties == null) Properties = Enumerable.Empty<PropertyMetadata>();
             foreach (var prop in Properties) prop.Validate();
         }
     }
