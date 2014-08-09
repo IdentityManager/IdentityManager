@@ -49,12 +49,12 @@ task UpdateVersion {
 }
 
 task ILMerge -depends Compile {
-	$input_dlls = "$output_directory\Thinktecture.IdentityManager.Core.dll"
+	$input_dlls = "$output_directory\Thinktecture.IdentityManager.dll"
 
 	Get-ChildItem -Path $output_directory -Filter *.dll |
 		foreach-object {
-			# Exclude Thinktecture.IdentityManager.Core.dll as that will be the primary assembly
-			if ("$_" -ne "Thinktecture.IdentityManager.Core.dll" -and 
+			# Exclude Thinktecture.IdentityManager.dll as that will be the primary assembly
+			if ("$_" -ne "Thinktecture.IdentityManager.dll" -and 
 			    "$_" -ne "Owin.dll") {
 				$input_dlls = "$input_dlls $output_directory\$_"
 			}

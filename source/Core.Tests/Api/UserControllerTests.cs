@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager;
 using Thinktecture.IdentityManager.Api.Models;
-using Thinktecture.IdentityManager;
-using Thinktecture.IdentityManager.Api.Models;
 using Thinktecture.IdentityManager.Resources;
 
 namespace Core.Tests.Api

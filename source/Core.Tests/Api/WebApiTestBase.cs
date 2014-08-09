@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager;
-using Thinktecture.IdentityManager;
 using Owin;
 using Moq;
 
