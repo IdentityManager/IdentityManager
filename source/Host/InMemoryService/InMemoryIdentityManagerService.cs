@@ -182,7 +182,7 @@ namespace Thinktecture.IdentityManager.Host
                 new UserClaim{Type="gravatar", Value=user.Claims.GetValue("gravatar")},
             };
 
-            var claims = user.Claims.Where(x=>!(x.Type == Constants.ClaimTypes.Role && x.Value == "admin") && x.Type != Constants.ClaimTypes.Name).Select(x => new UserClaim { Type = x.Type, Value = x.Value });
+            var claims = user.Claims.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
 
             return Task.FromResult(new IdentityManagerResult<UserDetail>(new UserDetail
             {

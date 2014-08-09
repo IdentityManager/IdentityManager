@@ -30,7 +30,7 @@ namespace System.Security.Claims
             if (claims == null) throw new ArgumentNullException("type");
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
 
-            var claim = claims.SingleOrDefault(x => x.Type == type);
+            var claim = claims.FirstOrDefault(x => x.Type == type);
             if (claim != null)
             {
                 return claim.Value;
@@ -69,8 +69,7 @@ namespace System.Security.Claims
             if (claims == null) throw new ArgumentNullException("type");
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
 
-            var claim = claims.SingleOrDefault(x => x.Type == type);
-            if (claim != null)
+            foreach (var claim in claims.Where(x => x.Type == type).ToArray())
             {
                 claims.Remove(claim);
             }
@@ -82,8 +81,7 @@ namespace System.Security.Claims
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
             if (String.IsNullOrWhiteSpace(value)) throw new ArgumentNullException("value");
 
-            var claim = claims.SingleOrDefault(x => x.Type == type && x.Value == value);
-            if (claim != null)
+            foreach (var claim in claims.Where(x => x.Type == type && x.Value == value).ToArray())
             {
                 claims.Remove(claim);
             }
