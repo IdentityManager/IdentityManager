@@ -52,7 +52,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 links["createUser"] = Url.Link(Constants.RouteNames.CreateUser, null);
             }
 
-            var resource = new Resource
+            var resource = new 
             {
                 Data = new {
                     currentUser = new

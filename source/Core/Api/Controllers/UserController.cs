@@ -100,7 +100,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 if (result.IsSuccess)
                 {
                     var url = Url.Link(Constants.RouteNames.GetUser, new { subject = result.Result.Subject });
-                    var resource = new Resource
+                    var resource = new 
                     {
                         Data = new { subject = result.Result.Subject },
                         Links = new { detail = url }

@@ -49,7 +49,7 @@ namespace Thinktecture.IdentityManager.Api.Models
                     from p in user.Properties
                     let m = (from m in meta.Properties where m.Type == p.Type select m).SingleOrDefault()
                     where m != null
-                    select new Property
+                    select new
                     {
                         Data = p.Value,
                         Meta = m,
@@ -70,7 +70,7 @@ namespace Thinktecture.IdentityManager.Api.Models
             {
                 var claims =
                     from c in user.Claims.ToArray()
-                    select new Resource
+                    select new 
                     {
                         Data = c,
                         Links = new
@@ -82,7 +82,7 @@ namespace Thinktecture.IdentityManager.Api.Models
                         }
                     };
                 
-                this["Claims"] = new Resource
+                this["Claims"] = new 
                 {
                     Data = claims.ToArray(),
                     Links = new

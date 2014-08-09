@@ -94,7 +94,6 @@
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Filters\SecurityHeadersAttribute.cs" />
     <Compile Include="Api\Models\ErrorModel.cs" />
-    <Compile Include="Api\Models\Resource.cs" />
     <Compile Include="Api\Models\UserDetailResource.cs" />
     <Compile Include="Api\Models\QueryResultResource.cs" />
     <Compile Include="Assets\AssetManager.cs" />
