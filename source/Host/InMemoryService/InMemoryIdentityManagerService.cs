@@ -134,10 +134,10 @@ namespace Thinktecture.IdentityManager.Host
                 filter = filter.ToLower();
                 query =
                     from u in query
-                    let name = (from c in u.Claims where c.Type == "name" select c.Value).SingleOrDefault()
+                    let names = (from c in u.Claims where c.Type == Constants.ClaimTypes.Name select c.Value.ToLower())
                     where
                         u.Username.ToLower().Contains(filter) ||
-                        (name != null && name.ToLower().Contains(filter))
+                        names.Contains(filter)
                     select u;
             }
 
