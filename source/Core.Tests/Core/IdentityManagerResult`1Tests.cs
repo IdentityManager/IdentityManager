@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Thinktecture.IdentityManager.Core;
+using Thinktecture.IdentityManager;
 
 namespace Core.Tests.Core
 {

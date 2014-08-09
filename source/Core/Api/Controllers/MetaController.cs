@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Thinktecture.IdentityManager.Core;
-using Thinktecture.IdentityManager.Core.Api.Filters;
-using Thinktecture.IdentityManager.Core.Api.Models;
+using Thinktecture.IdentityManager;
+using Thinktecture.IdentityManager.Api.Filters;
+using Thinktecture.IdentityManager.Api.Models;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {

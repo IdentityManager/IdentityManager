@@ -7,8 +7,8 @@
     <ProjectGuid>{319E13DD-C16A-4936-B179-BBFBA52C693B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Thinktecture.IdentityManager.Core</RootNamespace>
-    <AssemblyName>Thinktecture.IdentityManager.Core</AssemblyName>
+    <RootNamespace>Thinktecture.IdentityManager</RootNamespace>
+    <AssemblyName>Thinktecture.IdentityManager</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -109,6 +109,7 @@
     <Compile Include="Api\Models\ClaimModel.cs" />
     <Compile Include="Api\Models\CreateUserModel.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\DisposableIdentityManagerService.cs" />
     <Compile Include="Core\UserMetadata.cs" />
     <Compile Include="Core\PropertyDataType.cs" />
     <Compile Include="Core\PropertyMetadata.cs" />

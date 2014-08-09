@@ -5,9 +5,9 @@
 
 using System;
 using System.Linq;
-using Thinktecture.IdentityManager.Core.Api.Models;
+using Thinktecture.IdentityManager.Api.Models;
 
-namespace Thinktecture.IdentityManager.Core
+namespace Thinktecture.IdentityManager
 {
     static class IdentityManagerResultExtensions
     {

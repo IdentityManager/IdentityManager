@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Thinktecture.IdentityManager.Core
+namespace Thinktecture.IdentityManager
 {
     public class IdentityManagerMetadata
     {

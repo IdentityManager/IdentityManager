@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Web.Http.Routing;
 using Thinktecture.IdentityManager.Api.Models;
 
-namespace Thinktecture.IdentityManager.Core.Api.Models
+namespace Thinktecture.IdentityManager.Api.Models
 {
     public class UserDetailResource
     {

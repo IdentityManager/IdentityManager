@@ -5,7 +5,7 @@
 using System;
 using System.Web.Http.Filters;
 
-namespace Thinktecture.IdentityManager.Core.Api.Filters
+namespace Thinktecture.IdentityManager.Api.Filters
 {
     class SecurityHeadersAttribute : ActionFilterAttribute
     {

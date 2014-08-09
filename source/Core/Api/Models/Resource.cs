@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Thinktecture.IdentityManager.Core.Api.Models
+namespace Thinktecture.IdentityManager.Api.Models
 {
     public class Resource
     {

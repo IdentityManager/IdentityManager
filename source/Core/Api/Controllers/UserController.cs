@@ -9,10 +9,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Thinktecture.IdentityManager.Core;
-using Thinktecture.IdentityManager.Core.Api.Filters;
-using Thinktecture.IdentityManager.Core.Api.Models;
-using Thinktecture.IdentityManager.Core.Resources;
+using Thinktecture.IdentityManager;
+using Thinktecture.IdentityManager.Api.Filters;
+using Thinktecture.IdentityManager.Api.Models;
+using Thinktecture.IdentityManager.Resources;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
@@ -261,11 +261,11 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
         
-        private void ValidateProperties(UserMetadata userMetadata, Property[] properties)
+        private void ValidateProperties(UserMetadata userMetadata, CreateProperty[] properties)
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 
-            properties = properties ?? new Property[0];
+            properties = properties ?? new CreateProperty[0];
 
             var required = userMetadata.Properties
                 .Where(x => x.Required && x.Type != Constants.ClaimTypes.Username && x.Type != Constants.ClaimTypes.Password)

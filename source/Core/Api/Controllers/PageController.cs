@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Assets;
-using Thinktecture.IdentityManager.Core.Api.Filters;
+using Thinktecture.IdentityManager.Api.Filters;
 
-namespace Thinktecture.IdentityManager.Core.Api.Controllers
+namespace Thinktecture.IdentityManager.Api.Controllers
 {
     [SecurityHeaders]
     public class PageController : ApiController
@@ -19,7 +19,7 @@ namespace Thinktecture.IdentityManager.Core.Api.Controllers
         [HttpGet]
         public IHttpActionResult Index()
         {
-            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Core.Assets.Templates.index.html");
+            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.index.html");
         }
     }
 }

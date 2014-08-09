@@ -4,8 +4,8 @@
  */
 using System.Linq;
 using System.Web.Http.ModelBinding;
-using Thinktecture.IdentityManager.Core;
-using Thinktecture.IdentityManager.Core.Api.Models;
+using Thinktecture.IdentityManager;
+using Thinktecture.IdentityManager.Api.Models;
 
 namespace System.Web.Http
 {

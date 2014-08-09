@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Thinktecture.IdentityManager.Core
+namespace Thinktecture.IdentityManager
 {
     public enum PropertyDataType
     {

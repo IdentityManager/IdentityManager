@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Routing;
 
-namespace Thinktecture.IdentityManager.Core.Api.Models
+namespace Thinktecture.IdentityManager.Api.Models
 {
     public class QueryResultResource
     {
@@ -15,7 +15,7 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
             if (url == null) throw new ArgumentNullException("url");
             if (meta == null) throw new ArgumentNullException("meta");
 
-            Data = new QueryResultResourceData(result, url);
+            Data = new QueryResultResourceData(result, url, meta);
             
             var links = new Dictionary<string, string>();
             if (meta.SupportsCreate)
@@ -39,18 +39,24 @@ namespace Thinktecture.IdentityManager.Core.Api.Models
                 .ForMember(x => x.Data, opts => opts.MapFrom(x => x));
         }
 
-        public QueryResultResourceData(QueryResult result, UrlHelper url)
+        public QueryResultResourceData(QueryResult result, UrlHelper url, UserMetadata meta)
         {
+            if (result == null) throw new ArgumentNullException("result");
             if (url == null) throw new ArgumentNullException("url");
+            if (meta == null) throw new ArgumentNullException("meta");
 
             AutoMapper.Mapper.Map(result, this);
 
             foreach (var user in this.Users)
             {
-                user.Links = new
-                {
-                    Detail = url.Link(Constants.RouteNames.GetUser, new { subject = user.Data.Subject })
+                var links = new Dictionary<string, string> {
+                    {"Detail", url.Link(Constants.RouteNames.GetUser, new { subject = user.Data.Subject })}
                 };
+                if (meta.SupportsDelete)
+                {
+                    links.Add("delete", url.Link(Constants.RouteNames.DeleteUser, new { subject = user.Data.Subject }));
+                }
+                user.Links = links;
             }
         }
 

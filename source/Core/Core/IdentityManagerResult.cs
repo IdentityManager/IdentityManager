@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Thinktecture.IdentityManager.Core
+namespace Thinktecture.IdentityManager
 {
     public class IdentityManagerResult
     {

@@ -3,7 +3,7 @@
  * see license
  */
 
-namespace Thinktecture.IdentityManager.Core
+namespace Thinktecture.IdentityManager
 {
     public class IdentityManagerResult<T> : IdentityManagerResult
     {

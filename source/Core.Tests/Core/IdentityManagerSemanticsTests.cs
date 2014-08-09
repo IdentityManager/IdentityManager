@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Thinktecture.IdentityManager.Core;
+using Thinktecture.IdentityManager;
 using Xunit;
 
 namespace Core.Tests.Core

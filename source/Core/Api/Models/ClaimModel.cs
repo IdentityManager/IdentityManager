@@ -3,7 +3,7 @@
  * see license
  */
 using System.ComponentModel.DataAnnotations;
-using Thinktecture.IdentityManager.Core.Resources;
+using Thinktecture.IdentityManager.Resources;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
