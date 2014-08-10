@@ -151,6 +151,15 @@ namespace Thinktecture.IdentityManager.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is required..
+        /// </summary>
+        public static string IsRequired {
+            get {
+                return ResourceManager.GetString("IsRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing required properties: {0}.
         /// </summary>
         public static string MissingRequiredProperties {
@@ -201,15 +210,6 @@ namespace Thinktecture.IdentityManager.Resources {
         public static string PropertyInvalid {
             get {
                 return ResourceManager.GetString("PropertyInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} is required..
-        /// </summary>
-        public static string PropertyRequired {
-            get {
-                return ResourceManager.GetString("PropertyRequired", resourceCulture);
             }
         }
         

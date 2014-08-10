@@ -147,6 +147,9 @@
   <data name="InvalidUrl" xml:space="preserve">
     <value>{0} is not a valid URL.</value>
   </data>
+  <data name="IsRequired" xml:space="preserve">
+    <value>{0} is required.</value>
+  </data>
   <data name="MissingRequiredProperties" xml:space="preserve">
     <value>Missing required properties: {0}</value>
   </data>
@@ -164,9 +167,6 @@
   </data>
   <data name="PropertyInvalid" xml:space="preserve">
     <value>{0} is an invalid property name.</value>
-  </data>
-  <data name="PropertyRequired" xml:space="preserve">
-    <value>{0} is required.</value>
   </data>
   <data name="PropertyTypeRequired" xml:space="preserve">
     <value>Property type is required.</value>

@@ -20,6 +20,18 @@ namespace Thinktecture.IdentityManager
         {
             if (Properties == null) Properties = Enumerable.Empty<PropertyMetadata>();
             foreach (var prop in Properties) prop.Validate();
+            
+            var types = Properties.Select(x => x.Type).Distinct();
+            if (types.Count() < Properties.Count())
+            {
+                var query =
+                    from t in types
+                    let props = (from p in Properties where p.Type == t select p)
+                    where props.Count() > 1
+                    select t;
+                var names = query.Distinct().Aggregate((x, y) => x + ", " + y);
+                throw new InvalidOperationException("Duplicate PropertyMetadata Types registered: " + names);
+            }
         }
     }
 }

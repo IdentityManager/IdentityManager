@@ -109,6 +109,8 @@
     <Compile Include="Api\Models\CreateUserModel.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Core\DisposableIdentityManagerService.cs" />
+    <Compile Include="Core\ExpressionPropertyMetadata.cs" />
+    <Compile Include="Core\ReflectedPropertyMetadata.cs" />
     <Compile Include="Core\UserMetadata.cs" />
     <Compile Include="Core\PropertyDataType.cs" />
     <Compile Include="Core\PropertyMetadata.cs" />
@@ -119,7 +121,9 @@
     <Compile Include="Extensions\ModelStateDictionaryExtensions.cs" />
     <Compile Include="Extensions\IdentityManagerResultExtensions.cs" />
     <Compile Include="Extensions\PropertyInfoExtensions.cs" />
+    <Compile Include="Extensions\PropertyMetadataExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\UserMetadataExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
     <Compile Include="Core\UserClaim.cs" />

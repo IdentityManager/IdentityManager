@@ -21,68 +21,22 @@ namespace Thinktecture.IdentityManager.Host
             this.users = users;
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
+        static InMemoryIdentityManagerService()
         {
-            //var props = new HashSet<PropertyMetadata>
-            //        {
-            //            new PropertyMetadata {
-            //                Name = "Username",
-            //                Type = Constants.ClaimTypes.Username,
-            //                Required = true,
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "Name",
-            //                Type = Constants.ClaimTypes.Name,
-            //                Required = true,
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "Password",
-            //                Type = Constants.ClaimTypes.Password,
-            //                DataType = PropertyDataType.Password,
-            //                Required = true,
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "Email",
-            //                Type = Constants.ClaimTypes.Email,
-            //                DataType = PropertyDataType.Email,
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "Phone",
-            //                Type = Constants.ClaimTypes.Phone,
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "Is Administrator",
-            //                Type = "role.admin",
-            //                DataType = PropertyDataType.Boolean,
-            //                Required = true,
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "First Name",
-            //                Type = "first",
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "Last Name",
-            //                Type = "last",
-            //            },
-            //            new PropertyMetadata {
-            //                Name = "Gravatar Url",
-            //                Type = "gravatar",
-            //                DataType = PropertyDataType.Url,
-            //            }
-            //        };
-
-            
-            var props = PropertyMetadata.FromType<InMemoryUser>().ToList();
-            props.AddRange(new PropertyMetadata[]{
-                PropertyMetadata.FromProperty<InMemoryUser>("Username"),
-                PropertyMetadata.FromProperty<InMemoryUser>("Password", type:PropertyDataType.Password, required:true),
-                PropertyMetadata.FromProperty<InMemoryUser>("Mobile"),
-                PropertyMetadata.FromProperty<InMemoryUser>("Email", type:PropertyDataType.Email),
+            var props = new List<PropertyMetadata>()
+            {
+                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Password", type:PropertyDataType.Password, required:true),
+                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Username", required:true),
                 new PropertyMetadata {
                     Name = "Name",
                     Type = Constants.ClaimTypes.Name,
                     Required = true,
                 },
+                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Mobile"),
+                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Email", type:PropertyDataType.Email),
+            };
+            props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>());
+            props.AddRange(new PropertyMetadata[]{
                 new PropertyMetadata {
                     Name = "Is Administrator",
                     Type = "role.admin",
@@ -96,7 +50,7 @@ namespace Thinktecture.IdentityManager.Host
                     }
                 });
 
-            return Task.FromResult(new IdentityManagerMetadata()
+            metadata = new IdentityManagerMetadata()
             {
                 UserMetadata = new UserMetadata
                 {
@@ -105,15 +59,19 @@ namespace Thinktecture.IdentityManager.Host
                     SupportsClaims = true,
                     Properties = props
                 }
-            });
+            };
+        }
+
+        static IdentityManagerMetadata metadata;
+
+        public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
+        {
+            return Task.FromResult(metadata);
         }
 
         public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password, IEnumerable<UserClaim> properties)
         {
             var errors = new List<string>();
-            errors.AddRange(ValidateProperty(Constants.ClaimTypes.Username, username));
-            errors.AddRange(ValidateProperty(Constants.ClaimTypes.Password, password));
-            
             foreach(var prop in properties)
             {
                 errors.AddRange(ValidateProperty(prop.Type, prop.Value));
@@ -195,19 +153,12 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult<UserDetail>((UserDetail)null));
             }
 
-            var props = new List<UserClaim>()
+            var props = new List<UserClaim>();
+            foreach(var prop in metadata.UserMetadata.Properties)
             {
-                new UserClaim{Type=Constants.ClaimTypes.Username, Value=user.Username},
-                new UserClaim{Type=Constants.ClaimTypes.Name, Value=user.Claims.GetValue(Constants.ClaimTypes.Name)},
-                new UserClaim{Type=Constants.ClaimTypes.Password, Value=""},
-                new UserClaim{Type=Constants.ClaimTypes.Email, Value=user.Email},
-                new UserClaim{Type=Constants.ClaimTypes.Phone, Value=user.Mobile},
-                new UserClaim{Type="role.admin", Value=user.Claims.HasValue(Constants.ClaimTypes.Role, "admin").ToString().ToLower()},
-                new UserClaim{Type="first", Value=user.FirstName},
-                new UserClaim{Type="last", Value=user.LastName},
-                new UserClaim{Type="gravatar", Value=user.Claims.GetValue("gravatar")},
-            };
-
+                props.Add(new UserClaim{Type = prop.Type, Value = GetProperty(prop.Type, user)});
+            }
+           
             var claims = user.Claims.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
 
             return Task.FromResult(new IdentityManagerResult<UserDetail>(new UserDetail
@@ -239,88 +190,6 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        private static void SetProperty(string type, string value, InMemoryUser user)
-        {
-            switch (type)
-            {
-                case Constants.ClaimTypes.Username:
-                    user.Username = value;
-                    break;
-                case Constants.ClaimTypes.Name:
-                    {
-                        user.Claims.SetValue(Constants.ClaimTypes.Name, value);
-                    }
-                    break;
-                case Constants.ClaimTypes.Password:
-                    user.Password = value;
-                    break;
-                case Constants.ClaimTypes.Email:
-                    user.Email = value;
-                    break;
-                case Constants.ClaimTypes.Phone:
-                    user.Mobile = value;
-                    break;
-                case "role.admin":
-                    {
-                        var val = Boolean.Parse(value);
-                        if (val)
-                        {
-                            user.Claims.AddClaim(Constants.ClaimTypes.Role, "admin");
-                        }
-                        else
-                        {
-                            user.Claims.RemoveClaim(Constants.ClaimTypes.Role, "admin");
-                        }
-                    }
-                    break;
-                case "first":
-                    user.FirstName = value;
-                    break;
-                case "last":
-                    user.LastName = value;
-                    break;
-                case "gravatar":
-                    {
-                        user.Claims.SetValue("gravatar", value);
-                    }
-                    break;
-                default:
-                    throw new InvalidOperationException("Invalid Property Type");
-            }
-        }
-
-        private string[] ValidateProperty(string type, string value)
-        {
-            switch (type)
-            {
-                case Constants.ClaimTypes.Username:
-                    {
-                        if (String.IsNullOrWhiteSpace(value))
-                        {
-                            return new string[] { "Username required" };
-                        }
-                        if (this.users.Any(x=>x.Username == value))
-                        {
-                            return new string[] { "That Username is already in use" };
-                        }
-                    }
-                    break;
-                case Constants.ClaimTypes.Password:
-                    {
-                        if (String.IsNullOrWhiteSpace(value))
-                        {
-                            return new string[] { "Password required" };
-                        }
-                        if (value.Length < 3)
-                        {
-                            return new string[] { "Password must have at least 3 characters" };
-                        }
-                    }
-                    break;
-            } 
-            return new string[0];
-        }
-
         public System.Threading.Tasks.Task<IdentityManagerResult> AddClaimAsync(string subject, string type, string value)
         {
             var user = users.SingleOrDefault(x => x.Subject == subject);
@@ -345,6 +214,94 @@ namespace Thinktecture.IdentityManager.Host
             user.Claims.RemoveClaims(type, value);
 
             return Task.FromResult(IdentityManagerResult.Success);
+        }
+
+        private static string GetProperty(string type, InMemoryUser user)
+        {
+            switch (type)
+            {
+                case Constants.ClaimTypes.Name:
+                    return user.Claims.GetValue(Constants.ClaimTypes.Name);
+                case "role.admin":
+                    return user.Claims.HasValue(Constants.ClaimTypes.Role, "admin").ToString().ToLower();
+                case "gravatar":
+                    return user.Claims.GetValue("gravatar");
+            }
+
+            string value;
+            if (metadata.UserMetadata.TryGet(user, type, out value))
+            {
+                return value;
+            }
+
+            throw new Exception("Invalid property type " + type);
+        }
+
+        private static void SetProperty(string type, string value, InMemoryUser user)
+        {
+            if (metadata.UserMetadata.TrySet(user, type, value))
+            {
+                return;
+            }
+
+            switch (type)
+            {
+                case Constants.ClaimTypes.Name:
+                    {
+                        user.Claims.SetValue(Constants.ClaimTypes.Name, value);
+                    }
+                    break;
+                case "role.admin":
+                    {
+                        var val = Boolean.Parse(value);
+                        if (val)
+                        {
+                            user.Claims.AddClaim(Constants.ClaimTypes.Role, "admin");
+                        }
+                        else
+                        {
+                            user.Claims.RemoveClaim(Constants.ClaimTypes.Role, "admin");
+                        }
+                    }
+                    break;
+                case "gravatar":
+                    {
+                        user.Claims.SetValue("gravatar", value);
+                    }
+                    break;
+                default:
+                    throw new InvalidOperationException("Invalid Property Type");
+            }
+        }
+
+        private string[] ValidateProperty(string type, string value)
+        {
+            var error = metadata.UserMetadata.Validate(type, value);
+            if (error != null)
+            {
+                return new string[] { error };
+            }
+
+            switch (type)
+            {
+                case Constants.ClaimTypes.Username:
+                    {
+                        if (this.users.Any(x => x.Username == value))
+                        {
+                            return new string[] { "That Username is already in use" };
+                        }
+                    }
+                    break;
+                case Constants.ClaimTypes.Password:
+                    {
+                        if (value.Length < 3)
+                        {
+                            return new string[] { "Password must have at least 3 characters" };
+                        }
+                    }
+                    break;
+            }
+            return new string[0];
         }
     }
 }

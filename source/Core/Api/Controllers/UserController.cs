@@ -300,46 +300,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             {
                 ModelState.AddModelError("", String.Format(Messages.PropertyInvalid, type));
             }
-            else if (prop.Required && String.IsNullOrWhiteSpace(value))
+            else
             {
-                ModelState.AddModelError("", String.Format(Messages.PropertyRequired, prop.Name));
-            }
-            else if (!String.IsNullOrWhiteSpace(value))
-            {
-                if (prop.DataType == PropertyDataType.Boolean)
+                var error = prop.Validate(value);
+                if (error != null)
                 {
-                    bool val;
-                    if (!Boolean.TryParse(value, out val))
-                    {
-                        ModelState.AddModelError("", String.Format(Messages.InvalidBoolean, prop.Name));
-                    }
-                }
-
-                if (prop.DataType == PropertyDataType.Email)
-                {
-                    if (!value.Contains("@"))
-                    {
-                        ModelState.AddModelError("", String.Format(Messages.InvalidEmail, prop.Name));
-                    }
-                }
-
-                if (prop.DataType == PropertyDataType.Number)
-                {
-                    double d;
-                    if (!Double.TryParse(value, out d))
-                    {
-                        ModelState.AddModelError("", String.Format(Messages.InvalidNumber, prop.Name));
-                    }
-                }
-
-                if (prop.DataType == PropertyDataType.Url)
-                {
-                    Uri uri;
-                    if (!Uri.TryCreate(value, UriKind.Absolute, out uri) ||
-                        (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-                    {
-                        ModelState.AddModelError("", String.Format(Messages.InvalidUrl, prop.Name));
-                    }
+                    ModelState.AddModelError("", error);
                 }
             }
         }
