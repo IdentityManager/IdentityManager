@@ -35,7 +35,11 @@ namespace Thinktecture.IdentityManager.Host
                 ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Mobile"),
                 ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Email", type:PropertyDataType.Email),
             };
-            props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>());
+            props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>("FirstName"));
+            props.Add(new ExpressionPropertyMetadata<InMemoryUser, string>("FirstName", "First Name", u => u.FirstName, (u, v) => u.FirstName = v)
+            {
+                Required = true
+            });
             props.AddRange(new PropertyMetadata[]{
                 new PropertyMetadata {
                     Name = "Is Administrator",
@@ -156,7 +160,10 @@ namespace Thinktecture.IdentityManager.Host
             var props = new List<UserClaim>();
             foreach(var prop in metadata.UserMetadata.Properties)
             {
-                props.Add(new UserClaim{Type = prop.Type, Value = GetProperty(prop.Type, user)});
+                props.Add(new UserClaim{
+                    Type = prop.Type, 
+                    Value = GetProperty(prop.Type, user)
+                });
             }
            
             var claims = user.Claims.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
@@ -218,6 +225,12 @@ namespace Thinktecture.IdentityManager.Host
 
         private static string GetProperty(string type, InMemoryUser user)
         {
+            string value;
+            if (metadata.UserMetadata.TryGet(user, type, out value))
+            {
+                return value;
+            }
+            
             switch (type)
             {
                 case Constants.ClaimTypes.Name:
@@ -227,13 +240,7 @@ namespace Thinktecture.IdentityManager.Host
                 case "gravatar":
                     return user.Claims.GetValue("gravatar");
             }
-
-            string value;
-            if (metadata.UserMetadata.TryGet(user, type, out value))
-            {
-                return value;
-            }
-
+           
             throw new Exception("Invalid property type " + type);
         }
 

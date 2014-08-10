@@ -99,7 +99,14 @@ namespace System.Reflection
                 }
             }
 
-            var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+            return property.PropertyType.GetPropertyDataType();
+        }
+
+        public static PropertyDataType GetPropertyDataType(this Type type)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+
+            type = Nullable.GetUnderlyingType(type) ?? type;
 
             if (type == typeof(bool))
             {

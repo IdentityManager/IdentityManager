@@ -35,6 +35,13 @@ namespace Thinktecture.IdentityManager
                 return true;
             }
 
+            var expressionProperty = (ExpressionPropertyMetadata)userMetadata.Properties.Where(x => x is ExpressionPropertyMetadata && x.Type == type).SingleOrDefault();
+            if (expressionProperty != null)
+            {
+                expressionProperty.Set(instance, value);
+                return true;
+            }
+
             return false;
         }
         
@@ -42,10 +49,17 @@ namespace Thinktecture.IdentityManager
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 
-            var prop = (ReflectedPropertyMetadata)userMetadata.Properties.Where(x => x is ReflectedPropertyMetadata && x.Type == type).SingleOrDefault();
-            if (prop != null)
+            var reflectedProperty = (ReflectedPropertyMetadata)userMetadata.Properties.Where(x => x is ReflectedPropertyMetadata && x.Type == type).SingleOrDefault();
+            if (reflectedProperty != null)
             {
-                value = prop.Get(instance);
+                value = reflectedProperty.Get(instance);
+                return true;
+            }
+
+            var expressionProperty = (ExpressionPropertyMetadata)userMetadata.Properties.Where(x => x is ExpressionPropertyMetadata && x.Type == type).SingleOrDefault();
+            if (expressionProperty != null)
+            {
+                value = expressionProperty.Get(instance);
                 return true;
             }
 

@@ -58,5 +58,25 @@ namespace Thinktecture.IdentityManager
 
             return null;
         }
+
+        public static object Convert(this PropertyMetadata prop, string value)
+        {
+            if (String.IsNullOrWhiteSpace(value))
+            {
+                return null;
+            }
+
+            if (prop.DataType == PropertyDataType.Boolean)
+            {
+                return Boolean.Parse(value);
+            }
+
+            if (prop.DataType == PropertyDataType.Number)
+            {
+                return Double.Parse(value);
+            }
+
+            return value;
+        }
     }
 }

@@ -13,41 +13,58 @@ using Thinktecture.IdentityManager.Resources;
 
 namespace Thinktecture.IdentityManager
 {
-    public class ExpressionPropertyMetadata : PropertyMetadata
+    public abstract class ExpressionPropertyMetadata : PropertyMetadata
     {
+        public abstract string Get(object instance);
+        public abstract void Set(object instance, string value);
+    }
 
-        public ExpressionPropertyMetadata(Action<string, string> set, Func<string> get)
+    public class ExpressionPropertyMetadata<TContainer, TProperty> : ExpressionPropertyMetadata
+    {
+        Func<TContainer, TProperty> get;
+        Action<TContainer, TProperty> set;
+        public ExpressionPropertyMetadata(string type, Func<TContainer, TProperty> get, Action<TContainer, TProperty> set)
+            : this(type, type, get, set)
         {
         }
 
-        //PropertyInfo property;
+        public ExpressionPropertyMetadata(string type, string name, Func<TContainer, TProperty> get, Action<TContainer, TProperty> set)
+        {
+            this.Type = type;
+            this.Name = name;
+            this.get = get;
+            this.set = set;
 
-        //public string Get(object instance)
-        //{
-        //    if (this.DataType == PropertyDataType.Password) return null;
+            this.DataType = typeof(TProperty).GetPropertyDataType();
+        }
 
-        //    var value = property.GetValue(instance);
-        //    if (value != null)
-        //    {
-        //        return value.ToString();
-        //    }
+        public override string Get(object instance)
+        {
+            if (this.DataType == PropertyDataType.Password) return null;
 
-        //    return null;
-        //}
+            var value = get((TContainer)instance);
+            if (value != null)
+            {
+                return value.ToString();
+            }
 
-        //public void Set(object instance, string value)
-        //{
-        //    if (String.IsNullOrWhiteSpace(value))
-        //    {
-        //        property.SetValue(instance, null);
-        //    }
-        //    else
-        //    {
-        //        var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-        //        var convertedValue = Convert.ChangeType(value, type);
-        //        property.SetValue(instance, convertedValue);
-        //    }
-        //}
+            return null;
+        }
+
+        public override void Set(object instance, string value)
+        {
+            if (String.IsNullOrWhiteSpace(value))
+            {
+                set((TContainer)instance, default(TProperty));
+            }
+            else
+            {
+                var type = typeof(TProperty);
+                type = Nullable.GetUnderlyingType(type) ?? type;
+                var convertedValue = (TProperty)Convert.ChangeType(value, type);
+                set((TContainer)instance, convertedValue);
+            }
+        }
 
         //public static PropertyMetadata FromProperty(PropertyInfo property,
         //            string name = null,

@@ -15,6 +15,7 @@ namespace Thinktecture.IdentityManager
 {
     public class ReflectedPropertyMetadata : PropertyMetadata
     {
+        [Newtonsoft.Json.JsonIgnore]
         public PropertyInfo Property { get; set; }
 
         public string Get(object instance)
@@ -80,9 +81,9 @@ namespace Thinktecture.IdentityManager
             return FromProperty(property, name, type, required);
         }
 
-        public static IEnumerable<PropertyMetadata> FromType<T>()
+        public static IEnumerable<PropertyMetadata> FromType<T>(params string[] propertiesToExclude)
         {
-            return FromType(typeof(T));
+            return FromType(typeof(T), propertiesToExclude);
         }
 
         public static IEnumerable<PropertyMetadata> FromType(Type type, params string[] propertiesToExclude)
