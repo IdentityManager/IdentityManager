@@ -28,17 +28,10 @@ namespace Thinktecture.IdentityManager
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 
-            var prop = (ReflectedPropertyMetadata)userMetadata.Properties.Where(x => x is ReflectedPropertyMetadata && x.Type == type).SingleOrDefault();
-            if (prop != null)
+            var executableProperty = (ExecutablePropertyMetadata)userMetadata.Properties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
+            if (executableProperty != null)
             {
-                prop.Set(instance, value);
-                return true;
-            }
-
-            var expressionProperty = (ExpressionPropertyMetadata)userMetadata.Properties.Where(x => x is ExpressionPropertyMetadata && x.Type == type).SingleOrDefault();
-            if (expressionProperty != null)
-            {
-                expressionProperty.Set(instance, value);
+                executableProperty.Set(instance, value);
                 return true;
             }
 
@@ -49,17 +42,10 @@ namespace Thinktecture.IdentityManager
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 
-            var reflectedProperty = (ReflectedPropertyMetadata)userMetadata.Properties.Where(x => x is ReflectedPropertyMetadata && x.Type == type).SingleOrDefault();
-            if (reflectedProperty != null)
+            var executableProperty = (ExecutablePropertyMetadata)userMetadata.Properties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
+            if (executableProperty != null)
             {
-                value = reflectedProperty.Get(instance);
-                return true;
-            }
-
-            var expressionProperty = (ExpressionPropertyMetadata)userMetadata.Properties.Where(x => x is ExpressionPropertyMetadata && x.Type == type).SingleOrDefault();
-            if (expressionProperty != null)
-            {
-                value = expressionProperty.Get(instance);
+                value = executableProperty.Get(instance);
                 return true;
             }
 

@@ -26,7 +26,7 @@ namespace Thinktecture.IdentityManager.Host
             var props = new List<PropertyMetadata>()
             {
                 ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Password", type:PropertyDataType.Password, required:true),
-                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Username", required:true),
+                ReflectedPropertyMetadata.FromProperty<InMemoryUser>(x=>x.Username, required:true),
                 new PropertyMetadata {
                     Name = "Name",
                     Type = Constants.ClaimTypes.Name,
@@ -35,7 +35,8 @@ namespace Thinktecture.IdentityManager.Host
                 ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Mobile"),
                 ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Email", type:PropertyDataType.Email),
             };
-            props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>("FirstName"));
+            //props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>("FirstName"));
+            props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>(x=>x.FirstName));
             props.Add(new ExpressionPropertyMetadata<InMemoryUser, string>("FirstName", "First Name", u => u.FirstName, (u, v) => u.FirstName = v)
             {
                 Required = true

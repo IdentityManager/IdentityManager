@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,12 +14,12 @@ using Thinktecture.IdentityManager.Resources;
 
 namespace Thinktecture.IdentityManager
 {
-    public class ReflectedPropertyMetadata : PropertyMetadata
+    public class ReflectedPropertyMetadata : ExecutablePropertyMetadata
     {
         [Newtonsoft.Json.JsonIgnore]
         public PropertyInfo Property { get; set; }
 
-        public string Get(object instance)
+        public override string Get(object instance)
         {
             if (this.DataType == PropertyDataType.Password) return null;
 
@@ -31,7 +32,7 @@ namespace Thinktecture.IdentityManager
             return null;
         }
 
-        public void Set(object instance, string value)
+        public override void Set(object instance, string value)
         {
             if (String.IsNullOrWhiteSpace(value))
             {
@@ -45,9 +46,32 @@ namespace Thinktecture.IdentityManager
             }
         }
 
+        public static PropertyMetadata FromProperty<TContainer>(
+            Expression<Func<TContainer, object>> expression,
+            string name = null,
+            PropertyDataType? dataType = null,
+            bool? required = null)
+        {
+            if (expression == null) throw new ArgumentNullException("expression");
+
+            if (expression.Body.NodeType != ExpressionType.MemberAccess)
+            {
+                throw new ArgumentException("Expression must be a member property expression.");
+            }
+
+            MemberExpression memberExpression = (MemberExpression)expression.Body;
+            PropertyInfo property = memberExpression.Member as PropertyInfo;
+            if (property == null)
+            {
+                throw new ArgumentException("Expression must be a member property expression.");
+            }
+
+            return FromProperty(property, name, dataType, required);
+        }
+
         public static PropertyMetadata FromProperty(PropertyInfo property,
                     string name = null,
-                    PropertyDataType? type = null,
+                    PropertyDataType? dataType = null,
                     bool? required = null)
         {
             if (property == null) throw new ArgumentNullException("property");
@@ -61,7 +85,7 @@ namespace Thinktecture.IdentityManager
             {
                 Type = property.Name,
                 Name = name ?? property.GetName(),
-                DataType = type ?? property.GetPropertyDataType(),
+                DataType = dataType ?? property.GetPropertyDataType(),
                 Required = required ?? property.IsRequired(),
                 Property = property
             };
@@ -84,6 +108,29 @@ namespace Thinktecture.IdentityManager
         public static IEnumerable<PropertyMetadata> FromType<T>(params string[] propertiesToExclude)
         {
             return FromType(typeof(T), propertiesToExclude);
+        }
+
+        public static IEnumerable<PropertyMetadata> FromType<T>(params Expression<Func<T, object>>[] propertyExpressionsToExclude)
+        {
+            List<string> propertiesToExclude = new List<string>();
+            foreach (var expression in propertyExpressionsToExclude)
+            {
+                if (expression.Body.NodeType != ExpressionType.MemberAccess)
+                {
+                    throw new ArgumentException("Expression must be a member property expression.");
+                }
+
+                MemberExpression memberExpression = (MemberExpression)expression.Body;
+                PropertyInfo property = memberExpression.Member as PropertyInfo;
+                if (property == null)
+                {
+                    throw new ArgumentException("Expression must be a member property expression.");
+                }
+
+                propertiesToExclude.Add(property.Name);
+            }
+
+            return FromType(typeof(T), propertiesToExclude.ToArray());
         }
 
         public static IEnumerable<PropertyMetadata> FromType(Type type, params string[] propertiesToExclude)
