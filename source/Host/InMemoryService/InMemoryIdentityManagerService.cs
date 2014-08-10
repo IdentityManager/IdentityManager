@@ -23,53 +23,79 @@ namespace Thinktecture.IdentityManager.Host
 
         public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
         {
-            var props = new HashSet<PropertyMetadata>
-                    {
-                        new PropertyMetadata {
-                            Name = "Username",
-                            Type = Constants.ClaimTypes.Username,
-                            Required = true,
-                        },
-                        new PropertyMetadata {
-                            Name = "Name",
-                            Type = Constants.ClaimTypes.Name,
-                            Required = true,
-                        },
-                        new PropertyMetadata {
-                            Name = "Password",
-                            Type = Constants.ClaimTypes.Password,
-                            DataType = PropertyDataType.Password,
-                            Required = true,
-                        },
-                        new PropertyMetadata {
-                            Name = "Email",
-                            Type = Constants.ClaimTypes.Email,
-                            DataType = PropertyDataType.Email,
-                        },
-                        new PropertyMetadata {
-                            Name = "Phone",
-                            Type = Constants.ClaimTypes.Phone,
-                        },
-                        new PropertyMetadata {
-                            Name = "Is Administrator",
-                            Type = "role.admin",
-                            DataType = PropertyDataType.Boolean,
-                            Required = true,
-                        },
-                        new PropertyMetadata {
-                            Name = "First Name",
-                            Type = "first",
-                        },
-                        new PropertyMetadata {
-                            Name = "Last Name",
-                            Type = "last",
-                        },
-                        new PropertyMetadata {
-                            Name = "Gravatar Url",
-                            Type = "gravatar",
-                            DataType = PropertyDataType.Url,
-                        }
-                    };
+            //var props = new HashSet<PropertyMetadata>
+            //        {
+            //            new PropertyMetadata {
+            //                Name = "Username",
+            //                Type = Constants.ClaimTypes.Username,
+            //                Required = true,
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "Name",
+            //                Type = Constants.ClaimTypes.Name,
+            //                Required = true,
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "Password",
+            //                Type = Constants.ClaimTypes.Password,
+            //                DataType = PropertyDataType.Password,
+            //                Required = true,
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "Email",
+            //                Type = Constants.ClaimTypes.Email,
+            //                DataType = PropertyDataType.Email,
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "Phone",
+            //                Type = Constants.ClaimTypes.Phone,
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "Is Administrator",
+            //                Type = "role.admin",
+            //                DataType = PropertyDataType.Boolean,
+            //                Required = true,
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "First Name",
+            //                Type = "first",
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "Last Name",
+            //                Type = "last",
+            //            },
+            //            new PropertyMetadata {
+            //                Name = "Gravatar Url",
+            //                Type = "gravatar",
+            //                DataType = PropertyDataType.Url,
+            //            }
+            //        };
+
+            
+            var props = PropertyMetadata.FromType<InMemoryUser>().ToList();
+            props.AddRange(new PropertyMetadata[]{
+                PropertyMetadata.FromProperty<InMemoryUser>("Username"),
+                PropertyMetadata.FromProperty<InMemoryUser>("Password", type:PropertyDataType.Password, required:true),
+                PropertyMetadata.FromProperty<InMemoryUser>("Mobile"),
+                PropertyMetadata.FromProperty<InMemoryUser>("Email", type:PropertyDataType.Email),
+                new PropertyMetadata {
+                    Name = "Name",
+                    Type = Constants.ClaimTypes.Name,
+                    Required = true,
+                },
+                new PropertyMetadata {
+                    Name = "Is Administrator",
+                    Type = "role.admin",
+                    DataType = PropertyDataType.Boolean,
+                    Required = true,
+                },
+                new PropertyMetadata {
+                        Name = "Gravatar Url",
+                        Type = "gravatar",
+                        DataType = PropertyDataType.Url,
+                    }
+                });
+
             return Task.FromResult(new IdentityManagerMetadata()
             {
                 UserMetadata = new UserMetadata
