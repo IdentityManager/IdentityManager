@@ -16,14 +16,18 @@ namespace Thinktecture.IdentityManager
 {
     public class ReflectedPropertyMetadata : ExecutablePropertyMetadata
     {
-        [Newtonsoft.Json.JsonIgnore]
-        public PropertyInfo Property { get; set; }
+        PropertyInfo property;
+
+        public ReflectedPropertyMetadata(PropertyInfo property)
+        {
+            this.property = property;
+        }
 
         public override string Get(object instance)
         {
             if (this.DataType == PropertyDataType.Password) return null;
 
-            var value = Property.GetValue(instance);
+            var value = property.GetValue(instance);
             if (value != null)
             {
                 return value.ToString();
@@ -36,123 +40,14 @@ namespace Thinktecture.IdentityManager
         {
             if (String.IsNullOrWhiteSpace(value))
             {
-                Property.SetValue(instance, null);
+                property.SetValue(instance, null);
             }
             else
             {
-                var type = Nullable.GetUnderlyingType(Property.PropertyType) ?? Property.PropertyType;
+                var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                 var convertedValue = Convert.ChangeType(value, type);
-                Property.SetValue(instance, convertedValue);
+                property.SetValue(instance, convertedValue);
             }
-        }
-
-        public static PropertyMetadata FromProperty<TContainer>(
-            Expression<Func<TContainer, object>> expression,
-            string name = null,
-            PropertyDataType? dataType = null,
-            bool? required = null)
-        {
-            if (expression == null) throw new ArgumentNullException("expression");
-
-            if (expression.Body.NodeType != ExpressionType.MemberAccess)
-            {
-                throw new ArgumentException("Expression must be a member property expression.");
-            }
-
-            MemberExpression memberExpression = (MemberExpression)expression.Body;
-            PropertyInfo property = memberExpression.Member as PropertyInfo;
-            if (property == null)
-            {
-                throw new ArgumentException("Expression must be a member property expression.");
-            }
-
-            return FromProperty(property, name, dataType, required);
-        }
-
-        public static PropertyMetadata FromProperty(PropertyInfo property,
-                    string name = null,
-                    PropertyDataType? dataType = null,
-                    bool? required = null)
-        {
-            if (property == null) throw new ArgumentNullException("property");
-
-            if (!property.IsValidAsPropertyMetadata())
-            {
-                return null;
-            }
-
-            return new ReflectedPropertyMetadata
-            {
-                Type = property.Name,
-                Name = name ?? property.GetName(),
-                DataType = dataType ?? property.GetPropertyDataType(),
-                Required = required ?? property.IsRequired(),
-                Property = property
-            };
-        }
-        
-        public static PropertyMetadata FromProperty<T>(string propertyName,
-            string name = null,
-            PropertyDataType? type = null,
-            bool? required = null)
-        {
-            var property = typeof(T).GetProperty(propertyName);
-            if (property == null)
-            {
-                throw new ArgumentException(propertyName + " is invalid property on " + typeof(T).FullName);
-            }
-
-            return FromProperty(property, name, type, required);
-        }
-
-        public static IEnumerable<PropertyMetadata> FromType<T>(params string[] propertiesToExclude)
-        {
-            return FromType(typeof(T), propertiesToExclude);
-        }
-
-        public static IEnumerable<PropertyMetadata> FromType<T>(params Expression<Func<T, object>>[] propertyExpressionsToExclude)
-        {
-            List<string> propertiesToExclude = new List<string>();
-            foreach (var expression in propertyExpressionsToExclude)
-            {
-                if (expression.Body.NodeType != ExpressionType.MemberAccess)
-                {
-                    throw new ArgumentException("Expression must be a member property expression.");
-                }
-
-                MemberExpression memberExpression = (MemberExpression)expression.Body;
-                PropertyInfo property = memberExpression.Member as PropertyInfo;
-                if (property == null)
-                {
-                    throw new ArgumentException("Expression must be a member property expression.");
-                }
-
-                propertiesToExclude.Add(property.Name);
-            }
-
-            return FromType(typeof(T), propertiesToExclude.ToArray());
-        }
-
-        public static IEnumerable<PropertyMetadata> FromType(Type type, params string[] propertiesToExclude)
-        {
-            if (type == null) throw new ArgumentNullException("type");
-
-            List<PropertyMetadata> props = new List<PropertyMetadata>();
-
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.DeclaredOnly);
-            foreach (var property in properties)
-            {
-                if (!propertiesToExclude.Contains(property.Name, StringComparer.OrdinalIgnoreCase))
-                {
-                    var propMeta = FromProperty(property);
-                    if (propMeta != null)
-                    {
-                        props.Add(propMeta);
-                    }
-                }
-            }
-
-            return props;
         }
     }
 }

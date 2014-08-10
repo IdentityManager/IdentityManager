@@ -25,22 +25,19 @@ namespace Thinktecture.IdentityManager.Host
         {
             var props = new List<PropertyMetadata>()
             {
-                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Password", type:PropertyDataType.Password, required:true),
-                ReflectedPropertyMetadata.FromProperty<InMemoryUser>(x=>x.Username, required:true),
+                PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, type:Constants.ClaimTypes.Username),
+                PropertyMetadata.FromPropertyName<InMemoryUser>("Password", type:Constants.ClaimTypes.Password),
                 new PropertyMetadata {
                     Name = "Name",
                     Type = Constants.ClaimTypes.Name,
                     Required = true,
                 },
-                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Mobile"),
-                ReflectedPropertyMetadata.FromProperty<InMemoryUser>("Email", type:PropertyDataType.Email),
+                PropertyMetadata.FromPropertyName<InMemoryUser>("Mobile"),
+                PropertyMetadata.FromPropertyName<InMemoryUser>("Email", dataType:PropertyDataType.Email),
             };
-            //props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>("FirstName"));
-            props.AddRange(ReflectedPropertyMetadata.FromType<InMemoryUser>(x=>x.FirstName));
-            props.Add(new ExpressionPropertyMetadata<InMemoryUser, string>("FirstName", "First Name", u => u.FirstName, (u, v) => u.FirstName = v)
-            {
-                Required = true
-            });
+            //props.AddRange(PropertyMetadata.FromType<InMemoryUser>("FirstName"));
+            props.AddRange(PropertyMetadata.FromType<InMemoryUser>(x => x.FirstName));
+            props.Add(PropertyMetadata.FromFunctions<InMemoryUser, string>("FirstName", u => u.FirstName, (u, v) => u.FirstName = v, name:"First Name", required:true));
             props.AddRange(new PropertyMetadata[]{
                 new PropertyMetadata {
                     Name = "Is Administrator",

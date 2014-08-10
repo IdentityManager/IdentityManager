@@ -10,14 +10,29 @@ namespace Thinktecture.IdentityManager
 {
     public class UserMetadata
     {
+        public static string UsernameType = Constants.ClaimTypes.Username;
+        public static string PasswordType = Constants.ClaimTypes.Password;
+
         public bool SupportsCreate { get; set; }
         public bool SupportsDelete { get; set; }
-
         public bool SupportsClaims { get; set; }
+        
         public IEnumerable<PropertyMetadata> Properties { get; set; }
 
         internal void Validate()
         {
+            if (SupportsCreate)
+            {
+                //if (UsernameProperty == null)
+                //{
+                //    throw new InvalidOperationException("UsernameProperty required if SupportsCreate enabled");
+                //}
+                //if (PasswordProperty == null)
+                //{
+                //    throw new InvalidOperationException("PasswordProperty required if SupportsCreate enabled");
+                //}
+            }
+
             if (Properties == null) Properties = Enumerable.Empty<PropertyMetadata>();
             foreach (var prop in Properties) prop.Validate();
             

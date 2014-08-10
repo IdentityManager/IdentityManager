@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,134 @@ namespace Thinktecture.IdentityManager
         {
             if (String.IsNullOrWhiteSpace(Type)) throw new InvalidOperationException("PropertyMetadata Type is not assigned");
             if (String.IsNullOrWhiteSpace(Name)) throw new InvalidOperationException("PropertyMetadata Name is not assigned");
+        }
+
+        public static PropertyMetadata FromFunctions<TContainer, TProperty>(
+            string type,
+            Func<TContainer, TProperty> get, 
+            Action<TContainer, TProperty> set,
+            string name = null,
+            PropertyDataType? dataType = null,
+            bool? required = null)
+        {
+            var meta = new ExpressionPropertyMetadata<TContainer, TProperty>(type, get, set);
+            if (name != null) meta.Name = name;
+            if (dataType != null) meta.DataType = dataType.Value;
+            if (required != null) meta.Required = required.Value;
+
+            return meta;
+        }
+
+        public static PropertyMetadata FromProperty<TContainer>(
+            Expression<Func<TContainer, object>> expression,
+            string type = null,
+            string name = null,
+            PropertyDataType? dataType = null,
+            bool? required = null)
+        {
+            if (expression == null) throw new ArgumentNullException("expression");
+
+            if (expression.Body.NodeType != ExpressionType.MemberAccess)
+            {
+                throw new ArgumentException("Expression must be a member property expression.");
+            }
+
+            MemberExpression memberExpression = (MemberExpression)expression.Body;
+            PropertyInfo property = memberExpression.Member as PropertyInfo;
+            if (property == null)
+            {
+                throw new ArgumentException("Expression must be a member property expression.");
+            }
+
+            return FromPropertyInfo(property, type, name, dataType, required);
+        }
+
+        public static PropertyMetadata FromPropertyName<T>(
+            string propertyName,
+            string type = null,
+            string name = null,
+            PropertyDataType? dataType = null,
+            bool? required = null)
+        {
+            var property = typeof(T).GetProperty(propertyName);
+            if (property == null)
+            {
+                throw new ArgumentException(propertyName + " is invalid property on " + typeof(T).FullName);
+            }
+
+            return FromPropertyInfo(property, type, name, dataType, required);
+        }
+
+        public static PropertyMetadata FromPropertyInfo(PropertyInfo property,
+            string type = null,
+            string name = null,
+            PropertyDataType? dataType = null,
+            bool? required = null)
+        {
+            if (property == null) throw new ArgumentNullException("property");
+
+            if (!property.IsValidAsPropertyMetadata())
+            {
+                throw new InvalidOperationException(property.Name + " is an invalid property for use as PropertyMetadata");
+            }
+
+            return new ReflectedPropertyMetadata(property)
+            {
+                Type = type ?? property.Name,
+                Name = name ?? property.GetName(),
+                DataType = dataType ?? property.GetPropertyDataType(),
+                Required = required ?? property.IsRequired(),
+            };
+        }
+        
+        public static IEnumerable<PropertyMetadata> FromType<T>(params string[] propertiesToExclude)
+        {
+            return FromType(typeof(T), propertiesToExclude);
+        }
+
+        public static IEnumerable<PropertyMetadata> FromType<T>(params Expression<Func<T, object>>[] propertyExpressionsToExclude)
+        {
+            List<string> propertiesToExclude = new List<string>();
+            foreach (var expression in propertyExpressionsToExclude)
+            {
+                if (expression.Body.NodeType != ExpressionType.MemberAccess)
+                {
+                    throw new ArgumentException("Expression must be a member property expression.");
+                }
+
+                MemberExpression memberExpression = (MemberExpression)expression.Body;
+                PropertyInfo property = memberExpression.Member as PropertyInfo;
+                if (property == null)
+                {
+                    throw new ArgumentException("Expression must be a member property expression.");
+                }
+
+                propertiesToExclude.Add(property.Name);
+            }
+
+            return FromType(typeof(T), propertiesToExclude.ToArray());
+        }
+
+        public static IEnumerable<PropertyMetadata> FromType(Type type, params string[] propertiesToExclude)
+        {
+            if (type == null) throw new ArgumentNullException("type");
+
+            List<PropertyMetadata> props = new List<PropertyMetadata>();
+
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.DeclaredOnly);
+            foreach (var property in properties)
+            {
+                if (!propertiesToExclude.Contains(property.Name, StringComparer.OrdinalIgnoreCase))
+                {
+                    if (property.IsValidAsPropertyMetadata())
+                    {
+                        var propMeta = FromPropertyInfo(property);
+                        props.Add(propMeta);
+                    }
+                }
+            }
+
+            return props;
         }
     }
 }
