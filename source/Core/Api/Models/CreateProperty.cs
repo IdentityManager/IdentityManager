@@ -7,16 +7,6 @@ using Thinktecture.IdentityManager.Resources;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
-    public class CreateUserModel
-    {
-        [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "UsernameRequired")]
-        public string Username { get; set; }
-        [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PasswordRequired")]
-        public string Password { get; set; }
-
-        public CreateProperty[] Properties { get; set; }
-    }
-
     public class CreateProperty
     {
         [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PropertyTypeRequired")]

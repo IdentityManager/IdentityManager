@@ -31,24 +31,17 @@ namespace Thinktecture.IdentityManager.Host
                 {
                     PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, type:Constants.ClaimTypes.Username, required:true),
                 };
-                var updateprops = new List<PropertyMetadata>()
-                {
-                    PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, name:"Change Username", type:Constants.ClaimTypes.Username, required:true),
+
+                var updateprops = new List<PropertyMetadata>();
+                updateprops.AddRange(new PropertyMetadata[]{
+                    PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, type:Constants.ClaimTypes.Username, required:true),
                     PropertyMetadata.FromPropertyName<InMemoryUser>("Password", type:Constants.ClaimTypes.Password, required:true),
-                    new PropertyMetadata {
-                        Name = "Name",
-                        Type = Constants.ClaimTypes.Name,
-                        Required = true,
-                    },
+                    PropertyMetadata.FromFunctions<InMemoryUser, string>(Constants.ClaimTypes.Name, this.GetName, this.SetName, name:"Name", required:true),
+                });
+                updateprops.AddRange(PropertyMetadata.FromType<InMemoryUser>());
+                updateprops.AddRange(new PropertyMetadata[]{
                     PropertyMetadata.FromPropertyName<InMemoryUser>("Mobile"),
                     PropertyMetadata.FromPropertyName<InMemoryUser>("Email", dataType:PropertyDataType.Email),
-                };
-                
-                //props.AddRange(PropertyMetadata.FromType<InMemoryUser>("FirstName"));
-                updateprops.AddRange(PropertyMetadata.FromType<InMemoryUser>(x => x.FirstName, x=>x.LastName));
-                updateprops.Add(PropertyMetadata.FromFunctions<InMemoryUser, string>("FirstName", u => u.FirstName, (u, v) => u.FirstName = v, name: "First Name", required: true));
-                updateprops.Add(PropertyMetadata.FromProperty<InMemoryUser>(x => x.LastName, name:"Last Name"));
-                updateprops.AddRange(new PropertyMetadata[]{
                     new PropertyMetadata {
                         Name = "Is Administrator",
                         Type = "role.admin",
@@ -56,12 +49,11 @@ namespace Thinktecture.IdentityManager.Host
                         Required = true,
                     },
                     new PropertyMetadata {
-                            Name = "Gravatar Url",
-                            Type = "gravatar",
-                            DataType = PropertyDataType.Url,
-                        }
+                        Name = "Gravatar Url",
+                        Type = "gravatar",
+                        DataType = PropertyDataType.Url,
                     }
-                );
+                });
 
                 metadata = new IdentityManagerMetadata()
                 {
@@ -229,6 +221,16 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
+        private string GetName(InMemoryUser user)
+        {
+            return user.Claims.GetValue(Constants.ClaimTypes.Name);
+        }
+
+        private void SetName(InMemoryUser user, string value)
+        {
+            user.Claims.SetValue(Constants.ClaimTypes.Name, value);
+        }
+
         private string GetProperty(string type, InMemoryUser user)
         {
             string value;
@@ -239,8 +241,6 @@ namespace Thinktecture.IdentityManager.Host
             
             switch (type)
             {
-                case Constants.ClaimTypes.Name:
-                    return user.Claims.GetValue(Constants.ClaimTypes.Name);
                 case "role.admin":
                     return user.Claims.HasValue(Constants.ClaimTypes.Role, "admin").ToString().ToLower();
                 case "gravatar":
@@ -259,11 +259,6 @@ namespace Thinktecture.IdentityManager.Host
 
             switch (type)
             {
-                case Constants.ClaimTypes.Name:
-                    {
-                        user.Claims.SetValue(Constants.ClaimTypes.Name, value);
-                    }
-                    break;
                 case "role.admin":
                     {
                         var val = Boolean.Parse(value);

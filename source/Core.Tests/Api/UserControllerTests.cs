@@ -83,30 +83,30 @@ namespace Core.Tests.Api
         //    identityManager.VerifyCreateUserAsyncNotCalled();
         //}
 
-        [TestMethod]
-        public void CreateUserAsync_MissingModel_ReturnsError()
-        {
-            var response = Post("api/users", (CreateUserModel)null);
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
-            CollectionAssert.Contains(error.Errors, Messages.UserDataRequired);
-        }
-        [TestMethod]
-        public void CreateUserAsync_MissingUsername_ReturnsError()
-        {
-            var response = Post("api/users", new CreateUserModel { Username = "", Password = "pass" });
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
-            CollectionAssert.Contains(error.Errors, Messages.UsernameRequired);
-        }
-        [TestMethod]
-        public void CreateUserAsync_MissingPassword_ReturnsError()
-        {
-            var response = Post("api/users", new CreateUserModel { Username = "user", Password = "" });
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
-            CollectionAssert.Contains(error.Errors, Messages.PasswordRequired);
-        }
+        //[TestMethod]
+        //public void CreateUserAsync_MissingModel_ReturnsError()
+        //{
+        //    var response = Post("api/users", (CreateUserModel)null);
+        //    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        //    var error = response.Content.ReadAsAsync<ErrorModel>().Result;
+        //    CollectionAssert.Contains(error.Errors, Messages.UserDataRequired);
+        //}
+        //[TestMethod]
+        //public void CreateUserAsync_MissingUsername_ReturnsError()
+        //{
+        //    var response = Post("api/users", new CreateUserModel { Username = "", Password = "pass" });
+        //    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        //    var error = response.Content.ReadAsAsync<ErrorModel>().Result;
+        //    CollectionAssert.Contains(error.Errors, Messages.UsernameRequired);
+        //}
+        //[TestMethod]
+        //public void CreateUserAsync_MissingPassword_ReturnsError()
+        //{
+        //    var response = Post("api/users", new CreateUserModel { Username = "user", Password = "" });
+        //    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        //    var error = response.Content.ReadAsAsync<ErrorModel>().Result;
+        //    CollectionAssert.Contains(error.Errors, Messages.PasswordRequired);
+        //}
         //[TestMethod]
         //public void CreateUserAsync_IdentityManagerReturnsErrors_ReturnsErrors()
         //{
