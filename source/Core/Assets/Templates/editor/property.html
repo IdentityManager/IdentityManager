@@ -2,10 +2,11 @@
     <div ng-switch on="property.meta.dataType" class="col-sm-12">
         <div ng-switch-when="1">
             <div class="form-group">
-                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
                 <input type="password"
                        class="form-control user-edit-regular"
                        id="{{property.meta.type}}"
+                       name="data"
                        placeholder="{{property.meta.name}}"
                        required
                        ng-model="property.data">
@@ -14,21 +15,28 @@
                 <input type="password"
                        class="form-control user-edit-regular"
                        id="confirm_{{property.meta.type}}"
+                       name="confirm"
                        placeholder="Confirm {{property.meta.name}}"
                        required
                        ng-model="confirm"
                        tt-match="property.data">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && form.data.$error.required">{{property.meta.name}} is required</span>
+            <span class="label label-danger"
+                  ng-show="form.confirm.$dirty && form.data.$valid && form.confirm.$error.required">Confirm is required</span>
+            <span class="label label-danger"
+                  ng-show="form.confirm.$dirty && form.data.$valid && form.confirm.$error.ttMatch">Confirm must match</span>
         </div>
         <div ng-switch-when="5">
             <div class="form-group">
                 <label for="{{property.meta.type}}" class="column">
                     {{property.meta.name}}
-                    <span ng-show="property.meta.required">*</span>
                     <input type="checkbox"
                            class="user-edit-regular"
                            id="{{property.meta.type}}"
+                           name="data"
                            ng-model="property.data"
                            ng-true-value="'true'"
                            ng-false-value="'false'"
@@ -38,39 +46,69 @@
         </div>
         <div ng-switch-when="4">
             <div class="form-group">
-                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
                 <input type="number"
                        class="form-control user-edit-wide"
                        id="{{property.meta.type}}"
+                       name="data"
                        placeholder="{{property.meta.name}}"
                        ng-model="property.data"
                        ng-required="property.meta.required">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && form.data.$error.required">{{property.meta.name}} is required</span>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && !form.data.$error.required && form.data.$error.number">{{property.meta.name}} must be a number</span>
         </div>
         <div ng-switch-when="2">
             <div class="form-group">
-                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
                 <input type="email"
                        class="form-control user-edit-wide"
                        id="{{property.meta.type}}"
+                       name="data"
                        placeholder="{{property.meta.name}}"
                        ng-model="property.data"
                        ng-required="property.meta.required">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && form.data.$error.required">{{property.meta.name}} is required</span>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && !form.data.$error.required && form.data.$error.email">{{property.meta.name}} must be a valid email</span>
+        </div>
+        <div ng-switch-when="3">
+            <div class="form-group">
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
+                <input type="url"
+                       class="form-control user-edit-wide"
+                       id="{{property.meta.type}}"
+                       name="data"
+                       placeholder="{{property.meta.name}}"
+                       ng-model="property.data"
+                       ng-required="property.meta.required">
+            </div>
+            <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && form.data.$error.required">{{property.meta.name}} is required</span>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && !form.data.$error.required && form.data.$error.url">{{property.meta.name}} must be a valid URL</span>
         </div>
         <div ng-switch-default>
             <div class="form-group">
-                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}}</label>
                 <input type="text"
                        class="form-control user-edit-wide"
                        id="{{property.meta.type}}"
+                       name="data"
                        placeholder="{{property.meta.name}}"
                        ng-model="property.data"
                        ng-required="property.meta.required">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
+            <span class="label label-danger"
+                  ng-show="form.data.$dirty && form.data.$error.required">{{property.meta.name}} is required</span>
         </div>
     </div>
 </form>

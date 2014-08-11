@@ -76,6 +76,20 @@
                        required
                        ng-model="property.data">
             </div>
+            <div ng-switch-when="3" class="form-group col-sm-6">
+                <label for="{{property.meta.type}}">{{property.meta.name}}</label>
+                <span class="pull-right label label-danger"
+                      ng-show="childForm.$dirty && childForm.data.$error.url">{{property.meta.name}} must be a valid URL</span>
+                <span class="pull-right label label-danger"
+                      ng-show="childForm.$dirty && childForm.data.$error.required && !childForm.data.$error.url">{{property.meta.name}} is required</span>
+                <input type="url"
+                       id="{{property.meta.type}}"
+                       name="data"
+                       placeholder="{{property.meta.name}}"
+                       class="form-control"
+                       required
+                       ng-model="property.data">
+            </div>
             <div ng-switch-default class="form-group col-sm-6">
                 <label for="{{property.meta.type}}">{{property.meta.name}}</label>
                 <span class="pull-right label label-danger"
