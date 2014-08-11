@@ -741,7 +741,12 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         $scope.setProperty = function (property) {
             idmUsers.setProperty(property)
                 .then(function () {
-                    feedback.message = property.meta.name + " Changed to: " + property.data;
+                    if (property.meta.dataType !== 1) {
+                        feedback.message = property.meta.name + " Changed to: " + property.data;
+                    }
+                    else {
+                        feedback.message = property.meta.name + " Changed";
+                    }
                     loadUser();
                 }, feedback.errorHandler);
         };
