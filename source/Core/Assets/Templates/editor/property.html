@@ -16,6 +16,7 @@
                        id="confirm_{{property.meta.type}}"
                        placeholder="Confirm {{property.meta.name}}"
                        required
+                       ng-model="confirm"
                        tt-match="property.data">
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid">Set</button>
@@ -34,6 +35,30 @@
                            ng-change="setProperty(property)">
                 </label>
             </div>
+        </div>
+        <div ng-switch-when="4">
+            <div class="form-group">
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
+                <input type="number"
+                       class="form-control user-edit-wide"
+                       id="{{property.meta.type}}"
+                       placeholder="{{property.meta.name}}"
+                       ng-model="property.data"
+                       ng-required="property.meta.required">
+            </div>
+            <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
+        </div>
+        <div ng-switch-when="2">
+            <div class="form-group">
+                <label for="{{property.meta.type}}" class="column">{{property.meta.name}} <span ng-show="property.meta.required">*</span></label>
+                <input type="email"
+                       class="form-control user-edit-wide"
+                       id="{{property.meta.type}}"
+                       placeholder="{{property.meta.name}}"
+                       ng-model="property.data"
+                       ng-required="property.meta.required">
+            </div>
+            <button type="submit" class="btn btn-primary" ng-disabled="form.$invalid || form.$pristine">Set</button>
         </div>
         <div ng-switch-default>
             <div class="form-group">

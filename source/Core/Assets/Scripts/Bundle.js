@@ -367,16 +367,18 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     function ttMatch() {
         return {
             restrict: 'A',
-            require: '^form',
+            require: 'ngModel',
             link: function (scope, elem, attrs, ctrl) {
                 function check() {
-                    var thisVal = elem.val();
-                    var otherVal = scope.$eval(attrs.ttMatch);
-                    if (thisVal === otherVal) {
-                        ctrl.$setValidity('ttMatch', true);
-                    }
-                    else {
-                        ctrl.$setValidity('ttMatch', false);
+                    if (ctrl.$dirty) {
+                        var thisVal = elem.val();
+                        var otherVal = scope.$eval(attrs.ttMatch);
+                        if (!thisVal || thisVal === otherVal) {
+                            ctrl.$setValidity('ttMatch', true);
+                        }
+                        else {
+                            ctrl.$setValidity('ttMatch', false);
+                        }
                     }
                 }
                 elem.on("input", function () {

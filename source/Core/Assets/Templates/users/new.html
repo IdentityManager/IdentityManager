@@ -8,7 +8,7 @@
 </div>
 
 <form class="form" ng-submit="create(properties)" name="form" ng-show="create">
-    <div ng-repeat="property in properties" class="row">
+    <div ng-repeat="property in properties" class="row" ng-form="childForm">
         <div ng-switch on="property.meta.dataType">
             <div ng-switch-when="5" class="form-group col-sm-6">
                 <label for="{{property.meta.type}}">
@@ -23,26 +23,66 @@
             <div ng-switch-when="1">
                 <div class="form-group col-sm-3">
                     <label for="{{property.meta.type}}">{{property.meta.name}}</label>
+                    <span class="pull-right label label-danger"
+                          ng-show="childForm.data.$dirty && childForm.data.$error.required">{{property.meta.name}} is required</span>
                     <input type="password"
                            class="form-control"
                            id="{{property.meta.type}}"
+                           name="data"
                            placeholder="{{property.meta.name}}"
                            required
                            ng-model="property.data">
                 </div>
                 <div class="form-group col-sm-3">
                     <label for="{{property.meta.type}}">Confirm {{property.meta.name}}</label>
+                    <span class="pull-right label label-danger"
+                          ng-show="childForm.confirm.$dirty && childForm.confirm.$error.required">Confirm is required</span>
+                    <span class="pull-right label label-danger"
+                          ng-show="childForm.confirm.$touched && childForm.confirm.$error.ttMatch">Confirm must match</span>
                     <input type="password"
                            class="form-control"
+                           name="confirm"
                            placeholder="Confirm {{property.meta.name}}"
                            required
+                           ng-model="confirm"
                            tt-match="property.data">
                 </div>
             </div>
+            <div ng-switch-when="4" class="form-group col-sm-6">
+                <label for="{{property.meta.type}}">{{property.meta.name}}</label>
+                <span class="pull-right label label-danger"
+                      ng-show="childForm.$dirty && childForm.data.$error.number">{{property.meta.name}} must be a number</span>
+                <span class="pull-right label label-danger"
+                      ng-show="childForm.$dirty && childForm.data.$error.required && !childForm.data.$error.number">{{property.meta.name}} is required</span>
+                <input type="number"
+                       id="{{property.meta.type}}"
+                       name="data"
+                       placeholder="{{property.meta.name}}"
+                       class="form-control"
+                       required
+                       ng-model="property.data">
+            </div>
+            <div ng-switch-when="2" class="form-group col-sm-6">
+                <label for="{{property.meta.type}}">{{property.meta.name}}</label>
+                <span class="pull-right label label-danger"
+                      ng-show="childForm.$dirty && childForm.data.$error.email">{{property.meta.name}} must be a valid email</span>
+                <span class="pull-right label label-danger"
+                      ng-show="childForm.$dirty && childForm.data.$error.required && !childForm.data.$error.email">{{property.meta.name}} is required</span>
+                <input type="email"
+                       id="{{property.meta.type}}"
+                       name="data"
+                       placeholder="{{property.meta.name}}"
+                       class="form-control"
+                       required
+                       ng-model="property.data">
+            </div>
             <div ng-switch-default class="form-group col-sm-6">
                 <label for="{{property.meta.type}}">{{property.meta.name}}</label>
+                <span class="pull-right label label-danger"
+                      ng-show="childForm.$dirty && childForm.data.$error.required">{{property.meta.name}} is required</span>
                 <input type="text"
                        id="{{property.meta.type}}"
+                       name="data"
                        placeholder="{{property.meta.name}}"
                        class="form-control"
                        required
