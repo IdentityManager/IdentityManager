@@ -35,6 +35,10 @@ namespace Thinktecture.IdentityManager
             PropertyDataType? dataType = null,
             bool? required = null)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
+            if (get == null) throw new ArgumentNullException("get");
+            if (set == null) throw new ArgumentNullException("set");
+
             var meta = new ExpressionPropertyMetadata<TContainer, TProperty>(type, get, set);
             if (name != null) meta.Name = name;
             if (dataType != null) meta.DataType = dataType.Value;
@@ -74,6 +78,8 @@ namespace Thinktecture.IdentityManager
             PropertyDataType? dataType = null,
             bool? required = null)
         {
+            if (String.IsNullOrWhiteSpace(propertyName)) throw new ArgumentNullException("propertyName");
+
             var property = typeof(T).GetProperty(propertyName);
             if (property == null)
             {
@@ -83,7 +89,8 @@ namespace Thinktecture.IdentityManager
             return FromPropertyInfo(property, type, name, dataType, required);
         }
 
-        public static PropertyMetadata FromPropertyInfo(PropertyInfo property,
+        public static PropertyMetadata FromPropertyInfo(
+            PropertyInfo property,
             string type = null,
             string name = null,
             PropertyDataType? dataType = null,

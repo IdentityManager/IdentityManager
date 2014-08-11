@@ -22,8 +22,17 @@ namespace Thinktecture.IdentityManager
         {
         }
 
-        public ExpressionPropertyMetadata(string type, string name, Func<TContainer, TProperty> get, Action<TContainer, TProperty> set)
+        public ExpressionPropertyMetadata(
+            string type, 
+            string name, 
+            Func<TContainer, TProperty> get, 
+            Action<TContainer, TProperty> set)
         {
+            if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
+            if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("name");
+            if (get == null) throw new ArgumentNullException("get");
+            if (set == null) throw new ArgumentNullException("set");
+
             this.Type = type;
             this.Name = name;
             this.get = get;
@@ -34,6 +43,8 @@ namespace Thinktecture.IdentityManager
 
         public override string Get(object instance)
         {
+            if (instance == null) throw new ArgumentNullException("instance");
+
             if (this.DataType == PropertyDataType.Password) return null;
 
             var value = get((TContainer)instance);
@@ -47,6 +58,8 @@ namespace Thinktecture.IdentityManager
 
         public override void Set(object instance, string value)
         {
+            if (instance == null) throw new ArgumentNullException("instance");
+            
             if (String.IsNullOrWhiteSpace(value))
             {
                 set((TContainer)instance, default(TProperty));

@@ -20,11 +20,15 @@ namespace Thinktecture.IdentityManager
 
         public ReflectedPropertyMetadata(PropertyInfo property)
         {
+            if (property == null) throw new ArgumentNullException("property");
+
             this.property = property;
         }
 
         public override string Get(object instance)
         {
+            if (instance == null) throw new ArgumentNullException("instance");
+
             if (this.DataType == PropertyDataType.Password) return null;
 
             var value = property.GetValue(instance);
@@ -38,6 +42,8 @@ namespace Thinktecture.IdentityManager
 
         public override void Set(object instance, string value)
         {
+            if (instance == null) throw new ArgumentNullException("instance");
+            
             if (String.IsNullOrWhiteSpace(value))
             {
                 property.SetValue(instance, null);

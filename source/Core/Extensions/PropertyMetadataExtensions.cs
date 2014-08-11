@@ -9,49 +9,49 @@ namespace Thinktecture.IdentityManager
 {
     public static class PropertyMetadataExtensions
     {
-        public static string Validate(this PropertyMetadata prop, string value)
+        public static string Validate(this PropertyMetadata property, string value)
         {
-            if (prop == null) throw new ArgumentNullException("prop");
+            if (property == null) throw new ArgumentNullException("property");
 
-            if (prop.Required && String.IsNullOrWhiteSpace(value))
+            if (property.Required && String.IsNullOrWhiteSpace(value))
             {
-                return String.Format(Messages.IsRequired, prop.Name);
+                return String.Format(Messages.IsRequired, property.Name);
             }
             else if (!String.IsNullOrWhiteSpace(value))
             {
-                if (prop.DataType == PropertyDataType.Boolean)
+                if (property.DataType == PropertyDataType.Boolean)
                 {
                     bool val;
                     if (!Boolean.TryParse(value, out val))
                     {
-                        return String.Format(Messages.InvalidBoolean, prop.Name);
+                        return String.Format(Messages.InvalidBoolean, property.Name);
                     }
                 }
 
-                if (prop.DataType == PropertyDataType.Email)
+                if (property.DataType == PropertyDataType.Email)
                 {
                     if (!value.Contains("@"))
                     {
-                        return String.Format(Messages.InvalidEmail, prop.Name);
+                        return String.Format(Messages.InvalidEmail, property.Name);
                     }
                 }
 
-                if (prop.DataType == PropertyDataType.Number)
+                if (property.DataType == PropertyDataType.Number)
                 {
                     double d;
                     if (!Double.TryParse(value, out d))
                     {
-                        return String.Format(Messages.InvalidNumber, prop.Name);
+                        return String.Format(Messages.InvalidNumber, property.Name);
                     }
                 }
 
-                if (prop.DataType == PropertyDataType.Url)
+                if (property.DataType == PropertyDataType.Url)
                 {
                     Uri uri;
                     if (!Uri.TryCreate(value, UriKind.Absolute, out uri) ||
                         (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
                     {
-                        return String.Format(Messages.InvalidUrl, prop.Name);
+                        return String.Format(Messages.InvalidUrl, property.Name);
                     }
                 }
             }
@@ -59,19 +59,21 @@ namespace Thinktecture.IdentityManager
             return null;
         }
 
-        public static object Convert(this PropertyMetadata prop, string value)
+        public static object Convert(this PropertyMetadata property, string value)
         {
+            if (property == null) throw new ArgumentNullException("property");
+            
             if (String.IsNullOrWhiteSpace(value))
             {
                 return null;
             }
 
-            if (prop.DataType == PropertyDataType.Boolean)
+            if (property.DataType == PropertyDataType.Boolean)
             {
                 return Boolean.Parse(value);
             }
 
-            if (prop.DataType == PropertyDataType.Number)
+            if (property.DataType == PropertyDataType.Number)
             {
                 return Double.Parse(value);
             }
