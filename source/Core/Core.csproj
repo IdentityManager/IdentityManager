@@ -93,6 +93,7 @@
     <Compile Include="Api\Controllers\PageController.cs" />
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Filters\SecurityHeadersAttribute.cs" />
+    <Compile Include="Api\Models\CreateUserLink.cs" />
     <Compile Include="Api\Models\ErrorModel.cs" />
     <Compile Include="Api\Models\UserDetailResource.cs" />
     <Compile Include="Api\Models\QueryResultResource.cs" />

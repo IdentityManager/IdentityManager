@@ -21,57 +21,69 @@ namespace Thinktecture.IdentityManager.Host
             this.users = users;
         }
 
-        static InMemoryIdentityManagerService()
+        IdentityManagerMetadata metadata;
+
+        IdentityManagerMetadata GetMetadata()
         {
-            var props = new List<PropertyMetadata>()
+            if (metadata == null)
             {
-                PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, type:Constants.ClaimTypes.Username),
-                PropertyMetadata.FromPropertyName<InMemoryUser>("Password", type:Constants.ClaimTypes.Password),
-                new PropertyMetadata {
-                    Name = "Name",
-                    Type = Constants.ClaimTypes.Name,
-                    Required = true,
-                },
-                PropertyMetadata.FromPropertyName<InMemoryUser>("Mobile"),
-                PropertyMetadata.FromPropertyName<InMemoryUser>("Email", dataType:PropertyDataType.Email),
-            };
-            //props.AddRange(PropertyMetadata.FromType<InMemoryUser>("FirstName"));
-            props.AddRange(PropertyMetadata.FromType<InMemoryUser>(x => x.FirstName));
-            props.Add(PropertyMetadata.FromFunctions<InMemoryUser, string>("FirstName", u => u.FirstName, (u, v) => u.FirstName = v, name:"First Name", required:true));
-            props.AddRange(new PropertyMetadata[]{
-                new PropertyMetadata {
-                    Name = "Is Administrator",
-                    Type = "role.admin",
-                    DataType = PropertyDataType.Boolean,
-                    Required = true,
-                },
-                new PropertyMetadata {
-                        Name = "Gravatar Url",
-                        Type = "gravatar",
-                        DataType = PropertyDataType.Url,
-                    }
-                });
-
-            metadata = new IdentityManagerMetadata()
-            {
-                UserMetadata = new UserMetadata
+                var createprops = new List<PropertyMetadata>()
                 {
-                    SupportsCreate = true,
-                    SupportsDelete = true,
-                    SupportsClaims = true,
-                    Properties = props
-                }
-            };
-        }
+                    PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, type:Constants.ClaimTypes.Username, required:true),
+                };
+                var updateprops = new List<PropertyMetadata>()
+                {
+                    PropertyMetadata.FromProperty<InMemoryUser>(x => x.Username, name:"Change Username", type:Constants.ClaimTypes.Username, required:true),
+                    PropertyMetadata.FromPropertyName<InMemoryUser>("Password", type:Constants.ClaimTypes.Password, required:true),
+                    new PropertyMetadata {
+                        Name = "Name",
+                        Type = Constants.ClaimTypes.Name,
+                        Required = true,
+                    },
+                    PropertyMetadata.FromPropertyName<InMemoryUser>("Mobile"),
+                    PropertyMetadata.FromPropertyName<InMemoryUser>("Email", dataType:PropertyDataType.Email),
+                };
+                
+                //props.AddRange(PropertyMetadata.FromType<InMemoryUser>("FirstName"));
+                updateprops.AddRange(PropertyMetadata.FromType<InMemoryUser>(x => x.FirstName, x=>x.LastName));
+                updateprops.Add(PropertyMetadata.FromFunctions<InMemoryUser, string>("FirstName", u => u.FirstName, (u, v) => u.FirstName = v, name: "First Name", required: true));
+                updateprops.Add(PropertyMetadata.FromProperty<InMemoryUser>(x => x.LastName, name:"Last Name"));
+                updateprops.AddRange(new PropertyMetadata[]{
+                    new PropertyMetadata {
+                        Name = "Is Administrator",
+                        Type = "role.admin",
+                        DataType = PropertyDataType.Boolean,
+                        Required = true,
+                    },
+                    new PropertyMetadata {
+                            Name = "Gravatar Url",
+                            Type = "gravatar",
+                            DataType = PropertyDataType.Url,
+                        }
+                    }
+                );
 
-        static IdentityManagerMetadata metadata;
+                metadata = new IdentityManagerMetadata()
+                {
+                    UserMetadata = new UserMetadata
+                    {
+                        SupportsCreate = true,
+                        SupportsDelete = true,
+                        SupportsClaims = true,
+                        CreateProperties = createprops,
+                        UpdateProperties = updateprops
+                    }
+                };
+            }
+            return metadata;
+        }
 
         public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
         {
-            return Task.FromResult(metadata);
+            return Task.FromResult(GetMetadata());
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password, IEnumerable<UserClaim> properties)
+        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<UserClaim> properties)
         {
             var errors = new List<string>();
             foreach(var prop in properties)
@@ -84,11 +96,7 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult<CreateResult>(errors.ToArray()));
             }
 
-            var user = new InMemoryUser()
-            {
-                Username = username,
-                Password = password
-            };
+            var user = new InMemoryUser();
 
             foreach (var prop in properties)
             {
@@ -156,7 +164,7 @@ namespace Thinktecture.IdentityManager.Host
             }
 
             var props = new List<UserClaim>();
-            foreach(var prop in metadata.UserMetadata.Properties)
+            foreach(var prop in GetMetadata().UserMetadata.UpdateProperties)
             {
                 props.Add(new UserClaim{
                     Type = prop.Type, 
@@ -221,10 +229,10 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        private static string GetProperty(string type, InMemoryUser user)
+        private string GetProperty(string type, InMemoryUser user)
         {
             string value;
-            if (metadata.UserMetadata.TryGet(user, type, out value))
+            if (GetMetadata().UserMetadata.TryGet(user, type, out value))
             {
                 return value;
             }
@@ -242,9 +250,9 @@ namespace Thinktecture.IdentityManager.Host
             throw new Exception("Invalid property type " + type);
         }
 
-        private static void SetProperty(string type, string value, InMemoryUser user)
+        private void SetProperty(string type, string value, InMemoryUser user)
         {
-            if (metadata.UserMetadata.TrySet(user, type, value))
+            if (GetMetadata().UserMetadata.TrySet(user, type, value))
             {
                 return;
             }
@@ -281,7 +289,7 @@ namespace Thinktecture.IdentityManager.Host
 
         private string[] ValidateProperty(string type, string value)
         {
-            var error = metadata.UserMetadata.Validate(type, value);
+            var error = GetMetadata().UserMetadata.Validate(type, value);
             if (error != null)
             {
                 return new string[] { error };

@@ -7,10 +7,12 @@
     function ttMatch() {
         return {
             restrict: 'A',
-            require: 'ngModel',
+            require: '^form',
             link: function (scope, elem, attrs, ctrl) {
                 function check() {
-                    if (elem.val() === scope.$eval(attrs.ttMatch)) {
+                    var thisVal = elem.val();
+                    var otherVal = scope.$eval(attrs.ttMatch);
+                    if (thisVal === otherVal) {
                         ctrl.$setValidity('ttMatch', true);
                     }
                     else {
@@ -18,7 +20,7 @@
                     }
                 }
                 elem.on("input", function () {
-                    check();
+                    scope.$apply(check);
                 });
                 scope.$watch(attrs.ttMatch, function (val) {
                     check();

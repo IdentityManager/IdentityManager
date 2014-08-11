@@ -153,6 +153,9 @@
   <data name="MissingRequiredProperties" xml:space="preserve">
     <value>Missing required properties: {0}</value>
   </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
   <data name="PasswordDataRequired" xml:space="preserve">
     <value>Password data required.</value>
   </data>
@@ -176,6 +179,9 @@
   </data>
   <data name="UserDataRequired" xml:space="preserve">
     <value>User data required.</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
   </data>
   <data name="UsernameRequired" xml:space="preserve">
     <value>Username is required.</value>

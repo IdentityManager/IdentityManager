@@ -140,31 +140,27 @@
     function NewUserCtrl($scope, idmUsers, idmApi) {
         var feedback = new Feedback();
         $scope.feedback = feedback;
-        if (!idmApi.data.metadata.userMetadata.supportsCreate) {
+        if (!idmApi.links.createUser) {
             feedback.errors = "Create Not Supported";
             return;
         }
         else {
-            var required = idmApi.data.metadata.userMetadata.properties
-                .filter(function (item) {
-                    return item.required &&
-                        item.type != "username" &&
-                        item.type != "password";
-                }).map(function(item){
+            var properties = idmApi.links.createUser.meta
+                .map(function (item) {
                     return {
                         meta : item,
                         data : item.dataType === 5 ? false : undefined
                     };
                 });
-            $scope.properties = required;
-            $scope.create = function (username, password, properties) {
+            $scope.properties = properties;
+            $scope.create = function (properties) {
                 var props = properties.map(function (item) {
                     return {
                         type: item.meta.type,
                         value: item.data
                     };
                 });
-                idmUsers.createUser(username, password, props)
+                idmUsers.createUser(props)
                     .then(function (result) {
                         $scope.model.last = result;
                         feedback.message = "Create Success";

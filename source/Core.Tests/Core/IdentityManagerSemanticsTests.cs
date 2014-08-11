@@ -25,70 +25,70 @@ namespace Core.Tests.Core
             Assert.NotNull(task.Result);
         }
 
-        [Fact]
-        public void GetUserAsync_InvalidSubject_ReturnsSuccessResultWithNullUser()
-        {
-            var createResult = subject.CreateUserAsync("alice", "pass").Result;
-            Assert.True(createResult.IsSuccess);
-            Assert.NotNull(createResult.Result.Subject);
+        //[Fact]
+        //public void GetUserAsync_InvalidSubject_ReturnsSuccessResultWithNullUser()
+        //{
+        //    var createResult = subject.CreateUserAsync("alice", "pass").Result;
+        //    Assert.True(createResult.IsSuccess);
+        //    Assert.NotNull(createResult.Result.Subject);
 
-            subject = CreateIdentityManager();
+        //    subject = CreateIdentityManager();
 
-            var getResult = subject.GetUserAsync(createResult.Result.Subject).Result;
-            Assert.True(getResult.IsSuccess);
-            Assert.Null(getResult.Result);
-        }
+        //    var getResult = subject.GetUserAsync(createResult.Result.Subject).Result;
+        //    Assert.True(getResult.IsSuccess);
+        //    Assert.Null(getResult.Result);
+        //}
 
-        [Fact]
-        public void CreateUserAsync_CreatesUser()
-        {
-            var createResult = subject.CreateUserAsync("alice", "pass").Result;
-            Assert.True(createResult.IsSuccess);
-            Assert.NotNull(createResult.Result.Subject);
+        //[Fact]
+        //public void CreateUserAsync_CreatesUser()
+        //{
+        //    var createResult = subject.CreateUserAsync("alice", "pass").Result;
+        //    Assert.True(createResult.IsSuccess);
+        //    Assert.NotNull(createResult.Result.Subject);
 
-            var getResult = subject.GetUserAsync(createResult.Result.Subject).Result;
-            Assert.True(getResult.IsSuccess);
-            Assert.NotNull(getResult.Result);
-            Assert.Equal("alice", getResult.Result.Username);
-        }
+        //    var getResult = subject.GetUserAsync(createResult.Result.Subject).Result;
+        //    Assert.True(getResult.IsSuccess);
+        //    Assert.NotNull(getResult.Result);
+        //    Assert.Equal("alice", getResult.Result.Username);
+        //}
         
-        [Fact]
-        public void CreateUserAsync_DuplicateUsers_ReturnsError()
-        {
-            var createResult = subject.CreateUserAsync("alice", "pass").Result;
-            createResult = subject.CreateUserAsync("alice", "pass").Result;
-            Assert.False(createResult.IsSuccess);
-        }
+        //[Fact]
+        //public void CreateUserAsync_DuplicateUsers_ReturnsError()
+        //{
+        //    var createResult = subject.CreateUserAsync("alice", "pass").Result;
+        //    createResult = subject.CreateUserAsync("alice", "pass").Result;
+        //    Assert.False(createResult.IsSuccess);
+        //}
         
-        [Fact]
-        public void CreateUserAsync_UserCanLoginWithPassword()
-        {
-            var createResult = subject.CreateUserAsync("alice", "pass").Result;
-            Assert.True(ValidatePassword("alice", "pass"));
-        }
-        [Fact]
-        public void CreateUserAsync_NoUsername_ReturnsError()
-        {
-            var createResult = subject.CreateUserAsync("", "pass").Result;
-            Assert.False(createResult.IsSuccess);
-        }
-        [Fact]
-        public void CreateUserAsync_NoPassword_ReturnsError()
-        {
-            var createResult = subject.CreateUserAsync("user", "").Result;
-            Assert.False(createResult.IsSuccess);
-        }
+        //[Fact]
+        //public void CreateUserAsync_UserCanLoginWithPassword()
+        //{
+        //    var createResult = subject.CreateUserAsync("alice", "pass").Result;
+        //    Assert.True(ValidatePassword("alice", "pass"));
+        //}
+        //[Fact]
+        //public void CreateUserAsync_NoUsername_ReturnsError()
+        //{
+        //    var createResult = subject.CreateUserAsync("", "pass").Result;
+        //    Assert.False(createResult.IsSuccess);
+        //}
+        //[Fact]
+        //public void CreateUserAsync_NoPassword_ReturnsError()
+        //{
+        //    var createResult = subject.CreateUserAsync("user", "").Result;
+        //    Assert.False(createResult.IsSuccess);
+        //}
 
-        [Fact]
-        public void DeleteUserAsync_DeletesUser()
-        {
-            var createResult = subject.CreateUserAsync("alice", "pass").Result;
-            Assert.True(createResult.IsSuccess);
-            Assert.NotNull(createResult.Result.Subject);
+        //[Fact]
+        //public void DeleteUserAsync_DeletesUser()
+        //{
+        //    var createResult = subject.CreateUserAsync("alice", "pass").Result;
+        //    Assert.True(createResult.IsSuccess);
+        //    Assert.NotNull(createResult.Result.Subject);
 
-            var deleteResult = subject.DeleteUserAsync(createResult.Result.Subject).Result;
-            Assert.True(deleteResult.IsSuccess);
-        }
+        //    var deleteResult = subject.DeleteUserAsync(createResult.Result.Subject).Result;
+        //    Assert.True(deleteResult.IsSuccess);
+        //}
         [Fact]
         public void DeleteUserAsync_NoSubject_ReturnsError()
         {
@@ -150,44 +150,44 @@ namespace Core.Tests.Core
         //    Assert.False(result.IsSuccess);
         //}
         
-        public void AddClaimAsync_AddsClaim()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.AddClaimAsync(id, "color", "blue").Result;
-            Assert.True(result.IsSuccess);
-            var user = subject.GetUserAsync(id).Result.Result;
-            Assert.NotEmpty(user.Claims);
-            user.Claims.Single(x => x.Type == "color" && x.Value == "blue");
-        }
+        //public void AddClaimAsync_AddsClaim()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.AddClaimAsync(id, "color", "blue").Result;
+        //    Assert.True(result.IsSuccess);
+        //    var user = subject.GetUserAsync(id).Result.Result;
+        //    Assert.NotEmpty(user.Claims);
+        //    user.Claims.Single(x => x.Type == "color" && x.Value == "blue");
+        //}
         
-        public void AddClaimAsync_DuplicateClaims_ReturnsSuccessButOnlyAddsClaimOnce()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.AddClaimAsync(id, "color", "blue").Result;
-            result = subject.AddClaimAsync(id, "color", "blue").Result;
-            Assert.True(result.IsSuccess);
-            var user = subject.GetUserAsync(id).Result.Result;
-            Assert.NotEmpty(user.Claims);
-            user.Claims.Single(x => x.Type == "color" && x.Value == "blue");
-        }
+        //public void AddClaimAsync_DuplicateClaims_ReturnsSuccessButOnlyAddsClaimOnce()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.AddClaimAsync(id, "color", "blue").Result;
+        //    result = subject.AddClaimAsync(id, "color", "blue").Result;
+        //    Assert.True(result.IsSuccess);
+        //    var user = subject.GetUserAsync(id).Result.Result;
+        //    Assert.NotEmpty(user.Claims);
+        //    user.Claims.Single(x => x.Type == "color" && x.Value == "blue");
+        //}
 
-        public void RemoveClaimAsync_RemovesClaim()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.AddClaimAsync(id, "color", "blue").Result;
-            result = subject.RemoveClaimAsync(id, "color", "blue").Result;
-            Assert.True(result.IsSuccess);
-            var user = subject.GetUserAsync(id).Result.Result;
-            Assert.Empty(user.Claims);
-        }
+        //public void RemoveClaimAsync_RemovesClaim()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.AddClaimAsync(id, "color", "blue").Result;
+        //    result = subject.RemoveClaimAsync(id, "color", "blue").Result;
+        //    Assert.True(result.IsSuccess);
+        //    var user = subject.GetUserAsync(id).Result.Result;
+        //    Assert.Empty(user.Claims);
+        //}
         
-        public void RemoveClaimAsync_InvalidClaim_ReturnsSuccess()
-        {
-            var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
-            var result = subject.RemoveClaimAsync(id, "color", "blue").Result;
-            Assert.True(result.IsSuccess);
-            var user = subject.GetUserAsync(id).Result.Result;
-            Assert.Empty(user.Claims);
-        }
+        //public void RemoveClaimAsync_InvalidClaim_ReturnsSuccess()
+        //{
+        //    var id = subject.CreateUserAsync("alice", "pass").Result.Result.Subject;
+        //    var result = subject.RemoveClaimAsync(id, "color", "blue").Result;
+        //    Assert.True(result.IsSuccess);
+        //    var user = subject.GetUserAsync(id).Result.Result;
+        //    Assert.Empty(user.Claims);
+        //}
     }
 }

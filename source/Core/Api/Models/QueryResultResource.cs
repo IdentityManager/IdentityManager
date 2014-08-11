@@ -17,10 +17,10 @@ namespace Thinktecture.IdentityManager.Api.Models
 
             Data = new QueryResultResourceData(result, url, meta);
             
-            var links = new Dictionary<string, string>();
+            var links = new Dictionary<string, object>();
             if (meta.SupportsCreate)
             {
-                links["create"] = url.Link(Constants.RouteNames.CreateUser, null);
+                links["create"] = new CreateUserLink(url, meta);
             };
             Links = links;
         }

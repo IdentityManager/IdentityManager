@@ -320,34 +320,30 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             };
 
             if (idmApi.links.createUser) {
-                svc.createUser = function (username, password, properties) {
-                    return $http.post(idmApi.links.createUser, { username: username, password: password, properties: properties })
+                svc.createUser = function (properties) {
+                    return $http.post(idmApi.links.createUser.href, properties)
                         .then(mapResponseData, errorHandler("Error Creating User"));
                 };
             }
 
-            if (idmApi.data.metadata.userMetadata.supportsDelete) {
-                svc.deleteUser = function (user) {
-                    return $http.delete(user.links.delete)
-                        .then(nop, errorHandler("Error Deleting User"));
-                };
-            }
+            svc.deleteUser = function (user) {
+                return $http.delete(user.links.delete)
+                    .then(nop, errorHandler("Error Deleting User"));
+            };
 
             svc.setProperty = function (property) {
                 return $http.put(property.links.update, property.data)
                     .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };
 
-            if (idmApi.data.metadata.userMetadata.supportsClaims) {
-                svc.addClaim = function (claims, claim) {
-                    return $http.post(claims.links.create, claim)
-                        .then(nop,  errorHandler("Error Adding Claim"));
-                };
-                svc.removeClaim = function (claim) {
-                    return $http.delete(claim.links.delete)
-                        .then(nop,  errorHandler("Error Removing Claim"));
-                };
-            }
+            svc.addClaim = function (claims, claim) {
+                return $http.post(claims.links.create, claim)
+                    .then(nop,  errorHandler("Error Adding Claim"));
+            };
+            svc.removeClaim = function (claim) {
+                return $http.delete(claim.links.delete)
+                    .then(nop,  errorHandler("Error Removing Claim"));
+            };
         });
 
         return svc;
@@ -371,10 +367,12 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     function ttMatch() {
         return {
             restrict: 'A',
-            require: 'ngModel',
+            require: '^form',
             link: function (scope, elem, attrs, ctrl) {
                 function check() {
-                    if (elem.val() === scope.$eval(attrs.ttMatch)) {
+                    var thisVal = elem.val();
+                    var otherVal = scope.$eval(attrs.ttMatch);
+                    if (thisVal === otherVal) {
                         ctrl.$setValidity('ttMatch', true);
                     }
                     else {
@@ -382,7 +380,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                     }
                 }
                 elem.on("input", function () {
-                    check();
+                    scope.$apply(check);
                 });
                 scope.$watch(attrs.ttMatch, function (val) {
                     check();
@@ -694,31 +692,27 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     function NewUserCtrl($scope, idmUsers, idmApi) {
         var feedback = new Feedback();
         $scope.feedback = feedback;
-        if (!idmApi.data.metadata.userMetadata.supportsCreate) {
+        if (!idmApi.links.createUser) {
             feedback.errors = "Create Not Supported";
             return;
         }
         else {
-            var required = idmApi.data.metadata.userMetadata.properties
-                .filter(function (item) {
-                    return item.required &&
-                        item.type != "username" &&
-                        item.type != "password";
-                }).map(function(item){
+            var properties = idmApi.links.createUser.meta
+                .map(function (item) {
                     return {
                         meta : item,
                         data : item.dataType === 5 ? false : undefined
                     };
                 });
-            $scope.properties = required;
-            $scope.create = function (username, password, properties) {
+            $scope.properties = properties;
+            $scope.create = function (properties) {
                 var props = properties.map(function (item) {
                     return {
                         type: item.meta.type,
                         value: item.data
                     };
                 });
-                idmUsers.createUser(username, password, props)
+                idmUsers.createUser(props)
                     .then(function (result) {
                         $scope.model.last = result;
                         feedback.message = "Create Success";

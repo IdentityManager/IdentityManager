@@ -11,7 +11,7 @@ namespace Thinktecture.IdentityManager
     {
         Task<IdentityManagerMetadata> GetMetadataAsync();
         
-        Task<IdentityManagerResult<CreateResult>> CreateUserAsync(string username, string password, IEnumerable<UserClaim> properties = null);
+        Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<UserClaim> properties);
         Task<IdentityManagerResult> DeleteUserAsync(string subject);
         
         Task<IdentityManagerResult<QueryResult>> QueryUsersAsync(string filter, int start, int count);

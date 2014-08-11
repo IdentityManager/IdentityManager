@@ -45,11 +45,11 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         {
             var meta = await GetMetadataAsync();
 
-            var links = new Dictionary<string, string>();
+            var links = new Dictionary<string, object>();
             links["users"] = Url.Link(Constants.RouteNames.GetUsers, null);
             if (meta.UserMetadata.SupportsCreate)
             {
-                links["createUser"] = Url.Link(Constants.RouteNames.CreateUser, null);
+                links["createUser"] = new CreateUserLink(Url, meta.UserMetadata);
             }
 
             var resource = new 
@@ -58,8 +58,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                     currentUser = new
                     {
                         username = User.Identity.Name
-                    },
-                    metadata = meta,
+                    }
                 },
                 Links = links
             };

@@ -78,25 +78,25 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [HttpPost, Route("", Name = Constants.RouteNames.CreateUser)]
-        public async Task<IHttpActionResult> CreateUserAsync(CreateUserModel model)
+        public async Task<IHttpActionResult> CreateUserAsync(CreateProperty[] properties)
         {
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsCreate)
             {
                 return MethodNotAllowed();
-            } 
-            
-            if (model == null)
+            }
+
+            if (properties == null)
             {
                 ModelState.AddModelError("", Messages.UserDataRequired);
             }
 
-            ValidateProperties(meta.UserMetadata, model.Properties);
+            ValidateProperties(meta.UserMetadata, properties);
 
             if (ModelState.IsValid)
             {
-                var claims = model.Properties.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
-                var result = await this.userManager.CreateUserAsync(model.Username, model.Password, claims);
+                var claims = properties.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
+                var result = await this.userManager.CreateUserAsync(claims);
                 if (result.IsSuccess)
                 {
                     var url = Url.Link(Constants.RouteNames.GetUser, new { subject = result.Result.Subject });
@@ -267,7 +267,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
 
             properties = properties ?? new CreateProperty[0];
 
-            var required = userMetadata.Properties
+            var required = userMetadata.UpdateProperties
                 .Where(x => x.Required && x.Type != Constants.ClaimTypes.Username && x.Type != Constants.ClaimTypes.Password)
                 .Select(x => x.Type)
                 .ToArray();
@@ -295,7 +295,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return;
             }
 
-            var prop = userMetadata.Properties.SingleOrDefault(x => x.Type == type);
+            var prop = userMetadata.UpdateProperties.SingleOrDefault(x => x.Type == type);
             if (prop == null)
             {
                 ModelState.AddModelError("", String.Format(Messages.PropertyInvalid, type));

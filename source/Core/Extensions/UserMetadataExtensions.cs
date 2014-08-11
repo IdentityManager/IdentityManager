@@ -12,7 +12,7 @@ namespace Thinktecture.IdentityManager
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 
-            var prop = userMetadata.Properties.Where(x => x is ReflectedPropertyMetadata && x.Type == type).SingleOrDefault();
+            var prop = userMetadata.UpdateProperties.Where(x => x is ReflectedPropertyMetadata && x.Type == type).SingleOrDefault();
             if (prop != null)
             {
                 var error = prop.Validate(value);
@@ -28,7 +28,7 @@ namespace Thinktecture.IdentityManager
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 
-            var executableProperty = (ExecutablePropertyMetadata)userMetadata.Properties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
+            var executableProperty = (ExecutablePropertyMetadata)userMetadata.UpdateProperties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
             if (executableProperty != null)
             {
                 executableProperty.Set(instance, value);
@@ -42,7 +42,7 @@ namespace Thinktecture.IdentityManager
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 
-            var executableProperty = (ExecutablePropertyMetadata)userMetadata.Properties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
+            var executableProperty = (ExecutablePropertyMetadata)userMetadata.UpdateProperties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
             if (executableProperty != null)
             {
                 value = executableProperty.Get(instance);

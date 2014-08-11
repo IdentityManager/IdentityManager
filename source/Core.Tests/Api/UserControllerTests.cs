@@ -60,28 +60,29 @@ namespace Core.Tests.Api
         }
 
 
-        [TestMethod]
-        public void CreateUserAsync_ValidModel_CallsIdentityManager()
-        {
-            Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
-            identityManager.VerifyCreateUserAsync("user", "pass");
-        }
-        [TestMethod]
-        public void CreateUserAsync_IdentityManagerReturnsSuccess_CorrectResults()
-        {
-            identityManager.SetupCreateUserAsync(new CreateResult { Subject = "123" });
-            var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
-            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
-            Assert.AreEqual(Url("api/users/123"), response.Headers.Location.AbsoluteUri);
-        }
-        [TestMethod]
-        public void CreateUserAsync_InvalidModel_DoesNotCallIdentityManager()
-        {
-            Post("api/users", new CreateUserModel() { Username = "", Password = "pass" });
-            Post("api/users", new CreateUserModel() { Username = "user", Password = "" });
-            Post("api/users", (CreateUserModel)null);
-            identityManager.VerifyCreateUserAsyncNotCalled();
-        }
+        //[TestMethod]
+        //public void CreateUserAsync_ValidModel_CallsIdentityManager()
+        //{
+        //    Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
+        //    identityManager.VerifyCreateUserAsync("user", "pass");
+        //}
+        //[TestMethod]
+        //public void CreateUserAsync_IdentityManagerReturnsSuccess_CorrectResults()
+        //{
+        //    identityManager.SetupCreateUserAsync(new CreateResult { Subject = "123" });
+        //    var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
+        //    Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+        //    Assert.AreEqual(Url("api/users/123"), response.Headers.Location.AbsoluteUri);
+        //}
+        //[TestMethod]
+        //public void CreateUserAsync_InvalidModel_DoesNotCallIdentityManager()
+        //{
+        //    Post("api/users", new CreateUserModel() { Username = "", Password = "pass" });
+        //    Post("api/users", new CreateUserModel() { Username = "user", Password = "" });
+        //    Post("api/users", (CreateUserModel)null);
+        //    identityManager.VerifyCreateUserAsyncNotCalled();
+        //}
+
         [TestMethod]
         public void CreateUserAsync_MissingModel_ReturnsError()
         {
@@ -106,24 +107,24 @@ namespace Core.Tests.Api
             var error = response.Content.ReadAsAsync<ErrorModel>().Result;
             CollectionAssert.Contains(error.Errors, Messages.PasswordRequired);
         }
-        [TestMethod]
-        public void CreateUserAsync_IdentityManagerReturnsErrors_ReturnsErrors()
-        {
-            identityManager.SetupCreateUserAsync("foo", "bar");
-            var response = Post("api/users", new CreateUserModel() { Username="user", Password="pass" });
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            var error = response.Content.ReadAsAsync<ErrorModel>().Result;
-            Assert.AreEqual(2, error.Errors.Length);
-            CollectionAssert.Contains(error.Errors, "foo");
-            CollectionAssert.Contains(error.Errors, "bar");
-        }
-        [TestMethod]
-        public void CreateUserAsync_IdentityManagerThrows_ReturnsErrors()
-        {
-            identityManager.SetupCreateUserAsync(new Exception("Boom"));
-            var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
-            Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
-        }
+        //[TestMethod]
+        //public void CreateUserAsync_IdentityManagerReturnsErrors_ReturnsErrors()
+        //{
+        //    identityManager.SetupCreateUserAsync("foo", "bar");
+        //    var response = Post("api/users", new CreateUserModel() { Username="user", Password="pass" });
+        //    Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+        //    var error = response.Content.ReadAsAsync<ErrorModel>().Result;
+        //    Assert.AreEqual(2, error.Errors.Length);
+        //    CollectionAssert.Contains(error.Errors, "foo");
+        //    CollectionAssert.Contains(error.Errors, "bar");
+        //}
+        //[TestMethod]
+        //public void CreateUserAsync_IdentityManagerThrows_ReturnsErrors()
+        //{
+        //    identityManager.SetupCreateUserAsync(new Exception("Boom"));
+        //    var response = Post("api/users", new CreateUserModel() { Username = "user", Password = "pass" });
+        //    Assert.AreEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+        //}
 
 
 

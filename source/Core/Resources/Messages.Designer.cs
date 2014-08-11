@@ -169,6 +169,15 @@ namespace Thinktecture.IdentityManager.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        public static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password data required..
         /// </summary>
         public static string PasswordDataRequired {
@@ -237,6 +246,15 @@ namespace Thinktecture.IdentityManager.Resources {
         public static string UserDataRequired {
             get {
                 return ResourceManager.GetString("UserDataRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username.
+        /// </summary>
+        public static string Username {
+            get {
+                return ResourceManager.GetString("Username", resourceCulture);
             }
         }
         

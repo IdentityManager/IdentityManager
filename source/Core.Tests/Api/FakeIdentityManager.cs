@@ -47,29 +47,29 @@ namespace Core.Tests.Api
 
 
 
-        public void SetupCreateUserAsync(CreateResult result)
-        {
-            Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()))
-               .Returns(Task.FromResult(new IdentityManagerResult<CreateResult>(result)));
-        }
-        public void SetupCreateUserAsync(params string[] errors)
-        {
-            Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()))
-               .Returns(Task.FromResult(new IdentityManagerResult<CreateResult>(errors)));
-        }
-        public void SetupCreateUserAsync(Exception ex)
-        {
-            Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()))
-                .Throws(ex);
-        }
-        public void VerifyCreateUserAsync(string username, string password)
-        {
-            Verify(x => x.CreateUserAsync(username, password, null));
-        }
-        public void VerifyCreateUserAsyncNotCalled()
-        {
-            Verify(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()), Times.Never());
-        }
+        //public void SetupCreateUserAsync(CreateResult result)
+        //{
+        //    Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()))
+        //       .Returns(Task.FromResult(new IdentityManagerResult<CreateResult>(result)));
+        //}
+        //public void SetupCreateUserAsync(params string[] errors)
+        //{
+        //    Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()))
+        //       .Returns(Task.FromResult(new IdentityManagerResult<CreateResult>(errors)));
+        //}
+        //public void SetupCreateUserAsync(Exception ex)
+        //{
+        //    Setup(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()))
+        //        .Throws(ex);
+        //}
+        //public void VerifyCreateUserAsync(string username, string password)
+        //{
+        //    Verify(x => x.CreateUserAsync(username, password, null));
+        //}
+        //public void VerifyCreateUserAsyncNotCalled()
+        //{
+        //    Verify(x => x.CreateUserAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<UserClaim>>()), Times.Never());
+        //}
 
         
         internal void VerifyGetUserAsync(string subject)

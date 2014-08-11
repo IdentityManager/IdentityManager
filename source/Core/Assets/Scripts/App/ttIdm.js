@@ -65,34 +65,30 @@
             };
 
             if (idmApi.links.createUser) {
-                svc.createUser = function (username, password, properties) {
-                    return $http.post(idmApi.links.createUser, { username: username, password: password, properties: properties })
+                svc.createUser = function (properties) {
+                    return $http.post(idmApi.links.createUser.href, properties)
                         .then(mapResponseData, errorHandler("Error Creating User"));
                 };
             }
 
-            if (idmApi.data.metadata.userMetadata.supportsDelete) {
-                svc.deleteUser = function (user) {
-                    return $http.delete(user.links.delete)
-                        .then(nop, errorHandler("Error Deleting User"));
-                };
-            }
+            svc.deleteUser = function (user) {
+                return $http.delete(user.links.delete)
+                    .then(nop, errorHandler("Error Deleting User"));
+            };
 
             svc.setProperty = function (property) {
                 return $http.put(property.links.update, property.data)
                     .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };
 
-            if (idmApi.data.metadata.userMetadata.supportsClaims) {
-                svc.addClaim = function (claims, claim) {
-                    return $http.post(claims.links.create, claim)
-                        .then(nop,  errorHandler("Error Adding Claim"));
-                };
-                svc.removeClaim = function (claim) {
-                    return $http.delete(claim.links.delete)
-                        .then(nop,  errorHandler("Error Removing Claim"));
-                };
-            }
+            svc.addClaim = function (claims, claim) {
+                return $http.post(claims.links.create, claim)
+                    .then(nop,  errorHandler("Error Adding Claim"));
+            };
+            svc.removeClaim = function (claim) {
+                return $http.delete(claim.links.delete)
+                    .then(nop,  errorHandler("Error Removing Claim"));
+            };
         });
 
         return svc;

@@ -47,7 +47,7 @@ namespace Thinktecture.IdentityManager.Api.Models
             {
                 var props =
                     from p in user.Properties
-                    let m = (from m in meta.Properties where m.Type == p.Type select m).SingleOrDefault()
+                    let m = (from m in meta.UpdateProperties where m.Type == p.Type select m).SingleOrDefault()
                     where m != null
                     select new
                     {
