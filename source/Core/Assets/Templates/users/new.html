@@ -59,7 +59,7 @@
                        name="data"
                        placeholder="{{property.meta.name}}"
                        class="form-control"
-                       required
+                       ng-required="property.meta.required"
                        ng-model="property.data">
             </div>
             <div ng-switch-when="2" class="form-group col-sm-6">
@@ -73,7 +73,7 @@
                        name="data"
                        placeholder="{{property.meta.name}}"
                        class="form-control"
-                       required
+                       ng-required="property.meta.required"
                        ng-model="property.data">
             </div>
             <div ng-switch-when="3" class="form-group col-sm-6">
@@ -87,7 +87,7 @@
                        name="data"
                        placeholder="{{property.meta.name}}"
                        class="form-control"
-                       required
+                       ng-required="property.meta.required"
                        ng-model="property.data">
             </div>
             <div ng-switch-default class="form-group col-sm-6">
@@ -99,7 +99,7 @@
                        name="data"
                        placeholder="{{property.meta.name}}"
                        class="form-control"
-                       required
+                       ng-required="property.meta.required"
                        ng-model="property.data">
             </div>
         </div>
