@@ -55,7 +55,7 @@ namespace Thinktecture.IdentityManager.Api.Models
                     where m != null
                     select new
                     {
-                        Data = p.Value,
+                        Data = m.Convert(p.Value),
                         Meta = m,
                         Links = new
                         {
