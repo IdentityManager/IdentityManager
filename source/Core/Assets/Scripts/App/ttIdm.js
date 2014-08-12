@@ -77,6 +77,9 @@
             };
 
             svc.setProperty = function (property) {
+                if (property.data === 0) {
+                    property.data = "0";
+                }
                 return $http.put(property.links.update, property.data)
                     .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };

@@ -45,5 +45,6 @@ namespace Thinktecture.IdentityManager.Host
         public string FirstName { get; set; }
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
+        public int Age { get; set; }
     }
 }
