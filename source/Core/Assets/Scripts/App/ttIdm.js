@@ -80,6 +80,9 @@
                 if (property.data === 0) {
                     property.data = "0";
                 }
+                if (property.data === false) {
+                    property.data = "false";
+                }
                 return $http.put(property.links.update, property.data)
                     .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };

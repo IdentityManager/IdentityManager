@@ -46,5 +46,6 @@ namespace Thinktecture.IdentityManager.Host
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
         public int Age { get; set; }
+        public bool IsNice { get; set; }
     }
 }
