@@ -77,24 +77,19 @@ namespace Thinktecture.IdentityManager.Host
 
         public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<UserClaim> properties)
         {
-            var errors = new List<string>();
-            foreach(var prop in properties)
-            {
-                errors.AddRange(ValidateProperty(prop.Type, prop.Value));
-            }
-
-            if (errors.Count > 0)
+            var errors = ValidateProperties(properties);
+            if (errors.Any())
             {
                 return Task.FromResult(new IdentityManagerResult<CreateResult>(errors.ToArray()));
             }
 
             var user = new InMemoryUser();
-
-            foreach (var prop in properties)
+            var createPropsMeta = GetMetadata().UserMetadata.GetCreateProperties();
+            foreach(var prop in properties)
             {
                 SetProperty(prop.Type, prop.Value, user);
             }
-
+            
             users.Add(user);
 
             return Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult() { Subject = user.Subject }));
@@ -187,7 +182,7 @@ namespace Thinktecture.IdentityManager.Host
             var errors = ValidateProperty(type, value);
             if (errors.Any())
             {
-                return Task.FromResult(new IdentityManagerResult(errors));
+                return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
             }
 
             SetProperty(type, value, user);
@@ -234,7 +229,7 @@ namespace Thinktecture.IdentityManager.Host
         private string GetProperty(string type, InMemoryUser user)
         {
             string value;
-            if (GetMetadata().UserMetadata.TryGet(user, type, out value))
+            if (GetMetadata().UserMetadata.UpdateProperties.TryGet(user, type, out value))
             {
                 return value;
             }
@@ -252,7 +247,7 @@ namespace Thinktecture.IdentityManager.Host
 
         private void SetProperty(string type, string value, InMemoryUser user)
         {
-            if (GetMetadata().UserMetadata.TrySet(user, type, value))
+            if (GetMetadata().UserMetadata.UpdateProperties.TrySet(user, type, value))
             {
                 return;
             }
@@ -282,14 +277,13 @@ namespace Thinktecture.IdentityManager.Host
             }
         }
 
-        private string[] ValidateProperty(string type, string value)
+        IEnumerable<string> ValidateProperties(IEnumerable<UserClaim> properties)
         {
-            var error = GetMetadata().UserMetadata.Validate(type, value);
-            if (error != null)
-            {
-                return new string[] { error };
-            }
+            return properties.Select(x => ValidateProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
+        }
 
+        private IEnumerable<string> ValidateProperty(string type, string value)
+        {
             switch (type)
             {
                 case Constants.ClaimTypes.Username:
@@ -309,7 +303,8 @@ namespace Thinktecture.IdentityManager.Host
                     }
                     break;
             }
-            return new string[0];
+            
+            return Enumerable.Empty<string>();
         }
     }
 }

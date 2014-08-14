@@ -107,7 +107,6 @@
     <Compile Include="Api\Controllers\MetaController.cs" />
     <Compile Include="Api\Controllers\UserController.cs" />
     <Compile Include="Api\Models\ClaimModel.cs" />
-    <Compile Include="Api\Models\CreateProperty.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Core\DisposableIdentityManagerService.cs" />
     <Compile Include="Core\Metadata\ExpressionPropertyMetadata.cs" />

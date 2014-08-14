@@ -13,6 +13,7 @@ using Thinktecture.IdentityManager;
 using Thinktecture.IdentityManager.Api.Filters;
 using Thinktecture.IdentityManager.Api.Models;
 using Thinktecture.IdentityManager.Resources;
+using System.Collections.Generic;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {
@@ -35,19 +36,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         
         public IHttpActionResult NoContent()
         {
-            return ResponseMessage(Request.CreateResponse(HttpStatusCode.NoContent));
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
-        public IHttpActionResult Created(string location)
-        {
-            var response = Request.CreateResponse(HttpStatusCode.Created);
-            response.Headers.Location = new Uri(location);
-            return ResponseMessage(response);
-        }
-        
         public IHttpActionResult MethodNotAllowed()
         {
-            return ResponseMessage(Request.CreateResponse(HttpStatusCode.MethodNotAllowed));
+            return StatusCode(HttpStatusCode.MethodNotAllowed);
         }
 
         IdentityManagerMetadata _metadata;
@@ -78,7 +72,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [HttpPost, Route("", Name = Constants.RouteNames.CreateUser)]
-        public async Task<IHttpActionResult> CreateUserAsync(CreateProperty[] properties)
+        public async Task<IHttpActionResult> CreateUserAsync(UserClaim[] properties)
         {
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsCreate)
@@ -86,17 +80,15 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return MethodNotAllowed();
             }
 
-            if (properties == null)
+            var errors = ValidateCreateProperties(meta.UserMetadata, properties);
+            foreach(var error in errors)
             {
-                ModelState.AddModelError("", Messages.UserDataRequired);
+                ModelState.AddModelError("", error);
             }
-
-            ValidateProperties(meta.UserMetadata, properties);
 
             if (ModelState.IsValid)
             {
-                var claims = properties.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
-                var result = await this.userManager.CreateUserAsync(claims);
+                var result = await this.userManager.CreateUserAsync(properties);
                 if (result.IsSuccess)
                 {
                     var url = Url.Link(Constants.RouteNames.GetUser, new { subject = result.Result.Subject });
@@ -183,7 +175,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
 
             string value = await Request.Content.ReadAsStringAsync();
             var meta = await this.GetMetadataAsync();
-            ValidateProperty(type, value, meta.UserMetadata);
+            ValidateUpdateProperty(meta.UserMetadata, type, value);
 
             if (ModelState.IsValid)
             {
@@ -261,31 +253,16 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
         
-        private void ValidateProperties(UserMetadata userMetadata, CreateProperty[] properties)
+        private IEnumerable<string> ValidateCreateProperties(UserMetadata userMetadata, IEnumerable<UserClaim> properties)
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
+            properties = properties ?? Enumerable.Empty<UserClaim>();
 
-            properties = properties ?? new CreateProperty[0];
-
-            var required = userMetadata.UpdateProperties
-                .Where(x => x.Required && x.Type != Constants.ClaimTypes.Username && x.Type != Constants.ClaimTypes.Password)
-                .Select(x => x.Type)
-                .ToArray();
-            var provided = properties.Select(x => x.Type).ToArray();
-            var missing = required.Except(provided);
-            if (missing.Any())
-            {
-                var types = missing.Aggregate((x, y) => x + ", " + y);
-                ModelState.AddModelError("", String.Format(Messages.MissingRequiredProperties, types));
-            }
-            
-            foreach (var property in properties)
-            {
-                ValidateProperty(property.Type, property.Value, userMetadata);
-            }
+            var meta = userMetadata.GetCreateProperties();
+            return meta.Validate(properties);
         }
 
-        private void ValidateProperty(string type, string value, UserMetadata userMetadata)
+        private void ValidateUpdateProperty(UserMetadata userMetadata, string type, string value)
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
 

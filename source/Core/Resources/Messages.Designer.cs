@@ -241,6 +241,15 @@ namespace Thinktecture.IdentityManager.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unrecognized properties: {0}.
+        /// </summary>
+        public static string UnrecognizedProperties {
+            get {
+                return ResourceManager.GetString("UnrecognizedProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User data required..
         /// </summary>
         public static string UserDataRequired {

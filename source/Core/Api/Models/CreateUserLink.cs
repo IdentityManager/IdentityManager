@@ -16,10 +16,7 @@ namespace Thinktecture.IdentityManager.Api.Models
         public CreateUserLink(UrlHelper url, UserMetadata userMetadata)
         {
             this["href"] = url.Link(Constants.RouteNames.CreateUser, null);
-
-            var exclude = userMetadata.CreateProperties.Select(x => x.Type);
-            var additional = userMetadata.UpdateProperties.Where(x => !exclude.Contains(x.Type) && x.Required);
-            this["meta"] = userMetadata.CreateProperties.Union(additional);
+            this["meta"] = userMetadata.GetCreateProperties();
         }
     }
 }
