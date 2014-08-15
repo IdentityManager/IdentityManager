@@ -97,7 +97,7 @@ namespace Thinktecture.IdentityManager.Host
             var createPropsMeta = GetMetadata().UserMetadata.GetCreateProperties();
             foreach(var prop in properties)
             {
-                SetProperty(prop.Type, prop.Value, user);
+                SetProperty(createPropsMeta, user, prop.Type, prop.Value);
             }
             
             users.Add(user);
@@ -165,7 +165,7 @@ namespace Thinktecture.IdentityManager.Host
             {
                 props.Add(new UserClaim{
                     Type = prop.Type, 
-                    Value = GetProperty(prop.Type, user)
+                    Value = GetProperty(prop, user)
                 });
             }
            
@@ -195,7 +195,7 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
             }
 
-            SetProperty(type, value, user);
+            SetProperty(GetMetadata().UserMetadata.UpdateProperties, user, type, value);
 
             return Task.FromResult(IdentityManagerResult.Success);
         }
@@ -226,15 +226,15 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        private string GetProperty(string type, InMemoryUser user)
+        private string GetProperty(PropertyMetadata property, InMemoryUser user)
         {
             string value;
-            if (GetMetadata().UserMetadata.UpdateProperties.TryGet(user, type, out value))
+            if (property.TryGet(user, out value))
             {
                 return value;
             }
             
-            switch (type)
+            switch (property.Type)
             {
                 case "role.admin":
                     return user.Claims.HasValue(Constants.ClaimTypes.Role, "admin").ToString().ToLower();
@@ -242,12 +242,12 @@ namespace Thinktecture.IdentityManager.Host
                     return user.Claims.GetValue("gravatar");
             }
            
-            throw new Exception("Invalid property type " + type);
+            throw new Exception("Invalid property type " + property.Type);
         }
 
-        private void SetProperty(string type, string value, InMemoryUser user)
+        private void SetProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryUser user, string type, string value)
         {
-            if (GetMetadata().UserMetadata.UpdateProperties.TrySet(user, type, value))
+            if (propsMeta.TrySet(user, type, value))
             {
                 return;
             }
@@ -273,7 +273,7 @@ namespace Thinktecture.IdentityManager.Host
                     }
                     break;
                 default:
-                    throw new InvalidOperationException("Invalid Property Type");
+                    throw new InvalidOperationException("Invalid Property Type : " + type);
             }
         }
 

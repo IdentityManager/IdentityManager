@@ -101,12 +101,25 @@ namespace Thinktecture.IdentityManager
 
             return null;
         }
-        
+
         public static bool TrySet(this IEnumerable<PropertyMetadata> properties, object instance, string type, string value)
         {
             if (properties == null) throw new ArgumentNullException("properties");
 
-            var executableProperty = (ExecutablePropertyMetadata)properties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
+            var executableProperty = properties.Where(x => x.Type == type).SingleOrDefault() as ExecutablePropertyMetadata;
+            if (executableProperty != null)
+            {
+                return executableProperty.TrySet(instance, value);
+            }
+            
+            return false;
+        }
+
+        public static bool TrySet(this PropertyMetadata property, object instance, string value)
+        {
+            if (property == null) throw new ArgumentNullException("property");
+
+            var executableProperty = property as ExecutablePropertyMetadata;
             if (executableProperty != null)
             {
                 executableProperty.Set(instance, value);
@@ -116,11 +129,11 @@ namespace Thinktecture.IdentityManager
             return false;
         }
 
-        public static bool TryGet(this IEnumerable<PropertyMetadata> properties, object instance, string type, out string value)
+        public static bool TryGet(this PropertyMetadata property, object instance, out string value)
         {
-            if (properties == null) throw new ArgumentNullException("properties");
+            if (property == null) throw new ArgumentNullException("property");
 
-            var executableProperty = (ExecutablePropertyMetadata)properties.Where(x => x is ExecutablePropertyMetadata && x.Type == type).SingleOrDefault();
+            var executableProperty = property as ExecutablePropertyMetadata;
             if (executableProperty != null)
             {
                 value = executableProperty.Get(instance);
