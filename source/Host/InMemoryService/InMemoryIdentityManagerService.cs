@@ -70,6 +70,16 @@ namespace Thinktecture.IdentityManager.Host
             return metadata;
         }
 
+        private string GetName(InMemoryUser user)
+        {
+            return user.Claims.GetValue(Constants.ClaimTypes.Name);
+        }
+
+        private void SetName(InMemoryUser user, string value)
+        {
+            user.Claims.SetValue(Constants.ClaimTypes.Name, value);
+        }
+
         public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
         {
             return Task.FromResult(GetMetadata());
@@ -214,16 +224,6 @@ namespace Thinktecture.IdentityManager.Host
             user.Claims.RemoveClaims(type, value);
 
             return Task.FromResult(IdentityManagerResult.Success);
-        }
-
-        private string GetName(InMemoryUser user)
-        {
-            return user.Claims.GetValue(Constants.ClaimTypes.Name);
-        }
-
-        private void SetName(InMemoryUser user, string value)
-        {
-            user.Claims.SetValue(Constants.ClaimTypes.Name, value);
         }
 
         private string GetProperty(string type, InMemoryUser user)
