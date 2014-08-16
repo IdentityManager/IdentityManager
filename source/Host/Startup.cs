@@ -11,13 +11,16 @@ namespace Thinktecture.IdentityManager.Host
     {
         public void Configuration(IAppBuilder app)
         {
-            int numberOfRandomUsers = new System.Random().Next(5000, 20000);
-            var svc = new InMemoryIdentityManagerService(Users.Get(numberOfRandomUsers));
-            app.UseIdentityManager(new IdentityManagerConfiguration
+            app.Map("/test", testApp =>
             {
-                IdentityManagerFactory = () => svc,
-                DisableUserInterface = false,
-                SecurityMode = SecurityMode.Local
+                int numberOfRandomUsers = new System.Random().Next(5000, 20000);
+                var svc = new InMemoryIdentityManagerService(Users.Get(numberOfRandomUsers));
+                testApp.UseIdentityManager(new IdentityManagerConfiguration
+                {
+                    IdentityManagerFactory = () => svc,
+                    DisableUserInterface = false,
+                    SecurityMode = SecurityMode.Local
+                });
             });
         }
     }

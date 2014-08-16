@@ -359,7 +359,7 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 })(angular);
 
 (function (angular) {
-    var pathBase = document.getElementById("pathBase").textContent;
+    var pathBase = document.getElementById("pathBase").textContent.trim();
     angular.module("ttIdm").constant("PathBase", pathBase);
 })(angular);
 
