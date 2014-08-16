@@ -123,24 +123,6 @@
                 }, feedback.errorHandler);
         };
 
-        $scope.addClaim = function (claims, claim) {
-            idmRoles.addClaim(claims, claim)
-                .then(function () {
-                    feedback.message = "Claim Added : " + claim.type + ", " + claim.value;
-                    loadRole();
-                }, feedback.errorHandler);
-        };
-
-        $scope.removeClaim = function (claim) {
-            idmRoles.removeClaim(claim)
-                .then(function () {
-                    feedback.message = "Claim Removed : " + claim.data.type + ", " + claim.data.value;
-                    loadRole().then(function () {
-                        $scope.claim = claim.data;
-                    });
-                }, feedback.errorHandler);
-        };
-
         $scope.deleteRole = function (role) {
             idmRoles.deleteRole(role)
                 .then(function () {

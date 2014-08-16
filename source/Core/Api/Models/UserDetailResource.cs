@@ -59,10 +59,16 @@ namespace Thinktecture.IdentityManager.Api.Models
                         Meta = m,
                         Links = new
                         {
-                            update = url.Link(Constants.RouteNames.UpdateProperty, new { subject = user.Subject, type = p.Type }),
+                            update = url.Link(Constants.RouteNames.UpdateUserProperty,
+                                new
+                                {
+                                    subject = user.Subject,
+                                    type = p.Type.ToBase64UrlEncoded()
+                                }
+                            ),
                         }
                     };
-                
+
                 // TODO: validate props against metadata props
                 if (props.Any())
                 {
@@ -74,19 +80,21 @@ namespace Thinktecture.IdentityManager.Api.Models
             {
                 var claims =
                     from c in user.Claims.ToArray()
-                    select new 
+                    select new
                     {
                         Data = c,
                         Links = new
                         {
-                            delete = url.Link(Constants.RouteNames.RemoveClaim, new { 
-                                subject = user.Subject, 
-                                type = c.Type.ToBase64UrlEncoded(), 
-                                value = c.Value.ToBase64UrlEncoded() })
+                            delete = url.Link(Constants.RouteNames.RemoveClaim, new
+                            {
+                                subject = user.Subject,
+                                type = c.Type.ToBase64UrlEncoded(),
+                                value = c.Value.ToBase64UrlEncoded()
+                            })
                         }
                     };
-                
-                this["Claims"] = new 
+
+                this["Claims"] = new
                 {
                     Data = claims.ToArray(),
                     Links = new

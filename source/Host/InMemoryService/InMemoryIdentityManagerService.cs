@@ -60,7 +60,7 @@ namespace Thinktecture.IdentityManager.Host
                 var roleCreateProps = new List<PropertyMetadata>();
                 roleCreateProps.Add(PropertyMetadata.FromProperty<InMemoryRole>(x => x.Name));
                 var roleUpdateProps = new List<PropertyMetadata>();
-                roleUpdateProps.Add(PropertyMetadata.FromProperty<InMemoryRole>(x=>x.Description));
+                roleUpdateProps.Add(PropertyMetadata.FromProperty<InMemoryRole>(x=>x.Description, type:"description"));
 
                 metadata = new IdentityManagerMetadata()
                 {
@@ -102,7 +102,7 @@ namespace Thinktecture.IdentityManager.Host
 
         public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<Property> properties)
         {
-            var errors = ValidateProperties(properties);
+            var errors = ValidateUserProperties(properties);
             if (errors.Any())
             {
                 return Task.FromResult(new IdentityManagerResult<CreateResult>(errors.ToArray()));
@@ -112,7 +112,7 @@ namespace Thinktecture.IdentityManager.Host
             var createPropsMeta = GetMetadata().UserMetadata.GetCreateProperties();
             foreach(var prop in properties)
             {
-                SetProperty(createPropsMeta, user, prop.Type, prop.Value);
+                SetUserProperty(createPropsMeta, user, prop.Type, prop.Value);
             }
             
             users.Add(user);
@@ -181,7 +181,7 @@ namespace Thinktecture.IdentityManager.Host
             {
                 props.Add(new Property{
                     Type = prop.Type, 
-                    Value = GetProperty(prop, user)
+                    Value = GetUserProperty(prop, user)
                 });
             }
            
@@ -197,7 +197,7 @@ namespace Thinktecture.IdentityManager.Host
             }));
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult> SetPropertyAsync(string subject, string type, string value)
+        public System.Threading.Tasks.Task<IdentityManagerResult> SetUserPropertyAsync(string subject, string type, string value)
         {
             var user = users.SingleOrDefault(x => x.Subject == subject);
             if (user == null)
@@ -205,18 +205,18 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult("No user found"));
             }
 
-            var errors = ValidateProperty(type, value);
+            var errors = ValidateUserProperty(type, value);
             if (errors.Any())
             {
                 return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
             }
 
-            SetProperty(GetMetadata().UserMetadata.UpdateProperties, user, type, value);
+            SetUserProperty(GetMetadata().UserMetadata.UpdateProperties, user, type, value);
 
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult> AddClaimAsync(string subject, string type, string value)
+        public System.Threading.Tasks.Task<IdentityManagerResult> AddUserClaimAsync(string subject, string type, string value)
         {
             var user = users.SingleOrDefault(x => x.Subject == subject);
             if (user == null)
@@ -229,7 +229,7 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult> RemoveClaimAsync(string subject, string type, string value)
+        public System.Threading.Tasks.Task<IdentityManagerResult> RemoveUserClaimAsync(string subject, string type, string value)
         {
             var user = users.SingleOrDefault(x => x.Subject == subject);
             if (user == null)
@@ -242,7 +242,7 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        private string GetProperty(PropertyMetadata property, InMemoryUser user)
+        private string GetUserProperty(PropertyMetadata property, InMemoryUser user)
         {
             string value;
             if (property.TryGet(user, out value))
@@ -261,7 +261,7 @@ namespace Thinktecture.IdentityManager.Host
             throw new Exception("Invalid property type " + property.Type);
         }
 
-        private void SetProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryUser user, string type, string value)
+        private void SetUserProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryUser user, string type, string value)
         {
             if (propsMeta.TrySet(user, type, value))
             {
@@ -293,12 +293,12 @@ namespace Thinktecture.IdentityManager.Host
             }
         }
 
-        IEnumerable<string> ValidateProperties(IEnumerable<Property> properties)
+        IEnumerable<string> ValidateUserProperties(IEnumerable<Property> properties)
         {
-            return properties.Select(x => ValidateProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
+            return properties.Select(x => ValidateUserProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
         }
 
-        private IEnumerable<string> ValidateProperty(string type, string value)
+        private IEnumerable<string> ValidateUserProperty(string type, string value)
         {
             switch (type)
             {
@@ -326,6 +326,37 @@ namespace Thinktecture.IdentityManager.Host
 #endregion
         
         #region Roles
+
+        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties)
+        {
+            var errors = ValidateRoleProperties(properties);
+            if (errors.Any())
+            {
+                return Task.FromResult(new IdentityManagerResult<CreateResult>(errors.ToArray()));
+            }
+
+            var role = new InMemoryRole();
+            var createPropsMeta = GetMetadata().RoleMetadata.GetCreateProperties();
+            foreach (var prop in properties)
+            {
+                SetRoleProperty(createPropsMeta, role, prop.Type, prop.Value);
+            }
+
+            roles.Add(role);
+
+            return Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult() { Subject = role.ID }));
+        }
+
+        public Task<IdentityManagerResult> DeleteRoleAsync(string subject)
+        {
+            var role = roles.SingleOrDefault(x => x.ID == subject);
+            if (role != null)
+            {
+                roles.Remove(role);
+            }
+
+            return Task.FromResult(IdentityManagerResult.Success);
+        }
         
         public Task<IdentityManagerResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
         {
@@ -363,16 +394,85 @@ namespace Thinktecture.IdentityManager.Host
             }));
         }
 
-        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties)
+        public Task<IdentityManagerResult<RoleDetail>> GetRoleAsync(string subject)
         {
-            throw new NotImplementedException();
+            var role = this.roles.SingleOrDefault(x => x.ID == subject);
+            if (role == null)
+            {
+                return Task.FromResult(new IdentityManagerResult<RoleDetail>((RoleDetail)null));
+            }
+
+            var props = new List<Property>();
+            foreach (var prop in GetMetadata().RoleMetadata.UpdateProperties)
+            {
+                props.Add(new Property
+                {
+                    Type = prop.Type,
+                    Value = GetRoleProperty(prop, role)
+                });
+            }
+
+            var detail = new RoleDetail
+            {
+                Subject = role.ID,
+                Name = role.Name,
+                Properties = props
+            };
+            
+            return Task.FromResult(new IdentityManagerResult<RoleDetail>(detail));
         }
 
-        public Task<IdentityManagerResult> DeleteRoleAsync(string subject)
+        public Task<IdentityManagerResult> SetRolePropertyAsync(string subject, string type, string value)
         {
-            throw new NotImplementedException();
+            var role = roles.SingleOrDefault(x => x.ID == subject);
+            if (role == null)
+            {
+                return Task.FromResult(new IdentityManagerResult("No role found"));
+            }
+
+            var errors = ValidateRoleProperty(type, value);
+            if (errors.Any())
+            {
+                return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
+            }
+
+            SetRoleProperty(GetMetadata().RoleMetadata.UpdateProperties, role, type, value);
+
+            return Task.FromResult(IdentityManagerResult.Success);
         }
 
+        private string GetRoleProperty(PropertyMetadata property, InMemoryRole role)
+        {
+            string value;
+            if (property.TryGet(role, out value))
+            {
+                return value;
+            }
+
+            throw new Exception("Invalid property type " + property.Type);
+        }
+
+        private void SetRoleProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryRole role, string type, string value)
+        {
+            if (propsMeta.TrySet(role, type, value))
+            {
+                return;
+            }
+
+            throw new InvalidOperationException("Invalid Property Type : " + type);
+        }
+
+        IEnumerable<string> ValidateRoleProperties(IEnumerable<Property> properties)
+        {
+            return properties.Select(x => ValidateRoleProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
+        }
+
+        private IEnumerable<string> ValidateRoleProperty(string type, string value)
+        {
+
+            return Enumerable.Empty<string>();
+        }
+        
         #endregion
     }
 }

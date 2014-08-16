@@ -58,24 +58,29 @@ namespace Thinktecture.IdentityManager
             return this.inner.GetUserAsync(subject);
         }
 
-        public Task<IdentityManagerResult> SetPropertyAsync(string subject, string type, string value)
+        public Task<IdentityManagerResult> SetUserPropertyAsync(string subject, string type, string value)
         {
-            return this.inner.SetPropertyAsync(subject, type, value);
+            return this.inner.SetUserPropertyAsync(subject, type, value);
         }
 
-        public Task<IdentityManagerResult> AddClaimAsync(string subject, string type, string value)
+        public Task<IdentityManagerResult> AddUserClaimAsync(string subject, string type, string value)
         {
-            return this.inner.AddClaimAsync(subject, type, value);
+            return this.inner.AddUserClaimAsync(subject, type, value);
         }
 
-        public Task<IdentityManagerResult> RemoveClaimAsync(string subject, string type, string value)
+        public Task<IdentityManagerResult> RemoveUserClaimAsync(string subject, string type, string value)
         {
-            return this.inner.RemoveClaimAsync(subject, type, value);
+            return this.inner.RemoveUserClaimAsync(subject, type, value);
         }
 
         public Task<IdentityManagerResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
         {
             return inner.QueryRolesAsync(filter, start, count);
+        }
+        
+        public Task<IdentityManagerResult<RoleDetail>> GetRoleAsync(string subject)
+        {
+            return inner.GetRoleAsync(subject);
         }
 
         public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties)
@@ -86,6 +91,11 @@ namespace Thinktecture.IdentityManager
         public Task<IdentityManagerResult> DeleteRoleAsync(string subject)
         {
             return inner.DeleteRoleAsync(subject);
+        }
+
+        public Task<IdentityManagerResult> SetRolePropertyAsync(string subject, string type, string value)
+        {
+            return inner.SetRolePropertyAsync(subject, type, value);
         }
     }
 }

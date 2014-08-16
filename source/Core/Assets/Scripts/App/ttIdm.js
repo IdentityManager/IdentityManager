@@ -124,10 +124,21 @@
                     .then(mapResponseData, errorHandler("Error Getting Roles"));
             };
 
-            //svc.getRole = function (subject) {
-            //    return $http.get(idmApi.links.roles + "/" + encodeURIComponent(subject))
-            //        .then(mapResponseData, errorHandler("Error Getting Role"));
-            //};
+            svc.getRole = function (subject) {
+                return $http.get(idmApi.links.roles + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting Role"));
+            };
+
+            svc.setProperty = function (property) {
+                if (property.data === 0) {
+                    property.data = "0";
+                }
+                if (property.data === false) {
+                    property.data = "false";
+                }
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
+            };
 
             if (idmApi.links.createRole) {
                 svc.createRole = function (properties) {

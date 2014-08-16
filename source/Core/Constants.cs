@@ -36,13 +36,15 @@ namespace Thinktecture.IdentityManager
             public const string GetUser = "GetUser";
             public const string CreateUser = "CreateUser";
             public const string DeleteUser = "DeleteUser";
-            public const string UpdateProperty = "UpdateProperty";
+            public const string UpdateUserProperty = "UpdateUserProperty";
             public const string AddClaim = "AddClaim";
             public const string RemoveClaim = "RemoveClaim";
 
             public const string GetRoles = "GetRoles";
+            public const string GetRole = "GetRole";
             public const string CreateRole = "CreateRole";
             public const string DeleteRole = "DeleteRole ";
+            public const string UpdateRoleProperty = "UpdateRoleProperty";
         }
     }
 }

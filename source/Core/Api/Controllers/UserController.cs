@@ -21,12 +21,12 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
     [NoCache]
     public class UserController : ApiController
     {
-        IIdentityManagerService userManager;
-        public UserController(IIdentityManagerService userManager)
+        IIdentityManagerService idmService;
+        public UserController(IIdentityManagerService idmService)
         {
-            if (userManager == null) throw new ArgumentNullException("userManager");
+            if (idmService == null) throw new ArgumentNullException("idmService");
 
-            this.userManager = userManager;
+            this.idmService = idmService;
         }
 
         public IHttpActionResult BadRequest<T>(T data)
@@ -49,7 +49,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         {
             if (_metadata == null)
             {
-                _metadata = await userManager.GetMetadataAsync();
+                _metadata = await idmService.GetMetadataAsync();
                 if (_metadata == null) throw new InvalidOperationException("GetMetadataAsync returned null");
                 _metadata.Validate();
             }
@@ -60,7 +60,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         [HttpGet, Route("", Name = Constants.RouteNames.GetUsers)]
         public async Task<IHttpActionResult> GetUsersAsync(string filter = null, int start = 0, int count = 100)
         {
-            var result = await userManager.QueryUsersAsync(filter, start, count);
+            var result = await idmService.QueryUsersAsync(filter, start, count);
             if (result.IsSuccess)
             {
                 var meta = await GetMetadataAsync();
@@ -88,7 +88,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.CreateUserAsync(properties);
+                var result = await this.idmService.CreateUserAsync(properties);
                 if (result.IsSuccess)
                 {
                     var url = Url.Link(Constants.RouteNames.GetUser, new { subject = result.Result.Subject });
@@ -120,7 +120,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return BadRequest(ModelState.ToError());
             } 
             
-            var result = await this.userManager.GetUserAsync(subject);
+            var result = await this.idmService.GetUserAsync(subject);
             if (result.IsSuccess)
             {
                 if (result.Result == null)
@@ -155,7 +155,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return BadRequest(ModelState.ToError());
             }
 
-            var result = await this.userManager.DeleteUserAsync(subject);
+            var result = await this.idmService.DeleteUserAsync(subject);
             if (result.IsSuccess)
             {
                 return NoContent();
@@ -164,7 +164,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
 
-        [HttpPut, Route("{subject}/properties/{type}", Name = Constants.RouteNames.UpdateProperty)]
+        [HttpPut, Route("{subject}/properties/{type}", Name = Constants.RouteNames.UpdateUserProperty)]
         public async Task<IHttpActionResult> SetPropertyAsync(string subject, string type)
         {
             if (String.IsNullOrWhiteSpace(subject))
@@ -173,13 +173,15 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 ModelState.AddModelError("", Messages.SubjectRequired);
             }
 
+            type = type.FromBase64UrlEncoded();
+
             string value = await Request.Content.ReadAsStringAsync();
             var meta = await this.GetMetadataAsync();
             ValidateUpdateProperty(meta.UserMetadata, type, value);
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.SetPropertyAsync(subject, type, value);
+                var result = await this.idmService.SetUserPropertyAsync(subject, type, value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -213,7 +215,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await this.userManager.AddClaimAsync(subject, model.Type, model.Value);
+                var result = await this.idmService.AddUserClaimAsync(subject, model.Type, model.Value);
                 if (result.IsSuccess)
                 {
                     return NoContent();
@@ -244,7 +246,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return NotFound();
             }
 
-            var result = await this.userManager.RemoveClaimAsync(subject, type, value);
+            var result = await this.idmService.RemoveUserClaimAsync(subject, type, value);
             if (result.IsSuccess)
             {
                 return NoContent();

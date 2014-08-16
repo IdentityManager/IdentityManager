@@ -54,6 +54,7 @@ namespace Thinktecture.IdentityManager.Api.Models
             foreach (var role in this.Items)
             {
                 var links = new Dictionary<string, string>();
+                links.Add("detail", url.Link(Constants.RouteNames.GetRole, new { subject=role.Data.Subject }));
                 if (meta.SupportsDelete)
                 {
                     links.Add("delete", url.Link(Constants.RouteNames.DeleteRole, new { subject = role.Data.Subject }));

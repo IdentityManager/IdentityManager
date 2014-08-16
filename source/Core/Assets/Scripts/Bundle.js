@@ -379,10 +379,21 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                     .then(mapResponseData, errorHandler("Error Getting Roles"));
             };
 
-            //svc.getRole = function (subject) {
-            //    return $http.get(idmApi.links.roles + "/" + encodeURIComponent(subject))
-            //        .then(mapResponseData, errorHandler("Error Getting Role"));
-            //};
+            svc.getRole = function (subject) {
+                return $http.get(idmApi.links.roles + "/" + encodeURIComponent(subject))
+                    .then(mapResponseData, errorHandler("Error Getting Role"));
+            };
+
+            svc.setProperty = function (property) {
+                if (property.data === 0) {
+                    property.data = "0";
+                }
+                if (property.data === false) {
+                    property.data = "false";
+                }
+                return $http.put(property.links.update, property.data)
+                    .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
+            };
 
             if (idmApi.links.createRole) {
                 svc.createRole = function (properties) {
@@ -938,24 +949,6 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                         feedback.message = property.meta.name + " Changed";
                     }
                     loadRole();
-                }, feedback.errorHandler);
-        };
-
-        $scope.addClaim = function (claims, claim) {
-            idmRoles.addClaim(claims, claim)
-                .then(function () {
-                    feedback.message = "Claim Added : " + claim.type + ", " + claim.value;
-                    loadRole();
-                }, feedback.errorHandler);
-        };
-
-        $scope.removeClaim = function (claim) {
-            idmRoles.removeClaim(claim)
-                .then(function () {
-                    feedback.message = "Claim Removed : " + claim.data.type + ", " + claim.data.value;
-                    loadRole().then(function () {
-                        $scope.claim = claim.data;
-                    });
                 }, feedback.errorHandler);
         };
 

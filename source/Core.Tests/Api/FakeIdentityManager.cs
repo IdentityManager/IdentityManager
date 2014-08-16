@@ -169,39 +169,39 @@ namespace Core.Tests.Api
 
         internal void VerifyAddClaimAsync(string subject, string type, string value)
         {
-            Verify(x => x.AddClaimAsync(subject, type, value));
+            Verify(x => x.AddUserClaimAsync(subject, type, value));
         }
         internal void VerifyAddClaimAsyncNotCalled()
         {
-            Verify(x => x.AddClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            Verify(x => x.AddUserClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
         }
         internal void SetupAddClaimAsync(params string[] errors)
         {
-            Setup(x => x.AddClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            Setup(x => x.AddUserClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupAddClaimAsync(Exception ex)
         {
-            Setup(x => x.AddClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            Setup(x => x.AddUserClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(ex);
         }
 
         internal void VerifyRemoveClaimAsync(string subject, string type, string value)
         {
-            Verify(x => x.RemoveClaimAsync(subject, type, value));
+            Verify(x => x.RemoveUserClaimAsync(subject, type, value));
         }
         internal void VerifyRemoveClaimAsyncNotCalled()
         {
-            Verify(x => x.RemoveClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            Verify(x => x.RemoveUserClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
         }
         internal void SetupRemoveClaimAsync(params string[] errors)
         {
-            Setup(x => x.RemoveClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            Setup(x => x.RemoveUserClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new IdentityManagerResult(errors)));
         }
         public void SetupRemoveClaimAsync(Exception ex)
         {
-            Setup(x => x.RemoveClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            Setup(x => x.RemoveUserClaimAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Throws(ex);
         }
 
