@@ -64,6 +64,11 @@ namespace Thinktecture.IdentityManager.Host
                         SupportsClaims = true,
                         CreateProperties = createprops,
                         UpdateProperties = updateprops
+                    },
+                    RoleMetadata = new RoleMetadata
+                    {
+                        SupportsCreate = true,
+                        SupportsDelete = true
                     }
                 };
             }

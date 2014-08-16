@@ -22,6 +22,10 @@ namespace Thinktecture.IdentityManager.Host
                     SecurityMode = SecurityMode.Local
                 });
             });
+
+            app.Run(async ctx=>{
+                ctx.Response.Redirect("/test");
+            });
         }
     }
 }

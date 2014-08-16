@@ -197,7 +197,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsClaims)
             {
-                return NotFound();
+                return MethodNotAllowed();
             }
             
             if (String.IsNullOrWhiteSpace(subject))
@@ -234,7 +234,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsClaims)
             {
-                return NotFound();
+                return MethodNotAllowed();
             }
             
             if (String.IsNullOrWhiteSpace(subject) || 

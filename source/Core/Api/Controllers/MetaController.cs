@@ -51,6 +51,14 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             {
                 links["createUser"] = new CreateUserLink(Url, meta.UserMetadata);
             }
+            if (meta.RoleMetadata.SupportsListing)
+            {
+                links["roles"] = Url.Link(Constants.RouteNames.GetRoles, null);
+            }
+            if (meta.RoleMetadata.SupportsCreate)
+            {
+                links["createRole"] = Url.Link(Constants.RouteNames.CreateRole, null);
+            }
 
             var resource = new 
             {

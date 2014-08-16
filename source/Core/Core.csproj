@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Controllers\PageController.cs" />
+    <Compile Include="Api\Controllers\RoleController.cs" />
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Filters\SecurityHeadersAttribute.cs" />
     <Compile Include="Api\Models\CreateUserLink.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="Core\Metadata\ExpressionPropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ExecutablePropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ReflectedPropertyMetadata.cs" />
+    <Compile Include="Core\Metadata\RoleMetadata.cs" />
     <Compile Include="Core\Metadata\UserMetadata.cs" />
     <Compile Include="Core\Metadata\PropertyDataType.cs" />
     <Compile Include="Core\Metadata\PropertyMetadata.cs" />
