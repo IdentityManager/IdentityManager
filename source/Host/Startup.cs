@@ -23,8 +23,9 @@ namespace Thinktecture.IdentityManager.Host
                 });
             });
 
-            app.Run(async ctx=>{
+            app.Run(ctx=>{
                 ctx.Response.Redirect("/test/");
+                return System.Threading.Tasks.Task.FromResult(0);
             });
         }
     }

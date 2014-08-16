@@ -356,6 +356,51 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     }
     idmUsers.$inject = ["$http", "idmApi", "$log"];
     app.factory("idmUsers", idmUsers);
+
+    function idmRoles($http, idmApi, $log) {
+        function nop() {
+        }
+        function mapResponseData(response) {
+            return response.data;
+        }
+        function errorHandler(msg) {
+            msg = msg || "Unexpected Error";
+            return function (response) {
+                if (response.data.exceptionMessage) {
+                    $log.error(response.data.exceptionMessage);
+                }
+                throw (response.data.errors || response.data.message || msg);
+            }
+        }
+
+        var svc = idmApi.then(function () {
+            svc.getRoles = function (filter, start, count) {
+                return $http.get(idmApi.links.roles, { params: { filter: filter, start: start, count: count } })
+                    .then(mapResponseData, errorHandler("Error Getting Roles"));
+            };
+
+            //svc.getRole = function (subject) {
+            //    return $http.get(idmApi.links.roles + "/" + encodeURIComponent(subject))
+            //        .then(mapResponseData, errorHandler("Error Getting Role"));
+            //};
+
+            if (idmApi.links.createRole) {
+                svc.createRole = function (properties) {
+                    return $http.post(idmApi.links.createRole.href, properties)
+                        .then(mapResponseData, errorHandler("Error Creating Role"));
+                };
+            }
+
+            svc.deleteRole = function (role) {
+                return $http.delete(role.links.delete)
+                    .then(nop, errorHandler("Error Deleting Role"));
+            };
+        });
+
+        return svc;
+    }
+    idmRoles.$inject = ["$http", "idmApi", "$log"];
+    app.factory("idmRoles", idmRoles);
 })(angular);
 
 (function (angular) {
@@ -369,6 +414,61 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 
 (function (angular) {
     var app = angular.module("ttIdmUI", []);
+
+    app.factory("ttFeedback", function () {
+        function Feedback() {
+            var self = this;
+            var _errors;
+            var _message;
+
+            self.clear = function () {
+                _errors = null;
+                _message = null;
+            };
+
+            Object.defineProperty(this, "message", {
+                get: function () {
+                    return _message;
+                },
+                set: function (value) {
+                    self.clear();
+                    _message = value;
+                }
+            });
+            Object.defineProperty(this, "errors", {
+                get: function () {
+                    return _errors;
+                },
+                set: function (value) {
+                    self.clear();
+                    if (value instanceof Array) {
+                        _errors = value;
+                    }
+                    else {
+                        _errors = [value];
+                    }
+                }
+            });
+
+            self.messageHandler = function (message) {
+                self.message = message;
+            };
+            self.errorHandler = function (errors) {
+                self.errors = errors;
+            };
+            self.createMessageHandler = function (msg) {
+                return function () {
+                    self.message = msg;
+                };
+            };
+            self.createErrorHandler = function (msg) {
+                return function (errors) {
+                    self.errors = errors || msg;
+                };
+            };
+        }
+        return Feedback;
+    });
 
     function ttMatch() {
         return {
@@ -441,7 +541,8 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             restrict: 'E',
             templateUrl: PathBase + '/assets/Templates.pager.buttons.html',
             scope: {
-                pager: '='
+                pager: '=',
+                path: "@"
             }
         }
     }
@@ -557,71 +658,15 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     app.directive("idmMessage", idmMessage);
 })(angular);
 
-///#source 1 1 /Assets/Scripts/App/ttIdmApp.js
+///#source 1 1 /Assets/Scripts/App/ttIdmUsers.js
 /// <reference path="../Libs/angular.min.js" />
 /// <reference path="../Libs/angular-route.min.js" />
 
 (function (angular) {
 
-    function Feedback() {
-        var self = this;
-        var _errors;
-        var _message;
-
-        self.clear = function () {
-            _errors = null;
-            _message = null;
-        };
-
-        Object.defineProperty(this, "message", {
-            get: function () {
-                return _message;
-            },
-            set: function (value) {
-                self.clear();
-                _message = value;
-            }
-        });
-        Object.defineProperty(this, "errors", {
-            get: function () {
-                return _errors;
-            },
-            set: function (value) {
-                self.clear();
-                if (value instanceof Array) {
-                    _errors = value;
-                }
-                else {
-                    _errors = [value];
-                }
-            }
-        });
-
-        self.messageHandler = function (message) {
-            self.message = message;
-        };
-        self.errorHandler = function (errors) {
-            self.errors = errors;
-        };
-        self.createMessageHandler = function (msg) {
-            return function () {
-                self.message = msg;
-            };
-        };
-        self.createErrorHandler = function (msg) {
-            return function (errors) {
-                self.errors = errors || msg;
-            };
-        };
-    }
-
-    var app = angular.module("ttIdmApp", ['ngRoute', 'ttIdm', 'ttIdmUI']);
+    var app = angular.module("ttIdmUsers", ['ngRoute', 'ttIdm', 'ttIdmUI']);
     function config($routeProvider, PathBase) {
         $routeProvider
-            .when("/", {
-                controller: 'HomeCtrl',
-                templateUrl: PathBase + '/assets/Templates.home.html'
-            })
             .when("/users/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
                 resolve: { api: "idmUsers" },
@@ -636,30 +681,10 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 controller: 'EditUserCtrl',
                 resolve: { api: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.edit.html'
-            })
-            .otherwise({
-                redirectTo: '/'
             });
     }
     config.$inject = ["$routeProvider", "PathBase"];
     app.config(config);
-
-    function LayoutCtrl($scope, idmApi) {
-        $scope.model = {};
-
-        idmApi.then(function () {
-            $scope.model.username = idmApi.data.currentUser.username;
-            $scope.model.links = idmApi.links;
-        });
-    }
-    LayoutCtrl.$inject = ["$scope", "idmApi"];
-    app.controller("LayoutCtrl", LayoutCtrl);
-
-    function HomeCtrl($scope) {
-        $scope.model = {};
-    }
-    HomeCtrl.$inject = ["$scope"];
-    app.controller("HomeCtrl", HomeCtrl);
 
     function ListUsersCtrl($scope, idmUsers, idmPager, $routeParams, $location) {
         var model = {
@@ -697,8 +722,8 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     ListUsersCtrl.$inject = ["$scope", "idmUsers", "idmPager", "$routeParams", "$location"];
     app.controller("ListUsersCtrl", ListUsersCtrl);
 
-    function NewUserCtrl($scope, idmUsers, idmApi) {
-        var feedback = new Feedback();
+    function NewUserCtrl($scope, idmUsers, idmApi, ttFeedback) {
+        var feedback = new ttFeedback();
         $scope.feedback = feedback;
         if (!idmApi.links.createUser) {
             feedback.errors = "Create Not Supported";
@@ -728,11 +753,11 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             };
         }
     }
-    NewUserCtrl.$inject = ["$scope", "idmUsers", "idmApi"];
+    NewUserCtrl.$inject = ["$scope", "idmUsers", "idmApi", "ttFeedback"];
     app.controller("NewUserCtrl", NewUserCtrl);
 
-    function EditUserCtrl($scope, idmUsers, $routeParams) {
-        var feedback = new Feedback();
+    function EditUserCtrl($scope, idmUsers, $routeParams, ttFeedback) {
+        var feedback = new ttFeedback();
         $scope.feedback = feedback;
 
         function loadUser() {
@@ -785,8 +810,204 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 }, feedback.errorHandler);
         };
     }
-    EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams"];
+    EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams", "ttFeedback"];
     app.controller("EditUserCtrl", EditUserCtrl);
+
+})(angular);
+
+///#source 1 1 /Assets/Scripts/App/ttIdmRoles.js
+/// <reference path="../Libs/angular.min.js" />
+/// <reference path="../Libs/angular-route.min.js" />
+
+(function (angular) {
+
+    var app = angular.module("ttIdmRoles", ['ngRoute', 'ttIdm', 'ttIdmUI']);
+    function config($routeProvider, PathBase) {
+        $routeProvider
+            .when("/roles/list/:filter?/:page?", {
+                controller: 'ListRolesCtrl',
+                resolve: { api: "idmRoles" },
+                templateUrl: PathBase + '/assets/Templates.roles.list.html'
+            })
+            .when("/roles/create", {
+                controller: 'NewRoleCtrl',
+                resolve: { api: "idmRoles" },
+                templateUrl: PathBase + '/assets/Templates.roles.new.html'
+            })
+            .when("/roles/edit/:subject", {
+                controller: 'EditRoleCtrl',
+                resolve: { api: "idmRoles" },
+                templateUrl: PathBase + '/assets/Templates.roles.edit.html'
+            });
+    }
+    config.$inject = ["$routeProvider", "PathBase"];
+    app.config(config);
+
+    function ListRolesCtrl($scope, idmRoles, idmPager, $routeParams, $location) {
+        var model = {
+            message : null,
+            roles : null,
+            pager : null,
+            waiting : true,
+            filter : $routeParams.filter,
+            page : $routeParams.page || 1
+        };
+        $scope.model = model;
+
+        $scope.search = function (filter) {
+            var url = "/roles/list";
+            if (filter) {
+                url += "/" + filter;
+            }
+            $location.url(url);
+        };
+
+        var itemsPerPage = 10;
+        var startItem = (model.page - 1) * itemsPerPage;
+
+        idmRoles.getRoles(model.filter, startItem, itemsPerPage).then(function (result) {
+            $scope.model.waiting = false;
+            $scope.model.roles = result.data.items;
+            if (result.data.items && result.data.items.length) {
+                $scope.model.pager = new idmPager(result.data, itemsPerPage);
+            }
+        }, function (error) {
+            $scope.model.message = error;
+            $scope.model.waiting = false;
+        });
+    }
+    ListRolesCtrl.$inject = ["$scope", "idmRoles", "idmPager", "$routeParams", "$location"];
+    app.controller("ListRolesCtrl", ListRolesCtrl);
+
+    function NewRoleCtrl($scope, idmRoles, idmApi, ttFeedback) {
+        var feedback = new ttFeedback();
+        $scope.feedback = feedback;
+        if (!idmApi.links.createRole) {
+            feedback.errors = "Create Not Supported";
+            return;
+        }
+        else {
+            var properties = idmApi.links.createRole.meta
+                .map(function (item) {
+                    return {
+                        meta : item,
+                        data : item.dataType === 5 ? false : undefined
+                    };
+                });
+            $scope.properties = properties;
+            $scope.create = function (properties) {
+                var props = properties.map(function (item) {
+                    return {
+                        type: item.meta.type,
+                        value: item.data
+                    };
+                });
+                idmRoles.createRole(props)
+                    .then(function (result) {
+                        $scope.model.last = result;
+                        feedback.message = "Create Success";
+                    }, feedback.errorHandler);
+            };
+        }
+    }
+    NewRoleCtrl.$inject = ["$scope", "idmRoles", "idmApi", "ttFeedback"];
+    app.controller("NewRoleCtrl", NewRoleCtrl);
+
+    function EditRoleCtrl($scope, idmRoles, $routeParams, ttFeedback) {
+        var feedback = new ttFeedback();
+        $scope.feedback = feedback;
+
+        function loadRole() {
+            return idmRoles.getRole($routeParams.subject)
+                .then(function (result) {
+                    $scope.role = result;
+                    if (!result.data.properties) {
+                        $scope.tab = 1;
+                    }
+                }, feedback.errorHandler);
+        };
+        loadRole();
+
+        $scope.setProperty = function (property) {
+            idmRoles.setProperty(property)
+                .then(function () {
+                    if (property.meta.dataType !== 1) {
+                        feedback.message = property.meta.name + " Changed to: " + property.data;
+                    }
+                    else {
+                        feedback.message = property.meta.name + " Changed";
+                    }
+                    loadRole();
+                }, feedback.errorHandler);
+        };
+
+        $scope.addClaim = function (claims, claim) {
+            idmRoles.addClaim(claims, claim)
+                .then(function () {
+                    feedback.message = "Claim Added : " + claim.type + ", " + claim.value;
+                    loadRole();
+                }, feedback.errorHandler);
+        };
+
+        $scope.removeClaim = function (claim) {
+            idmRoles.removeClaim(claim)
+                .then(function () {
+                    feedback.message = "Claim Removed : " + claim.data.type + ", " + claim.data.value;
+                    loadRole().then(function () {
+                        $scope.claim = claim.data;
+                    });
+                }, feedback.errorHandler);
+        };
+
+        $scope.deleteRole = function (role) {
+            idmRoles.deleteRole(role)
+                .then(function () {
+                    feedback.message = "Role Deleted";
+                    $scope.role = null;
+                }, feedback.errorHandler);
+        };
+    }
+    EditRoleCtrl.$inject = ["$scope", "idmRoles", "$routeParams", "ttFeedback"];
+    app.controller("EditRoleCtrl", EditRoleCtrl);
+
+})(angular);
+
+///#source 1 1 /Assets/Scripts/App/ttIdmApp.js
+/// <reference path="../Libs/angular.min.js" />
+/// <reference path="../Libs/angular-route.min.js" />
+
+(function (angular) {
+
+    var app = angular.module("ttIdmApp", ['ngRoute', 'ttIdm', 'ttIdmUI', 'ttIdmUsers', 'ttIdmRoles']);
+    function config(PathBase, $routeProvider) {
+        $routeProvider
+            .when("/", {
+                controller: 'HomeCtrl',
+                templateUrl: PathBase + '/assets/Templates.home.html'
+            })
+            .otherwise({
+                redirectTo: '/'
+            });
+    }
+    config.$inject = ["PathBase", "$routeProvider"];
+    app.config(config);
+
+    function LayoutCtrl($scope, idmApi) {
+        $scope.model = {};
+
+        idmApi.then(function () {
+            $scope.model.username = idmApi.data.currentUser.username;
+            $scope.model.links = idmApi.links;
+        });
+    }
+    LayoutCtrl.$inject = ["$scope", "idmApi"];
+    app.controller("LayoutCtrl", LayoutCtrl);
+
+    function HomeCtrl($scope) {
+        $scope.model = {};
+    }
+    HomeCtrl.$inject = ["$scope"];
+    app.controller("HomeCtrl", HomeCtrl);
 
 })(angular);
 

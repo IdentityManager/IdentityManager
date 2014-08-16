@@ -149,6 +149,9 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Templates\roles\new.html" />
+    <EmbeddedResource Include="Assets\Templates\roles\list.html" />
+    <EmbeddedResource Include="Assets\Templates\roles\edit.html" />
     <EmbeddedResource Include="Assets\Templates\editor\property.html" />
     <EmbeddedResource Include="Assets\Templates\pager\buttons.html" />
     <EmbeddedResource Include="Assets\Templates\pager\summary.html" />
@@ -167,9 +170,17 @@
     </Content>
     <EmbeddedResource Include="Assets\Templates\index.html" />
     <Content Include="Assets\Scripts\App\ttIdm.js" />
-    <Content Include="Assets\Scripts\App\ttIdmApp.js" />
-    <Content Include="Assets\Scripts\App\ttIdmApp.min.js">
+    <Content Include="Assets\Scripts\App\ttIdmApp.min - Copy %282%29.js">
+      <DependentUpon>ttIdmRoles.js</DependentUpon>
+    </Content>
+    <Content Include="Assets\Scripts\App\ttIdmApp.min - Copy.js">
       <DependentUpon>ttIdmApp.js</DependentUpon>
+    </Content>
+    <Content Include="Assets\Scripts\App\ttIdmApp.js" />
+    <Content Include="Assets\Scripts\App\ttIdmRoles.js" />
+    <Content Include="Assets\Scripts\App\ttIdmUsers.js" />
+    <Content Include="Assets\Scripts\App\ttIdmApp.min.js">
+      <DependentUpon>ttIdmUsers.js</DependentUpon>
     </Content>
     <Content Include="Assets\Scripts\App\ttIdmUI.js" />
     <EmbeddedResource Include="Assets\Scripts\Bundle.js">
@@ -196,6 +207,12 @@
     <None Include="app.config" />
     <None Include="Assets\Scripts\App\ttIdm.min.js.map">
       <DependentUpon>ttIdm.min.js</DependentUpon>
+    </None>
+    <None Include="Assets\Scripts\App\ttIdmApp.min.js - Copy %282%29.map">
+      <DependentUpon>ttIdmApp.min - Copy %282%29.js</DependentUpon>
+    </None>
+    <None Include="Assets\Scripts\App\ttIdmApp.min.js - Copy.map">
+      <DependentUpon>ttIdmApp.min - Copy.js</DependentUpon>
     </None>
     <None Include="Assets\Scripts\App\ttIdmApp.min.js.map">
       <DependentUpon>ttIdmApp.min.js</DependentUpon>

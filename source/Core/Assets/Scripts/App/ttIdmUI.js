@@ -4,6 +4,61 @@
 (function (angular) {
     var app = angular.module("ttIdmUI", []);
 
+    app.factory("ttFeedback", function () {
+        function Feedback() {
+            var self = this;
+            var _errors;
+            var _message;
+
+            self.clear = function () {
+                _errors = null;
+                _message = null;
+            };
+
+            Object.defineProperty(this, "message", {
+                get: function () {
+                    return _message;
+                },
+                set: function (value) {
+                    self.clear();
+                    _message = value;
+                }
+            });
+            Object.defineProperty(this, "errors", {
+                get: function () {
+                    return _errors;
+                },
+                set: function (value) {
+                    self.clear();
+                    if (value instanceof Array) {
+                        _errors = value;
+                    }
+                    else {
+                        _errors = [value];
+                    }
+                }
+            });
+
+            self.messageHandler = function (message) {
+                self.message = message;
+            };
+            self.errorHandler = function (errors) {
+                self.errors = errors;
+            };
+            self.createMessageHandler = function (msg) {
+                return function () {
+                    self.message = msg;
+                };
+            };
+            self.createErrorHandler = function (msg) {
+                return function (errors) {
+                    self.errors = errors || msg;
+                };
+            };
+        }
+        return Feedback;
+    });
+
     function ttMatch() {
         return {
             restrict: 'A',
@@ -75,7 +130,8 @@
             restrict: 'E',
             templateUrl: PathBase + '/assets/Templates.pager.buttons.html',
             scope: {
-                pager: '='
+                pager: '=',
+                path: "@"
             }
         }
     }

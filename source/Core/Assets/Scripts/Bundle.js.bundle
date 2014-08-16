@@ -16,6 +16,8 @@
     <file>/Assets/Scripts/Libs/angular-route.min.js</file>
     <file>/Assets/Scripts/App/ttIdm.js</file>
     <file>/Assets/Scripts/App/ttIdmUI.js</file>
+    <file>/Assets/Scripts/App/ttIdmUsers.js</file>
+    <file>/Assets/Scripts/App/ttIdmRoles.js</file>
     <file>/Assets/Scripts/App/ttIdmApp.js</file>
   </files>
 </bundle>

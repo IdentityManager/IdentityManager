@@ -101,6 +101,51 @@
     }
     idmUsers.$inject = ["$http", "idmApi", "$log"];
     app.factory("idmUsers", idmUsers);
+
+    function idmRoles($http, idmApi, $log) {
+        function nop() {
+        }
+        function mapResponseData(response) {
+            return response.data;
+        }
+        function errorHandler(msg) {
+            msg = msg || "Unexpected Error";
+            return function (response) {
+                if (response.data.exceptionMessage) {
+                    $log.error(response.data.exceptionMessage);
+                }
+                throw (response.data.errors || response.data.message || msg);
+            }
+        }
+
+        var svc = idmApi.then(function () {
+            svc.getRoles = function (filter, start, count) {
+                return $http.get(idmApi.links.roles, { params: { filter: filter, start: start, count: count } })
+                    .then(mapResponseData, errorHandler("Error Getting Roles"));
+            };
+
+            //svc.getRole = function (subject) {
+            //    return $http.get(idmApi.links.roles + "/" + encodeURIComponent(subject))
+            //        .then(mapResponseData, errorHandler("Error Getting Role"));
+            //};
+
+            if (idmApi.links.createRole) {
+                svc.createRole = function (properties) {
+                    return $http.post(idmApi.links.createRole.href, properties)
+                        .then(mapResponseData, errorHandler("Error Creating Role"));
+                };
+            }
+
+            svc.deleteRole = function (role) {
+                return $http.delete(role.links.delete)
+                    .then(nop, errorHandler("Error Deleting Role"));
+            };
+        });
+
+        return svc;
+    }
+    idmRoles.$inject = ["$http", "idmApi", "$log"];
+    app.factory("idmRoles", idmRoles);
 })(angular);
 
 (function (angular) {

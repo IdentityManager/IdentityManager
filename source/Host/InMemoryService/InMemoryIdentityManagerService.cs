@@ -339,7 +339,7 @@ namespace Thinktecture.IdentityManager.Host
                     from r in query
                     where
                         r.Name.ToLower().Contains(filter) ||
-                        r.Description.ToLower().Contains(filter)
+                        (r.Description != null && r.Description.ToLower().Contains(filter))
                     select r;
             }
 

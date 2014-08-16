@@ -1,6 +1,6 @@
 ﻿<ul class="center-block pagination">
     <li ng-repeat="button in pager.buttons"
         ng-class="!button.enabled ? 'disabled' : (button.current ? 'active':'')">
-        <a href="#/users/list/{{pager.filter}}/{{button.page}}" ng-bind-html="button.text"></a>
+        <a href="#/{{path}}/list/{{pager.filter}}/{{button.page}}" ng-bind-html="button.text"></a>
     </li>
 </ul>

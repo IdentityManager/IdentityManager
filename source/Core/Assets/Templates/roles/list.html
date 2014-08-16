@@ -1,7 +1,7 @@
 ﻿
 <div class="page-header">
     <h1>
-        Users
+        Roles
         <span ng-show="model.waiting" class="waiting label label-info">Searching...</span>
         <span ng-show="model.pager" class="badge">{{model.pager.total}} found</span>
     </h1>
@@ -10,7 +10,6 @@
 <form ng-submit="search(model.filter)" class="form-group">
     <div class="col-sm-6">
         <div class="input-group form-group">
-            <!--<span class="input-group-addon"><label for="filter">Filter</label></span>-->
             <input type="text" id="filter" ng-model="model.filter" class="form-control" placeholder="Filter" autofocus>
             <span class="input-group-btn">
                 <button class="btn btn-primary">Search</button>
@@ -25,34 +24,32 @@
     </div>
 </div>
 
-<div class="row" ng-hide="model.waiting || model.message || (model.users.length > 0)">
+<div class="row" ng-hide="model.waiting || model.message || (model.roles.length > 0)">
     <div class="col-sm-8">
-        <div class="alert alert-info">No Users Found</div>
+        <div class="alert alert-info">No Roles Found</div>
     </div>
 </div>
 
-<div class="row" ng-show="model.users.length > 0">
+<div class="row" ng-show="model.roles.length > 0">
     <table class="table table-condensed table-responsive table-striped xtable-bordered">
         <thead>
             <tr>
                 <th></th>
                 <th>Name</th>
-                <th>Username</th>
                 <th>Subject</th>
             </tr>
         </thead>
-        <tr ng-repeat="user in model.users">
-            <td><a ng-show="user.links.detail" href="#/users/edit/{{user.data.subject}}" class="btn btn-primary btn-xs">edit</a></td>
-            <td>{{user.data.name}}</td>
-            <td>{{user.data.username}}</td>
-            <td>{{user.data.subject}}</td>
+        <tr ng-repeat="role in model.roles">
+            <td><a ng-show="role.links.detail" href="#/roles/edit/{{role.data.subject}}" class="btn btn-primary btn-xs">edit</a></td>
+            <td>{{role.data.name}}</td>
+            <td>{{role.data.subject}}</td>
         </tr>
     </table>
 </div>
 
 <div class="row" ng-show="model.pager">
     <div class="col-sm-8">
-        <tt-pager-buttons pager="model.pager" path="users"></tt-pager-buttons>
+        <tt-pager-buttons pager="model.pager" path="roles"></tt-pager-buttons>
     </div>
     <div class="col-sm-4 pager-text">
         <tt-pager-summary pager="model.pager"></tt-pager-summary>

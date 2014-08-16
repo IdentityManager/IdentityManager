@@ -1,0 +1,40 @@
+﻿<div class="page-header">
+    <h1>
+        Edit Role <span ng-show="role.data.name">: {{role.data.name}}</span>
+        <small class="subject">{{role.data.subject}}</small>
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-sm-8">
+        <idm-message message="feedback"></idm-message>
+    </div>
+</div>
+
+<div ng-show="role">
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="{{!tab ?'active':''}}" ng-show="role.data.properties"><a ng-click="tab=0" href="#/roles/edit/{{role.data.subject}}" role="tab" data-toggle="tab">Properties</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane {{!tab ?'active':''}}">
+            <div class="line" ng-repeat="property in role.data.properties">
+                <div class="row">
+                    <tt-property-editor property="property" set-property="setProperty"></tt-property-editor>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row section" ng-show="role.links.delete">
+        <form name="deleteRoleForm"
+              class="form-inline"
+              ng-submit="deleteRole(role)">
+            <div class="col-sm-12">
+                <tt-prompt id="m" action="Delete">Are you sure you want to delete role <strong>{{role.data.name}}</strong> (<em>{{role.data.subject}}</em>)?</tt-prompt>
+                <button type="submit" class="btn btn-primary" tt-confirm-click="#m">Delete role</button>
+            </div>
+        </form>
+    </div>
+</div>
