@@ -13,8 +13,8 @@ namespace Thinktecture.IdentityManager.Host
         {
             app.Map("/test", testApp =>
             {
-                int numberOfRandomUsers = new System.Random().Next(5000, 20000);
-                var svc = new InMemoryIdentityManagerService(Users.Get(numberOfRandomUsers));
+                var rand = new System.Random();
+                var svc = new InMemoryIdentityManagerService(Users.Get(rand.Next(5000, 20000)), Roles.Get(rand.Next(100)));
                 testApp.UseIdentityManager(new IdentityManagerConfiguration
                 {
                     IdentityManagerFactory = () => svc,
@@ -24,7 +24,7 @@ namespace Thinktecture.IdentityManager.Host
             });
 
             app.Run(async ctx=>{
-                ctx.Response.Redirect("/test");
+                ctx.Response.Redirect("/test/");
             });
         }
     }

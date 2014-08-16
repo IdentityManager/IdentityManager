@@ -64,7 +64,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             if (result.IsSuccess)
             {
                 var meta = await GetMetadataAsync();
-                var resource = new QueryResultResource(result.Result, Url, meta.UserMetadata);
+                var resource = new UserQueryResultResource(result.Result, Url, meta.UserMetadata);
                 return Ok(resource);
             }
 
@@ -72,7 +72,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [HttpPost, Route("", Name = Constants.RouteNames.CreateUser)]
-        public async Task<IHttpActionResult> CreateUserAsync(UserClaim[] properties)
+        public async Task<IHttpActionResult> CreateUserAsync(Property[] properties)
         {
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsCreate)
@@ -253,10 +253,10 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
         
-        private IEnumerable<string> ValidateCreateProperties(UserMetadata userMetadata, IEnumerable<UserClaim> properties)
+        private IEnumerable<string> ValidateCreateProperties(UserMetadata userMetadata, IEnumerable<Property> properties)
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
-            properties = properties ?? Enumerable.Empty<UserClaim>();
+            properties = properties ?? Enumerable.Empty<Property>();
 
             var meta = userMetadata.GetCreateProperties();
             return meta.Validate(properties);

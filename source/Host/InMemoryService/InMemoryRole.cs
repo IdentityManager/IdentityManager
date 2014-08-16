@@ -15,7 +15,12 @@ namespace Thinktecture.IdentityManager.Host
 {
     public class InMemoryRole
     {
-        public string Id { get; set; }
+        public InMemoryRole()
+        {
+            ID = Guid.NewGuid().ToString();
+        }
+
+        public string ID { get; set; }
 
         [Required]
         public string Name { get; set; }

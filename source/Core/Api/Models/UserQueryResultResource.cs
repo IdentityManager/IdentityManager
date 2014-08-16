@@ -11,15 +11,15 @@ using System.Web.Http.Routing;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {
-    public class QueryResultResource
+    public class UserQueryResultResource
     {
-        public QueryResultResource(QueryResult result, UrlHelper url, UserMetadata meta)
+        public UserQueryResultResource(QueryResult<UserSummary> result, UrlHelper url, UserMetadata meta)
         {
-            if (result == null) throw new ArgumentNullException("user");
+            if (result == null) throw new ArgumentNullException("result");
             if (url == null) throw new ArgumentNullException("url");
             if (meta == null) throw new ArgumentNullException("meta");
 
-            Data = new QueryResultResourceData(result, url, meta);
+            Data = new UserQueryResultResourceData(result, url, meta);
             
             var links = new Dictionary<string, object>();
             if (meta.SupportsCreate)
@@ -29,21 +29,21 @@ namespace Thinktecture.IdentityManager.Api.Models
             Links = links;
         }
 
-        public QueryResultResourceData Data { get; set; }
+        public UserQueryResultResourceData Data { get; set; }
         public object Links { get; set; }
     }
 
-    public class QueryResultResourceData : QueryResult
+    public class UserQueryResultResourceData : QueryResult<UserSummary>
     {
-        static QueryResultResourceData()
+        static UserQueryResultResourceData()
         {
-            AutoMapper.Mapper.CreateMap<QueryResult, QueryResultResourceData>()
-                .ForMember(x => x.Users, opts => opts.MapFrom(x => x.Users));
-            AutoMapper.Mapper.CreateMap<UserResult, UserResultResource>()
+            AutoMapper.Mapper.CreateMap<QueryResult<UserSummary>, UserQueryResultResourceData>()
+                .ForMember(x => x.Items, opts => opts.MapFrom(x => x.Items));
+            AutoMapper.Mapper.CreateMap<UserSummary, UserResultResource>()
                 .ForMember(x => x.Data, opts => opts.MapFrom(x => x));
         }
 
-        public QueryResultResourceData(QueryResult result, UrlHelper url, UserMetadata meta)
+        public UserQueryResultResourceData(QueryResult<UserSummary> result, UrlHelper url, UserMetadata meta)
         {
             if (result == null) throw new ArgumentNullException("result");
             if (url == null) throw new ArgumentNullException("url");
@@ -51,7 +51,7 @@ namespace Thinktecture.IdentityManager.Api.Models
 
             AutoMapper.Mapper.Map(result, this);
 
-            foreach (var user in this.Users)
+            foreach (var user in this.Items)
             {
                 var links = new Dictionary<string, string> {
                     {"Detail", url.Link(Constants.RouteNames.GetUser, new { subject = user.Data.Subject })}
@@ -64,12 +64,12 @@ namespace Thinktecture.IdentityManager.Api.Models
             }
         }
 
-        public new IEnumerable<UserResultResource> Users { get; set; }
+        public new IEnumerable<UserResultResource> Items { get; set; }
     }
 
     public class UserResultResource
     {
-        public UserResult Data { get; set; }
+        public UserSummary Data { get; set; }
         public object Links { get; set; }
     }
 }

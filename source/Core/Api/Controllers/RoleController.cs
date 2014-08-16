@@ -58,7 +58,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
         
         [HttpGet, Route("", Name = Constants.RouteNames.GetRoles)]
-        public async Task<IHttpActionResult> GetRolesAsync()
+        public async Task<IHttpActionResult> GetRolesAsync(string filter = null, int start = 0, int count = 100)
         {
             var meta = await GetMetadataAsync();
             if (!meta.RoleMetadata.SupportsListing)
@@ -66,11 +66,18 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 return MethodNotAllowed();
             }
 
-            return Ok();
+            var result = await userManager.QueryRolesAsync(filter, start, count);
+            if (result.IsSuccess)
+            {
+                var resource = new RoleQueryResultResource(result.Result, Url, meta.RoleMetadata);
+                return Ok(resource);
+            }
+
+            return BadRequest(result.ToError());
         }
 
         [HttpPost, Route("", Name = Constants.RouteNames.CreateRole)]
-        public async Task<IHttpActionResult> CreateRoleAsync()
+        public async Task<IHttpActionResult> CreateRoleAsync(Property[] properties)
         {
             var meta = await GetMetadataAsync();
             if (!meta.RoleMetadata.SupportsCreate)
@@ -81,8 +88,8 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return Ok();
         }
 
-        [HttpDelete, Route("{id}", Name = Constants.RouteNames.DeleteRole)]
-        public async Task<IHttpActionResult> DeleteUserAsync(string id)
+        [HttpDelete, Route("{subject}", Name = Constants.RouteNames.DeleteRole)]
+        public async Task<IHttpActionResult> DeleteUserAsync(string subject)
         {
             var meta = await GetMetadataAsync();
             if (!meta.RoleMetadata.SupportsDelete)

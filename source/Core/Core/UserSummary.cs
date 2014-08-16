@@ -6,9 +6,10 @@ using System.Collections.Generic;
 
 namespace Thinktecture.IdentityManager
 {
-    public class UserDetail : UserSummary
+    public class UserSummary
     {
-        public IEnumerable<Property> Properties { get; set; }
-        public IEnumerable<Property> Claims { get; set; }
+        public string Subject { get; set; }
+        public string Username { get; set; }
+        public string Name { get; set; }
     }
 }

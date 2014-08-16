@@ -33,8 +33,8 @@ namespace Core.Tests.Api
         public void GetUsersAsync_SuccessfulResult_ReturnsResults()
         {
             ConfigureQueryUsers(53);
-            var result = Get<QueryResult>("api/users");
-            Assert.AreEqual(53, result.Users.Count());
+            var result = Get<QueryResult<UserSummary>>("api/users");
+            Assert.AreEqual(53, result.Items.Count());
         }        
         [TestMethod]
         public void GetUsersAsync_IdentityManagerFails_ReturnsErrors()
@@ -138,7 +138,7 @@ namespace Core.Tests.Api
         public void GetUserAsync_UserFound_ReturnsUser()
         {
             identityManager.SetupGetUserAsync(new UserDetail { Subject = "foo", Username = "user" });
-            var result = Get<UserResult>("api/users/123");
+            var result = Get<UserSummary>("api/users/123");
             Assert.AreEqual("foo", result.Subject);
             Assert.AreEqual("user", result.Username);
         }

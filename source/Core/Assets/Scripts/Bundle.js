@@ -685,8 +685,8 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 
         idmUsers.getUsers(model.filter, startItem, itemsPerPage).then(function (result) {
             $scope.model.waiting = false;
-            $scope.model.users = result.data.users;
-            if (result.data.users && result.data.users.length) {
+            $scope.model.users = result.data.items;
+            if (result.data.items && result.data.items.length) {
                 $scope.model.pager = new idmPager(result.data, itemsPerPage);
             }
         }, function (error) {

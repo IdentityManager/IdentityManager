@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using Thinktecture.IdentityManager.Resources;
 namespace Thinktecture.IdentityManager
 {
-    public class UserClaim
+    public class Property
     {
         [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PropertyTypeRequired")]
         public string Type { get; set; }

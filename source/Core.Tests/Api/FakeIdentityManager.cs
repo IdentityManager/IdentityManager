@@ -13,23 +13,23 @@ namespace Core.Tests.Api
         public FakeIdentityManager()
         {
             this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult()));
-            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<QueryResult>(new QueryResult())));
+            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<QueryResult<UserSummary>>(new QueryResult<UserSummary>())));
             this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult())));
-            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<UserResult>(new UserResult())));
+            this.SetReturnsDefault(Task.FromResult(new IdentityManagerResult<UserSummary>(new UserSummary())));
             this.SetupGetMetadataAsync(new IdentityManagerMetadata {
             });
         }
 
 
-        public void SetupQueryUsersAsync(QueryResult result)
+        public void SetupQueryUsersAsync(QueryResult<UserSummary> result)
         {
             Setup(x => x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(new IdentityManagerResult<QueryResult>(result)));
+                .Returns(Task.FromResult(new IdentityManagerResult<QueryResult<UserSummary>>(result)));
         }
         public void SetupQueryUsersAsync(params string[] errors)
         {
             Setup(x => x.QueryUsersAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(Task.FromResult(new IdentityManagerResult<QueryResult>(errors)));
+                .Returns(Task.FromResult(new IdentityManagerResult<QueryResult<UserSummary>>(errors)));
         }
         public void SetupQueryUsersAsync(Exception ex)
         {

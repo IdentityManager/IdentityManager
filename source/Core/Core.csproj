@@ -95,9 +95,11 @@
     <Compile Include="Api\Filters\NoCacheAttribute.cs" />
     <Compile Include="Api\Filters\SecurityHeadersAttribute.cs" />
     <Compile Include="Api\Models\CreateUserLink.cs" />
+    <Compile Include="Api\Models\CreateRoleLink.cs" />
     <Compile Include="Api\Models\ErrorModel.cs" />
     <Compile Include="Api\Models\UserDetailResource.cs" />
-    <Compile Include="Api\Models\QueryResultResource.cs" />
+    <Compile Include="Api\Models\RoleQueryResultResource.cs" />
+    <Compile Include="Api\Models\UserQueryResultResource.cs" />
     <Compile Include="Assets\AssetManager.cs" />
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
@@ -119,21 +121,24 @@
     <Compile Include="Core\Metadata\PropertyMetadata.cs" />
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IIdentityManagerService.cs" />
+    <Compile Include="Core\RoleDetail.cs" />
     <Compile Include="Core\UserDetail.cs" />
+    <Compile Include="Core\RoleSummary.cs" />
     <Compile Include="Extensions\ClaimsExtensions.cs" />
     <Compile Include="Extensions\ModelStateDictionaryExtensions.cs" />
     <Compile Include="Extensions\IdentityManagerResultExtensions.cs" />
     <Compile Include="Extensions\PropertyInfoExtensions.cs" />
     <Compile Include="Extensions\PropertyMetadataExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\RoleMetadataExtensions.cs" />
     <Compile Include="Extensions\UserMetadataExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
-    <Compile Include="Core\UserClaim.cs" />
+    <Compile Include="Core\Property.cs" />
     <Compile Include="Core\Metadata\IdentityManagerMetadata.cs" />
     <Compile Include="Core\IdentityManagerResult`1.cs" />
     <Compile Include="Core\IdentityManagerResult.cs" />
-    <Compile Include="Core\UserResult.cs" />
+    <Compile Include="Core\UserSummary.cs" />
     <Compile Include="Resources\Messages.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

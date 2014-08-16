@@ -24,12 +24,21 @@ namespace Thinktecture.IdentityManager
             this.disposable = disposable;
         }
 
+        public void Dispose()
+        {
+            if (this.disposable != null)
+            {
+                this.disposable.Dispose();
+                this.disposable = null;
+            }
+        }
+
         public Task<IdentityManagerMetadata> GetMetadataAsync()
         {
             return inner.GetMetadataAsync();
         }
 
-        public Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<UserClaim> properties)
+        public Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<Property> properties)
         {
             return inner.CreateUserAsync(properties);
         }
@@ -39,7 +48,7 @@ namespace Thinktecture.IdentityManager
             return this.inner.DeleteUserAsync(subject);
         }
 
-        public Task<IdentityManagerResult<QueryResult>> QueryUsersAsync(string filter, int start, int count)
+        public Task<IdentityManagerResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
         {
             return this.inner.QueryUsersAsync(filter, start, count);
         }
@@ -64,13 +73,19 @@ namespace Thinktecture.IdentityManager
             return this.inner.RemoveClaimAsync(subject, type, value);
         }
 
-        public void Dispose()
+        public Task<IdentityManagerResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
         {
-            if (this.disposable != null)
-            {
-                this.disposable.Dispose();
-                this.disposable = null;
-            }
+            return inner.QueryRolesAsync(filter, start, count);
+        }
+
+        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties)
+        {
+            return inner.CreateRoleAsync(properties);
+        }
+
+        public Task<IdentityManagerResult> DeleteRoleAsync(string subject)
+        {
+            return inner.DeleteRoleAsync(subject);
         }
     }
 }

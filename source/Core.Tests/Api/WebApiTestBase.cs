@@ -45,12 +45,12 @@ namespace Core.Tests.Api
 
         protected void ConfigureQueryUsers(int number)
         {
-            var users = new UserResult[number];
+            var users = new UserSummary[number];
             for (var i = 0; i < number; i++)
             {
-                users[i] = new UserResult { Subject = i.ToString() };
+                users[i] = new UserSummary { Subject = i.ToString() };
             }
-            identityManager.SetupQueryUsersAsync(new QueryResult { Users = users });
+            identityManager.SetupQueryUsersAsync(new QueryResult<UserSummary> { Items = users });
         }
 
         protected HttpResponseMessage Get(string path)

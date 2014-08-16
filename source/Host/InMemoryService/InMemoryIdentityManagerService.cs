@@ -16,9 +16,11 @@ namespace Thinktecture.IdentityManager.Host
     class InMemoryIdentityManagerService : IIdentityManagerService
     {
         ICollection<InMemoryUser> users;
-        public InMemoryIdentityManagerService(ICollection<InMemoryUser> users)
+        ICollection<InMemoryRole> roles;
+        public InMemoryIdentityManagerService(ICollection<InMemoryUser> users, ICollection<InMemoryRole> roles)
         {
             this.users = users;
+            this.roles = roles;
         }
 
         IdentityManagerMetadata metadata;
@@ -55,6 +57,11 @@ namespace Thinktecture.IdentityManager.Host
                     }
                 });
 
+                var roleCreateProps = new List<PropertyMetadata>();
+                roleCreateProps.Add(PropertyMetadata.FromProperty<InMemoryRole>(x => x.Name));
+                var roleUpdateProps = new List<PropertyMetadata>();
+                roleUpdateProps.Add(PropertyMetadata.FromProperty<InMemoryRole>(x=>x.Description));
+
                 metadata = new IdentityManagerMetadata()
                 {
                     UserMetadata = new UserMetadata
@@ -68,13 +75,16 @@ namespace Thinktecture.IdentityManager.Host
                     RoleMetadata = new RoleMetadata
                     {
                         SupportsCreate = true,
-                        SupportsDelete = true
+                        SupportsDelete = true,
+                        CreateProperties = roleCreateProps,
+                        UpdateProperties = roleUpdateProps
                     }
                 };
             }
             return metadata;
         }
 
+        #region Users
         private string GetName(InMemoryUser user)
         {
             return user.Claims.GetValue(Constants.ClaimTypes.Name);
@@ -90,7 +100,7 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(GetMetadata());
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<UserClaim> properties)
+        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<Property> properties)
         {
             var errors = ValidateProperties(properties);
             if (errors.Any())
@@ -120,7 +130,7 @@ namespace Thinktecture.IdentityManager.Host
             return Task.FromResult(IdentityManagerResult.Success);
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult<QueryResult>> QueryUsersAsync(string filter, int start, int count)
+        public System.Threading.Tasks.Task<IdentityManagerResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count)
         {
             var query =
                 from u in users
@@ -137,23 +147,24 @@ namespace Thinktecture.IdentityManager.Host
                     select u;
             }
 
-            var userResults =
+            var items =
                 from u in query.Distinct()
-                select new UserResult
+                select new UserSummary
                 {
                     Subject = u.Subject,
                     Username = u.Username,
                     Name = u.Claims.Where(x => x.Type == Constants.ClaimTypes.Name).Select(x => x.Value).FirstOrDefault(),
                 };
+            var total = items.Count();
 
-            var result = userResults.Skip(start).Take(count);
-            return Task.FromResult(new IdentityManagerResult<QueryResult>(new QueryResult
+            var result = items.Skip(start).Take(count);
+            return Task.FromResult(new IdentityManagerResult<QueryResult<UserSummary>>(new QueryResult<UserSummary>
             {
                 Filter = filter,
                 Start = start,
                 Count = result.Count(),
-                Users = result,
-                Total = userResults.Count(),
+                Items = result,
+                Total = total,
             }));
         }
 
@@ -165,16 +176,16 @@ namespace Thinktecture.IdentityManager.Host
                 return Task.FromResult(new IdentityManagerResult<UserDetail>((UserDetail)null));
             }
 
-            var props = new List<UserClaim>();
+            var props = new List<Property>();
             foreach(var prop in GetMetadata().UserMetadata.UpdateProperties)
             {
-                props.Add(new UserClaim{
+                props.Add(new Property{
                     Type = prop.Type, 
                     Value = GetProperty(prop, user)
                 });
             }
            
-            var claims = user.Claims.Select(x => new UserClaim { Type = x.Type, Value = x.Value });
+            var claims = user.Claims.Select(x => new Property { Type = x.Type, Value = x.Value });
 
             return Task.FromResult(new IdentityManagerResult<UserDetail>(new UserDetail
             {
@@ -282,7 +293,7 @@ namespace Thinktecture.IdentityManager.Host
             }
         }
 
-        IEnumerable<string> ValidateProperties(IEnumerable<UserClaim> properties)
+        IEnumerable<string> ValidateProperties(IEnumerable<Property> properties)
         {
             return properties.Select(x => ValidateProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
         }
@@ -311,5 +322,57 @@ namespace Thinktecture.IdentityManager.Host
             
             return Enumerable.Empty<string>();
         }
+        
+#endregion
+        
+        #region Roles
+        
+        public Task<IdentityManagerResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count)
+        {
+            var query =
+                from r in roles
+                select r;
+            if (!String.IsNullOrWhiteSpace(filter))
+            {
+                filter = filter.ToLower();
+                query =
+                    from r in query
+                    where
+                        r.Name.ToLower().Contains(filter) ||
+                        r.Description.ToLower().Contains(filter)
+                    select r;
+            }
+
+            var items =
+                from r in query.Distinct()
+                select new RoleSummary
+                {
+                    Subject = r.ID,
+                    Name = r.Name
+                };
+            var total = items.Count();
+
+            var result = items.Skip(start).Take(count);
+            return Task.FromResult(new IdentityManagerResult<QueryResult<RoleSummary>>(new QueryResult<RoleSummary>
+            {
+                Filter = filter,
+                Start = start,
+                Count = result.Count(),
+                Items = result,
+                Total = total,
+            }));
+        }
+
+        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IdentityManagerResult> DeleteRoleAsync(string subject)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }
