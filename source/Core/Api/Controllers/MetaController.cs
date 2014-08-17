@@ -45,6 +45,11 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         {
             var meta = await GetMetadataAsync();
 
+            var data = new Dictionary<string, object>();
+            data.Add("currentUser", new {
+                username = User.Identity.Name
+            });
+
             var links = new Dictionary<string, object>();
             links["users"] = Url.Link(Constants.RouteNames.GetUsers, null);
             if (meta.RoleMetadata.SupportsListing)
@@ -60,17 +65,11 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 links["createRole"] = new CreateRoleLink(Url, meta.RoleMetadata);
             }
 
-            var resource = new 
+            return Ok(new 
             {
-                Data = new {
-                    currentUser = new
-                    {
-                        username = User.Identity.Name
-                    }
-                },
+                Data = data,
                 Links = links
-            };
-            return Ok(resource);
+            });
         }
     }
 }

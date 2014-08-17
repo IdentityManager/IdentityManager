@@ -15,16 +15,16 @@ namespace Thinktecture.IdentityManager.Api.Models
 {
     public class UserDetailResource
     {
-        public UserDetailResource(UserDetail user, UrlHelper url, UserMetadata meta)
+        public UserDetailResource(UserDetail user, UrlHelper url, IdentityManagerMetadata idmMeta, RoleSummary[] roles)
         {
             if (user == null) throw new ArgumentNullException("user");
             if (url == null) throw new ArgumentNullException("url");
-            if (meta == null) throw new ArgumentNullException("meta");
+            if (idmMeta == null) throw new ArgumentNullException("idmMeta");
 
-            Data = new UserDetailDataResource(user, url, meta);
+            Data = new UserDetailDataResource(user, url, idmMeta, roles);
 
             var links = new Dictionary<string, string>();
-            if (meta.SupportsDelete)
+            if (idmMeta.UserMetadata.SupportsDelete)
             {
                 links["Delete"] = url.Link(Constants.RouteNames.DeleteUser, new { subject = user.Subject });
             }
@@ -37,7 +37,7 @@ namespace Thinktecture.IdentityManager.Api.Models
 
     public class UserDetailDataResource : Dictionary<string, object>
     {
-        public UserDetailDataResource(UserDetail user, UrlHelper url, UserMetadata meta)
+        public UserDetailDataResource(UserDetail user, UrlHelper url, IdentityManagerMetadata meta, RoleSummary[] roles)
         {
             if (user == null) throw new ArgumentNullException("user");
             if (url == null) throw new ArgumentNullException("url");
@@ -51,7 +51,7 @@ namespace Thinktecture.IdentityManager.Api.Models
             {
                 var props =
                     from p in user.Properties
-                    let m = (from m in meta.UpdateProperties where m.Type == p.Type select m).SingleOrDefault()
+                    let m = (from m in meta.UserMetadata.UpdateProperties where m.Type == p.Type select m).SingleOrDefault()
                     where m != null
                     select new
                     {
@@ -76,7 +76,28 @@ namespace Thinktecture.IdentityManager.Api.Models
                 }
             }
 
-            if (meta.SupportsClaims && user.Claims != null)
+            if (roles != null && user.Claims != null)
+            {
+                var roleClaims = user.Claims.Where(x => x.Type == meta.RoleMetadata.RoleClaimType);
+                var query =
+                    from r in roles
+                    select new
+                    {
+                        data = roleClaims.Any(x => x.Value == r.Name),
+                        meta = new
+                        {
+                            type = r.Name
+                        },
+                        links = new
+                        {
+                            add = url.Link(Constants.RouteNames.AddRole, new { subject = user.Subject, role = r.Name.ToBase64UrlEncoded() }),
+                            remove = url.Link(Constants.RouteNames.RemoveRole, new { subject = user.Subject, role = r.Name.ToBase64UrlEncoded() })
+                        }
+                    };
+                this["Roles"] = query.ToArray();
+            }
+
+            if (meta.UserMetadata.SupportsClaims && user.Claims != null)
             {
                 var claims =
                     from c in user.Claims.ToArray()

@@ -680,17 +680,17 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         $routeProvider
             .when("/users/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
-                resolve: { api: "idmUsers" },
+                resolve: { users: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.list.html'
             })
             .when("/users/create", {
                 controller: 'NewUserCtrl',
-                resolve: { api: "idmUsers" },
+                resolve: { users: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.new.html'
             })
             .when("/users/edit/:subject", {
                 controller: 'EditUserCtrl',
-                resolve: { api: "idmUsers" },
+                resolve: { users: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.edit.html'
             });
     }
@@ -775,9 +775,15 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             return idmUsers.getUser($routeParams.subject)
                 .then(function (result) {
                     $scope.user = result;
+
                     if (!result.data.properties) {
                         $scope.tab = 1;
+
+                        if (!result.data.roles) {
+                            $scope.tab = 2;
+                        }
                     }
+
                 }, feedback.errorHandler);
         };
         loadUser();
@@ -837,17 +843,17 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
         $routeProvider
             .when("/roles/list/:filter?/:page?", {
                 controller: 'ListRolesCtrl',
-                resolve: { api: "idmRoles" },
+                resolve: { roles: "idmRoles" },
                 templateUrl: PathBase + '/assets/Templates.roles.list.html'
             })
             .when("/roles/create", {
                 controller: 'NewRoleCtrl',
-                resolve: { api: "idmRoles" },
+                resolve: { roles: "idmRoles" },
                 templateUrl: PathBase + '/assets/Templates.roles.new.html'
             })
             .when("/roles/edit/:subject", {
                 controller: 'EditRoleCtrl',
-                resolve: { api: "idmRoles" },
+                resolve: { roles: "idmRoles" },
                 templateUrl: PathBase + '/assets/Templates.roles.edit.html'
             });
     }

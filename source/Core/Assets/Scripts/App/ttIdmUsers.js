@@ -8,17 +8,17 @@
         $routeProvider
             .when("/users/list/:filter?/:page?", {
                 controller: 'ListUsersCtrl',
-                resolve: { api: "idmUsers" },
+                resolve: { users: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.list.html'
             })
             .when("/users/create", {
                 controller: 'NewUserCtrl',
-                resolve: { api: "idmUsers" },
+                resolve: { users: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.new.html'
             })
             .when("/users/edit/:subject", {
                 controller: 'EditUserCtrl',
-                resolve: { api: "idmUsers" },
+                resolve: { users: "idmUsers" },
                 templateUrl: PathBase + '/assets/Templates.users.edit.html'
             });
     }
@@ -103,9 +103,15 @@
             return idmUsers.getUser($routeParams.subject)
                 .then(function (result) {
                     $scope.user = result;
+
                     if (!result.data.properties) {
                         $scope.tab = 1;
+
+                        if (!result.data.roles) {
+                            $scope.tab = 2;
+                        }
                     }
+
                 }, feedback.errorHandler);
         };
         loadUser();

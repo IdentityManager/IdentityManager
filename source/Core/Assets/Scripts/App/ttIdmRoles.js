@@ -8,17 +8,17 @@
         $routeProvider
             .when("/roles/list/:filter?/:page?", {
                 controller: 'ListRolesCtrl',
-                resolve: { api: "idmRoles" },
+                resolve: { roles: "idmRoles" },
                 templateUrl: PathBase + '/assets/Templates.roles.list.html'
             })
             .when("/roles/create", {
                 controller: 'NewRoleCtrl',
-                resolve: { api: "idmRoles" },
+                resolve: { roles: "idmRoles" },
                 templateUrl: PathBase + '/assets/Templates.roles.new.html'
             })
             .when("/roles/edit/:subject", {
                 controller: 'EditRoleCtrl',
-                resolve: { api: "idmRoles" },
+                resolve: { roles: "idmRoles" },
                 templateUrl: PathBase + '/assets/Templates.roles.edit.html'
             });
     }

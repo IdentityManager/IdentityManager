@@ -39,6 +39,8 @@ namespace Thinktecture.IdentityManager
             public const string UpdateUserProperty = "UpdateUserProperty";
             public const string AddClaim = "AddClaim";
             public const string RemoveClaim = "RemoveClaim";
+            public const string AddRole = "AddRole";
+            public const string RemoveRole = "RemoveRole";
 
             public const string GetRoles = "GetRoles";
             public const string GetRole = "GetRole";

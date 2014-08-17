@@ -21,6 +21,7 @@ namespace Thinktecture.IdentityManager
 
         public bool SupportsCreate { get; set; }
         public bool SupportsDelete { get; set; }
+        public string RoleClaimType { get; set; }
 
         public IEnumerable<PropertyMetadata> CreateProperties { get; set; }
         public IEnumerable<PropertyMetadata> UpdateProperties { get; set; }

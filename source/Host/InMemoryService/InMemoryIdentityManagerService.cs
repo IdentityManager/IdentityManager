@@ -74,6 +74,7 @@ namespace Thinktecture.IdentityManager.Host
                     },
                     RoleMetadata = new RoleMetadata
                     {
+                        RoleClaimType = Constants.ClaimTypes.Role,
                         SupportsCreate = true,
                         SupportsDelete = true,
                         CreateProperties = roleCreateProps,
@@ -383,12 +384,23 @@ namespace Thinktecture.IdentityManager.Host
                 };
             var total = items.Count();
 
-            var result = items.Skip(start).Take(count);
+            var result = items;
+            if (start >= 0 && count >= 0)
+            {
+                result = items.Skip(start).Take(count);
+                count = result.Count();
+            }
+            else
+            {
+                start = 0;
+                count = total;
+            }
+            
             return Task.FromResult(new IdentityManagerResult<QueryResult<RoleSummary>>(new QueryResult<RoleSummary>
             {
                 Filter = filter,
                 Start = start,
-                Count = result.Count(),
+                Count = count,
                 Items = result,
                 Total = total,
             }));

@@ -14,7 +14,7 @@ namespace Thinktecture.IdentityManager.Host
             app.Map("/test", testApp =>
             {
                 var rand = new System.Random();
-                var svc = new InMemoryIdentityManagerService(Users.Get(rand.Next(5000, 20000)), Roles.Get(rand.Next(100)));
+                var svc = new InMemoryIdentityManagerService(Users.Get(rand.Next(5000, 20000)), Roles.Get(rand.Next(15)));
                 testApp.UseIdentityManager(new IdentityManagerConfiguration
                 {
                     IdentityManagerFactory = () => svc,

@@ -129,7 +129,19 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
                 }
 
                 var meta = await GetMetadataAsync();
-                return Ok(new UserDetailResource(result.Result, Url, meta.UserMetadata));
+                RoleSummary[] roles = null;
+                if (!String.IsNullOrWhiteSpace(meta.RoleMetadata.RoleClaimType))
+                {
+                    var roleResult = await idmService.QueryRolesAsync(null, -1, -1);
+                    if (!roleResult.IsSuccess)
+                    {
+                        return BadRequest(roleResult.Errors);
+                    }
+
+                    roles = roleResult.Result.Items.ToArray();
+                }
+
+                return Ok(new UserDetailResource(result.Result, Url, meta, roles));
             }
 
             return BadRequest(result.ToError());
@@ -247,6 +259,56 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             }
 
             var result = await this.idmService.RemoveUserClaimAsync(subject, type, value);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
+        }
+
+        [HttpPost, Route("{subject}/roles/{role}", Name = Constants.RouteNames.AddRole)]
+        public async Task<IHttpActionResult> AddRoleAsync(string subject, string role)
+        {
+            var meta = await GetMetadataAsync();
+            if (String.IsNullOrWhiteSpace(meta.RoleMetadata.RoleClaimType))
+            {
+                return MethodNotAllowed();
+            }
+
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                return NotFound();
+            }
+
+            role = role.FromBase64UrlEncoded();
+            
+            var result = await this.idmService.AddUserClaimAsync(subject, meta.RoleMetadata.RoleClaimType, role);
+            if (result.IsSuccess)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result.ToError());
+        }
+
+        [HttpDelete, Route("{subject}/roles/{role}", Name = Constants.RouteNames.RemoveRole)]
+        public async Task<IHttpActionResult> RemoveRoleAsync(string subject, string role)
+        {
+            var meta = await GetMetadataAsync();
+            if (String.IsNullOrWhiteSpace(meta.RoleMetadata.RoleClaimType))
+            {
+                return MethodNotAllowed();
+            }
+
+            if (String.IsNullOrWhiteSpace(subject))
+            {
+                return NotFound();
+            }
+
+            role = role.FromBase64UrlEncoded();
+
+            var result = await this.idmService.RemoveUserClaimAsync(subject, meta.RoleMetadata.RoleClaimType, role);
             if (result.IsSuccess)
             {
                 return NoContent();
