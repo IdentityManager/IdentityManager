@@ -5865,6 +5865,9 @@ form label.column {
   position: relative;
   left: 44px;
 }
+.user-roles .alert {
+  margin-top: 20px;
+}
 .user-roles form {
   padding: 10px 0;
   border-bottom: 1px solid #eeeeee;
