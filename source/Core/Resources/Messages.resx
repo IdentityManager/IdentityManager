@@ -150,6 +150,9 @@
   <data name="IsRequired" xml:space="preserve">
     <value>{0} is required.</value>
   </data>
+  <data name="LocalUsername" xml:space="preserve">
+    <value>Local User</value>
+  </data>
   <data name="MissingRequiredProperties" xml:space="preserve">
     <value>Missing required properties: {0}</value>
   </data>

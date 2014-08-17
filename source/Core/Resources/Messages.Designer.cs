@@ -160,6 +160,15 @@ namespace Thinktecture.IdentityManager.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Local User.
+        /// </summary>
+        public static string LocalUsername {
+            get {
+                return ResourceManager.GetString("LocalUsername", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing required properties: {0}.
         /// </summary>
         public static string MissingRequiredProperties {

@@ -12,6 +12,7 @@ namespace Thinktecture.IdentityManager
 {
     public class Constants
     {
+        public const string LocalAuthenticationType = "local";
         public const string AdminRoleName = "IdentityManagerAdministrator";
 
         public class ClaimTypes

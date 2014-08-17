@@ -18,12 +18,11 @@ namespace Thinktecture.IdentityManager
         }
 
         public Func<IIdentityManagerService> IdentityManagerFactory { get; set; }
+        
         public SecurityMode SecurityMode { get; set; }
-        public string AuthenticationType { get; set; }
-        public bool DisableUserInterface { get; set; }
+        public string TokenAuthenticationType { get; set; }
 
-        public EmbeddedAuthentication EmbeddedAuthentication { get; set; }
-        public ExternalAuthentication ExternalAuthentication { get; set; }
+        public bool DisableUserInterface { get; set; }
 
         public string AdminRoleName { get; set; }
 
@@ -46,21 +45,5 @@ namespace Thinktecture.IdentityManager
             //    throw new Exception("Both EmbeddedAuthentication and EmbeddedAuthentication was provided. Only one is allowed.");
             //}
         }
-    }
-    
-    public class EmbeddedAuthentication
-    {
-        public string EmbeddedAdminUsername { get; set; }
-        public string EmbeddedAdminPassword { get; set; }
-    }
-    
-    public class ExternalAuthentication
-    {
-        public Func<ClaimsPrincipal, Task<ClaimsPrincipal>> ExternalClaimsTransformer { get; set; }
-        public string OAuthAuthorizationEndpoint { get; set; }
-        public string OAuthIssuer { get; set; }
-        public string OAuthAudience { get; set; }
-        public string OAuthSigningKey { get; set; }
-        public X509Certificate2 OAuthSigningCertificate { get; set; }
     }
 }

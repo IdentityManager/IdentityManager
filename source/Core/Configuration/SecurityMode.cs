@@ -12,6 +12,7 @@ namespace Thinktecture.IdentityManager
 {
     public enum SecurityMode
     {
-        Local
+        Local,
+        Token
     }
 }

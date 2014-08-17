@@ -105,6 +105,8 @@
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
     <Compile Include="Configuration\AutofacConfig.cs" />
+    <Compile Include="Configuration\Hosting\LocalAuthenticationFilter.cs" />
+    <Compile Include="Configuration\Hosting\TraceLogger.cs" />
     <Compile Include="Configuration\IdentityManagerConfiguration.cs" />
     <Compile Include="Configuration\SecurityMode.cs" />
     <Compile Include="Configuration\WebApiConfig.cs" />

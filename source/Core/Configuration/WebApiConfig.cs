@@ -12,6 +12,7 @@ using System.Web.Http;
 using System.Web.Http.Dependencies;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Filters;
+using Thinktecture.IdentityManager.Configuration.Hosting;
 
 namespace Thinktecture.IdentityManager
 {
@@ -36,7 +37,7 @@ namespace Thinktecture.IdentityManager
             apiConfig.SuppressDefaultHostAuthentication();
             if (idmConfig.SecurityMode != SecurityMode.Local)
             {
-                apiConfig.Filters.Add(new HostAuthenticationAttribute(idmConfig.AuthenticationType));
+                apiConfig.Filters.Add(new HostAuthenticationAttribute(idmConfig.TokenAuthenticationType));
             }
             else
             {
@@ -56,53 +57,16 @@ namespace Thinktecture.IdentityManager
 #endif
         }
 
-        public class UserAdminExceptionLogger : ExceptionLogger
-        {
-            public override void Log(ExceptionLoggerContext context)
-            {
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data");
-                path = Path.Combine(path, "UserAdminException.txt");
-                Directory.CreateDirectory(path);
-                var msg = DateTime.Now.ToString() + Environment.NewLine + context.Exception.ToString() + Environment.NewLine + Environment.NewLine;
-                File.AppendAllText(path, msg);
-            }
-        }
-
-        public class TraceLogger : ExceptionLogger
-        {
-            public override void Log(ExceptionLoggerContext context)
-            {
-                Trace.WriteLine(context.Exception.ToString());
-            }
-        }
-
-        public class LocalAuthenticationFilter : IAuthenticationFilter
-        {
-            string role;
-            public LocalAuthenticationFilter(string role)
-            {
-                this.role = role;
-            }
-
-            public System.Threading.Tasks.Task AuthenticateAsync(HttpAuthenticationContext context, System.Threading.CancellationToken cancellationToken)
-            {
-                var id = new ClaimsIdentity("local");
-                id.AddClaim(new Claim(ClaimTypes.Name, "Local User"));
-                id.AddClaim(new Claim(ClaimTypes.Role, this.role));
-                var user = new ClaimsPrincipal(id);
-                context.Principal = user;
-                return Task.FromResult(0);
-            }
-
-            public System.Threading.Tasks.Task ChallengeAsync(HttpAuthenticationChallengeContext context, System.Threading.CancellationToken cancellationToken)
-            {
-                return Task.FromResult(0);
-            }
-
-            public bool AllowMultiple
-            {
-                get { return false; }
-            }
-        }
+        //public class UserAdminExceptionLogger : ExceptionLogger
+        //{
+        //    public override void Log(ExceptionLoggerContext context)
+        //    {
+        //        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data");
+        //        path = Path.Combine(path, "UserAdminException.txt");
+        //        Directory.CreateDirectory(path);
+        //        var msg = DateTime.Now.ToString() + Environment.NewLine + context.Exception.ToString() + Environment.NewLine + Environment.NewLine;
+        //        File.AppendAllText(path, msg);
+        //    }
+        //}
     }
 }
