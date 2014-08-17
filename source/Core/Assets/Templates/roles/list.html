@@ -36,12 +36,14 @@
             <tr>
                 <th></th>
                 <th>Name</th>
+                <th>Description</th>
                 <th>Subject</th>
             </tr>
         </thead>
         <tr ng-repeat="role in model.roles">
             <td><a ng-show="role.links.detail" href="#/roles/edit/{{role.data.subject}}" class="btn btn-primary btn-xs">edit</a></td>
             <td>{{role.data.name}}</td>
+            <td>{{role.data.description}}</td>
             <td>{{role.data.subject}}</td>
         </tr>
     </table>

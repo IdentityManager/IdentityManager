@@ -5865,3 +5865,15 @@ form label.column {
   position: relative;
   left: 44px;
 }
+.user-roles form {
+  padding: 10px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+.user-roles input {
+  margin-left: 40px;
+  margin-right: 30px;
+}
+.user-roles label {
+  display: inline-block;
+  width: 200px;
+}

@@ -154,6 +154,21 @@
                     $scope.user = null;
                 }, feedback.errorHandler);
         };
+
+        $scope.setRole = function (role) {
+            if (role.data) {
+                idmUsers.addRole(role)
+                    .then(function () {
+                        feedback.message = "Role Added : " + role.meta.type;
+                    }, feedback.errorHandler);
+            }
+            else {
+                idmUsers.removeRole(role)
+                    .then(function () {
+                        feedback.message = "Role Removed : " + role.meta.type;
+                    }, feedback.errorHandler);
+            }
+        };
     }
     EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams", "ttFeedback"];
     app.controller("EditUserCtrl", EditUserCtrl);

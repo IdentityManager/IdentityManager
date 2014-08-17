@@ -350,6 +350,16 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 return $http.delete(claim.links.delete)
                     .then(nop,  errorHandler("Error Removing Claim"));
             };
+
+            svc.addRole = function (role) {
+                return $http.post(role.links.add)
+                    .then(nop, errorHandler("Error Adding Role"));
+            };
+
+            svc.removeRole = function (role) {
+                return $http.delete(role.links.remove)
+                    .then(nop, errorHandler("Error Removing Role"));
+            };
         });
 
         return svc;
@@ -825,6 +835,21 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                     feedback.message = "User Deleted";
                     $scope.user = null;
                 }, feedback.errorHandler);
+        };
+
+        $scope.setRole = function (role) {
+            if (role.data) {
+                idmUsers.addRole(role)
+                    .then(function () {
+                        feedback.message = "Role Added : " + role.meta.type;
+                    }, feedback.errorHandler);
+            }
+            else {
+                idmUsers.removeRole(role)
+                    .then(function () {
+                        feedback.message = "Role Removed : " + role.meta.type;
+                    }, feedback.errorHandler);
+            }
         };
     }
     EditUserCtrl.$inject = ["$scope", "idmUsers", "$routeParams", "ttFeedback"];

@@ -81,12 +81,14 @@ namespace Thinktecture.IdentityManager.Api.Models
                 var roleClaims = user.Claims.Where(x => x.Type == meta.RoleMetadata.RoleClaimType);
                 var query =
                     from r in roles
+                    orderby r.Name
                     select new
                     {
                         data = roleClaims.Any(x => x.Value == r.Name),
                         meta = new
                         {
-                            type = r.Name
+                            type = r.Name,
+                            description = r.Description,
                         },
                         links = new
                         {

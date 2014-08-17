@@ -380,7 +380,8 @@ namespace Thinktecture.IdentityManager.Host
                 select new RoleSummary
                 {
                     Subject = r.ID,
-                    Name = r.Name
+                    Name = r.Name,
+                    Description = r.Description
                 };
             var total = items.Count();
 
@@ -428,6 +429,7 @@ namespace Thinktecture.IdentityManager.Host
             {
                 Subject = role.ID,
                 Name = role.Name,
+                Description = role.Description,
                 Properties = props
             };
             

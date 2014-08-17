@@ -95,6 +95,16 @@
                 return $http.delete(claim.links.delete)
                     .then(nop,  errorHandler("Error Removing Claim"));
             };
+
+            svc.addRole = function (role) {
+                return $http.post(role.links.add)
+                    .then(nop, errorHandler("Error Adding Role"));
+            };
+
+            svc.removeRole = function (role) {
+                return $http.delete(role.links.remove)
+                    .then(nop, errorHandler("Error Removing Role"));
+            };
         });
 
         return svc;
