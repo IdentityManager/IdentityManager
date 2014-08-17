@@ -11,6 +11,11 @@ namespace Thinktecture.IdentityManager
 {
     public class RoleMetadata
     {
+        public RoleMetadata()
+        {
+            CreateProperties = UpdateProperties = Enumerable.Empty<PropertyMetadata>();
+        }
+
         public bool SupportsListing
         {
             get

@@ -11,6 +11,11 @@ namespace Thinktecture.IdentityManager
 {
     public class UserMetadata
     {
+        public UserMetadata()
+        {
+            CreateProperties = UpdateProperties = Enumerable.Empty<PropertyMetadata>();
+        }
+
         public bool SupportsCreate { get; set; }
         public bool SupportsDelete { get; set; }
         public bool SupportsClaims { get; set; }
