@@ -842,12 +842,14 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 idmUsers.addRole(role)
                     .then(function () {
                         feedback.message = "Role Added : " + role.meta.type;
+                        loadUser();
                     }, feedback.errorHandler);
             }
             else {
                 idmUsers.removeRole(role)
                     .then(function () {
                         feedback.message = "Role Removed : " + role.meta.type;
+                        loadUser();
                     }, feedback.errorHandler);
             }
         };
