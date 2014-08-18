@@ -12,6 +12,8 @@ using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using System.Web.Http;
 using Microsoft.Owin.Infrastructure;
+using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.OpenIdConnect;
 
 namespace Owin
 {
@@ -23,7 +25,7 @@ namespace Owin
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
 
-            if (config.SecurityMode == SecurityMode.Local)
+            if (config.SecurityMode == SecurityMode.LocalMachine)
             {
                 app.Use(async (ctx, next) =>
                 {
@@ -33,6 +35,26 @@ namespace Owin
                         await next();
                     }
                 });
+            }
+            else
+            {
+                var cookie = new CookieAuthenticationOptions
+                {
+                    AuthenticationType = Constants.CookieAuthenticationType
+                };
+                app.UseCookieAuthentication(cookie);
+
+                var oidc = new OpenIdConnectAuthenticationOptions
+                {
+                    AuthenticationType = Constants.ExternalAuthenticationType,
+                    ClientId = "test",
+                    Scope = "openid foo",
+                    ResponseType = "id_token token",
+                    Authority = "http://localhost:3333/core/",
+                    RedirectUri = "http://localhost:10152/",
+                    SignInAsAuthenticationType = "cookie",
+                };
+                app.UseOpenIdConnectAuthentication(oidc);
             }
 
             if (!config.DisableUserInterface)

@@ -10,21 +10,39 @@ using Thinktecture.IdentityManager;
 
 namespace Thinktecture.IdentityManager
 {
+    public class OpenIdConnectProviderConfiguration
+    {
+        public OpenIdConnectProviderConfiguration()
+        {
+            RoleScope = Constants.RoleScope;
+        }
+
+        public string Authority { get; set; }
+        public string ClientId { get; set; }
+        public string RoleScope { get; set; }
+
+        internal void Validate()
+        {
+            if (String.IsNullOrWhiteSpace(Authority)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : Authority not configured");
+            if (String.IsNullOrWhiteSpace(ClientId)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : ClientId not configured");
+            if (String.IsNullOrWhiteSpace(RoleScope)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : RoleScope not configured");
+        }
+    }
+
     public class IdentityManagerConfiguration
     {
         public IdentityManagerConfiguration()
         {
-            this.AdminRoleName = Constants.AdminRoleName;
+            AdminRoleName = Constants.AdminRoleName;
         }
 
         public Func<IIdentityManagerService> IdentityManagerFactory { get; set; }
-        
-        public SecurityMode SecurityMode { get; set; }
-        public string TokenAuthenticationType { get; set; }
-
-        public bool DisableUserInterface { get; set; }
 
         public string AdminRoleName { get; set; }
+        public SecurityMode SecurityMode { get; set; }
+        public OpenIdConnectProviderConfiguration OidcConfiguration { get; set; }
+
+        public bool DisableUserInterface { get; set; }
 
         internal void Validate()
         {
@@ -32,18 +50,19 @@ namespace Thinktecture.IdentityManager
             {
                 throw new Exception("IdentityManagerFactory is required.");
             }
-            //if (String.IsNullOrWhiteSpace(this.AdminRoleName))
-            //{
-            //    throw new Exception("AdminRoleName is required.");
-            //}
-            //if (this.EmbeddedAuthentication == null && this.ExternalAuthentication == null)
-            //{
-            //    throw new Exception("Neither EmbeddedAuthentication nor ExternalAuthentication was provided. One is required.");
-            //}
-            //if (this.EmbeddedAuthentication != null && this.ExternalAuthentication != null)
-            //{
-            //    throw new Exception("Both EmbeddedAuthentication and EmbeddedAuthentication was provided. Only one is allowed.");
-            //}
+
+            if (this.SecurityMode == IdentityManager.SecurityMode.ExternalOidc)
+            {
+                if (this.OidcConfiguration == null)
+                {
+                    throw new InvalidOperationException("OidcConfiguration is required.");
+                }
+                this.OidcConfiguration.Validate();
+            }
+            if (String.IsNullOrWhiteSpace(AdminRoleName))
+            {
+                throw new InvalidOperationException("AdminRoleName not configured");
+            }
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Web;
 
-namespace Thinktecture.IdentityManager.Host
+namespace Thinktecture.IdentityManager.Host.InMemoryService
 {
     public class InMemoryRole
     {

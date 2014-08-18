@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Thinktecture.IdentityManager;
 
-namespace Thinktecture.IdentityManager.Host
+namespace Thinktecture.IdentityManager.Host.InMemoryService
 {
     class InMemoryIdentityManagerService : IIdentityManagerService
     {

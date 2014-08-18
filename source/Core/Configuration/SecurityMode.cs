@@ -12,7 +12,7 @@ namespace Thinktecture.IdentityManager
 {
     public enum SecurityMode
     {
-        Local,
-        Token
+        LocalMachine,
+        ExternalOidc
     }
 }

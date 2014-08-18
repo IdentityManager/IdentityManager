@@ -35,9 +35,9 @@ namespace Thinktecture.IdentityManager
             }
 
             apiConfig.SuppressDefaultHostAuthentication();
-            if (idmConfig.SecurityMode != SecurityMode.Local)
+            if (idmConfig.SecurityMode != SecurityMode.LocalMachine)
             {
-                apiConfig.Filters.Add(new HostAuthenticationAttribute(idmConfig.TokenAuthenticationType));
+                //apiConfig.Filters.Add(new HostAuthenticationAttribute(idmConfig.TokenAuthenticationType));
             }
             else
             {

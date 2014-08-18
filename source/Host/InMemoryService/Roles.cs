@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Web;
 using Thinktecture.IdentityManager;
 
-namespace Thinktecture.IdentityManager.Host
+namespace Thinktecture.IdentityManager.Host.InMemoryService
 {
     public class Roles
     {

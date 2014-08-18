@@ -1,0 +1,98 @@
+﻿using Owin;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Web;
+using Thinktecture.IdentityServer.Core.Configuration;
+using Thinktecture.IdentityServer.Core.Models;
+using Thinktecture.IdentityServer.Core.Services.InMemory;
+
+namespace Thinktecture.IdentityManager.Host.IdSvr
+{
+    public class IdSvrConfig
+    {
+        public static void Configure(IAppBuilder app)
+        {
+            var factory = InMemoryFactory.Create(users:GetUsers(), scopes:GetScopes(), clients:GetClients());
+            var idsrvOptions = new IdentityServerOptions
+            {
+                IssuerUri = "https://idsrv3.com",
+                SiteName = "Thinktecture IdentityServer v3",
+                SigningCertificate = Cert.Load(),
+                CspReportEndpoint = EndpointSettings.Enabled,
+                AccessTokenValidationEndpoint = EndpointSettings.Enabled,
+                PublicHostName = "http://localhost:17457",
+                Factory = factory,
+                CorsPolicy = CorsPolicy.AllowAll
+            };
+            app.UseIdentityServer(idsrvOptions);
+        }
+
+        static InMemoryUser[] GetUsers()
+        {
+            return new InMemoryUser[]{
+                new InMemoryUser{
+                    Subject = Guid.Parse("951a965f-1f84-4360-90e4-3f6deac7b9bc").ToString(),
+                    Username = "admin", 
+                    Password = "admin",
+                    Claims = new Claim[]{
+                        new Claim(Constants.ClaimTypes.Role, Constants.AdminRoleName)
+                    }
+                }
+            };
+        }
+
+        static Client[] GetClients()
+        {
+            return new Client[]{
+                new Client{
+                    ClientId = "idmgr",
+                    ClientName = "IdentityManager",
+                    Enabled = true,
+                    Flow = Flows.Implicit,                    
+                    ApplicationType = ApplicationTypes.Web,
+                    RedirectUris = new List<Uri>{
+
+                    },
+                    AccessTokenType = AccessTokenType.Jwt
+                }
+            };
+        }
+
+        static Scope[] GetScopes()
+        {
+            return new Scope[] {
+                new Scope
+                {
+                    Name = Thinktecture.IdentityServer.Core.Constants.StandardScopes.OpenId, 
+                    DisplayName = "Your user identifier",
+                    Required = true,
+                    IsOpenIdScope = true,
+                    Claims = new List<ScopeClaim>
+                        {
+                            new ScopeClaim
+                            {
+                                AlwaysIncludeInIdToken = true,
+                                Name = "sub",
+                                Description = "subject identifier"
+                            }
+                        }
+                 },
+                 new Scope
+                 {
+                    Name = "idmgr.admin",
+                    DisplayName = "Admin Access To IdentityManager",
+                    Description = "Allows ",
+                    Required = true,
+                    Claims = new ScopeClaim[]{
+                        new ScopeClaim {
+                            Name = "idmgr.admin",
+                            Description = "Indicates that the user is an admin with permission to IdentityManager"
+                        }
+                    }
+                }
+            };
+        }
+    }
+}
