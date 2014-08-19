@@ -46,8 +46,9 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             var meta = await GetMetadataAsync();
 
             var data = new Dictionary<string, object>();
+            var name = User != null ? User.Identity.Name : "Unknown User";
             data.Add("currentUser", new {
-                username = User.Identity.Name
+                username = name
             });
 
             var links = new Dictionary<string, object>();

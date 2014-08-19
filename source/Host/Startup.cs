@@ -22,8 +22,14 @@ namespace Thinktecture.IdentityManager.Host
                 idm.UseIdentityManager(new IdentityManagerConfiguration
                 {
                     IdentityManagerFactory = () => svc,
-                    DisableUserInterface = false,
-                    SecurityMode = SecurityMode.LocalMachine
+                    SecurityMode = SecurityMode.ExternalOidc,
+                    OidcConfiguration = new OpenIdConnectProviderConfiguration
+                    {
+                        Authority = "http://localhost:17457/ids",
+                        ClientId = "idmgr",
+                        RedirectUri = "http://localhost:17457/idm",
+                        RoleScope = "idmgr"
+                    }
                 });
             });
 
@@ -33,7 +39,6 @@ namespace Thinktecture.IdentityManager.Host
             {
                 IdSvrConfig.Configure(ids);
             });
-
             
             // used to redirect to the main admin page visiting the root of the host
             app.Run(ctx =>

@@ -19,12 +19,14 @@ namespace Thinktecture.IdentityManager
 
         public string Authority { get; set; }
         public string ClientId { get; set; }
+        public string RedirectUri { get; set; }
         public string RoleScope { get; set; }
 
         internal void Validate()
         {
             if (String.IsNullOrWhiteSpace(Authority)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : Authority not configured");
             if (String.IsNullOrWhiteSpace(ClientId)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : ClientId not configured");
+            if (String.IsNullOrWhiteSpace(RedirectUri)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : RedirectUri not configured");
             if (String.IsNullOrWhiteSpace(RoleScope)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : RoleScope not configured");
         }
     }

@@ -14,7 +14,7 @@ namespace Thinktecture.IdentityManager
     {
         public const string LocalAuthenticationType = "idmgr.local";
         public const string CookieAuthenticationType = "idmgr.cookie";
-        public const string ExternalAuthenticationType = "idmgr.oidc";
+        public const string ExternalOidcAuthenticationType = "idmgr.oidc";
 
         public const string RoleScope = "idmgr.role";
         public const string AdminRoleName = "IdentityManagerAdministrator";

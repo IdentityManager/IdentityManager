@@ -40,19 +40,21 @@ namespace Owin
             {
                 var cookie = new CookieAuthenticationOptions
                 {
-                    AuthenticationType = Constants.CookieAuthenticationType
+                    AuthenticationType = Constants.CookieAuthenticationType,
+                    CookieName = Constants.CookieAuthenticationType,
+                    AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Active
                 };
                 app.UseCookieAuthentication(cookie);
 
                 var oidc = new OpenIdConnectAuthenticationOptions
                 {
-                    AuthenticationType = Constants.ExternalAuthenticationType,
-                    ClientId = "test",
-                    Scope = "openid foo",
-                    ResponseType = "id_token token",
-                    Authority = "http://localhost:3333/core/",
-                    RedirectUri = "http://localhost:10152/",
-                    SignInAsAuthenticationType = "cookie",
+                    AuthenticationType = Constants.ExternalOidcAuthenticationType,
+                    ClientId = config.OidcConfiguration.ClientId,
+                    Scope = "openid " + config.OidcConfiguration.RoleScope,
+                    ResponseType = "id_token",
+                    Authority = config.OidcConfiguration.Authority,
+                    RedirectUri = config.OidcConfiguration.RedirectUri,
+                    SignInAsAuthenticationType = Constants.CookieAuthenticationType
                 };
                 app.UseOpenIdConnectAuthentication(oidc);
             }

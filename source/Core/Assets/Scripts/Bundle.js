@@ -285,7 +285,12 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
             angular.extend(promise, resp.data);
             api.resolve();
         }, function (resp) {
-            api.reject('Error loading API');
+            if (resp.status === 401) {
+                api.reject('Error : You are not authorized to use this service.');
+            }
+            else {
+                api.reject('Error loading API');
+            }
         });
         return promise;
     }
@@ -1011,6 +1016,9 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
                 controller: 'HomeCtrl',
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
+            .when("/error", {
+                templateUrl: PathBase + '/assets/Templates.message.html'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -1018,15 +1026,18 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($scope, idmApi) {
+    function LayoutCtrl($scope, idmApi, $location) {
         $scope.model = {};
 
         idmApi.then(function () {
             $scope.model.username = idmApi.data.currentUser.username;
             $scope.model.links = idmApi.links;
+        }, function (error) {
+            $scope.model.errors = [error];
+            $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$scope", "idmApi"];
+    LayoutCtrl.$inject = ["$scope", "idmApi", "$location"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl($scope) {

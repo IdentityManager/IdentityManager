@@ -37,7 +37,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     Username = "admin", 
                     Password = "admin",
                     Claims = new Claim[]{
-                        new Claim(Constants.ClaimTypes.Role, Constants.AdminRoleName)
+                        new Claim("role", "IdentityManagerAdministrator"),                    
                     }
                 }
             };
@@ -51,12 +51,11 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     ClientName = "IdentityManager",
                     Enabled = true,
                     Flow = Flows.Implicit,                    
-                    ApplicationType = ApplicationTypes.Web,
                     RedirectUris = new List<Uri>{
-
+                        new Uri("http://localhost:17457/idm")
                     },
                     AccessTokenType = AccessTokenType.Jwt
-                }
+                },
             };
         }
 
@@ -79,19 +78,17 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                             }
                         }
                  },
-                 new Scope
-                 {
-                    Name = "idmgr.admin",
-                    DisplayName = "Admin Access To IdentityManager",
-                    Description = "Allows ",
-                    Required = true,
+                 new Scope{
+                    Name = "idmgr",
+                    DisplayName = "IdentityManager",
+                    Description = "Roles for IdentityManager",
+                    IsOpenIdScope = true,
                     Claims = new ScopeClaim[]{
-                        new ScopeClaim {
-                            Name = "idmgr.admin",
-                            Description = "Indicates that the user is an admin with permission to IdentityManager"
+                        new ScopeClaim{
+                            Name = "role", Description = "Role for IdentityManager"
                         }
                     }
-                }
+                },
             };
         }
     }

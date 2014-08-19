@@ -34,17 +34,18 @@ namespace Thinktecture.IdentityManager
                     new { controller = "Page" });
             }
 
-            apiConfig.SuppressDefaultHostAuthentication();
-            if (idmConfig.SecurityMode != SecurityMode.LocalMachine)
-            {
-                //apiConfig.Filters.Add(new HostAuthenticationAttribute(idmConfig.TokenAuthenticationType));
-            }
-            else
+            if (idmConfig.SecurityMode == SecurityMode.LocalMachine)
             {
                 apiConfig.Filters.Add(new LocalAuthenticationFilter(idmConfig.AdminRoleName));
             }
+            else
+            {
+                apiConfig.SuppressDefaultHostAuthentication();
+                // TODO: bearer tokens
+                // apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.ExternalAuthenticationType));
+            }
 
-            apiConfig.Filters.Add(new AuthorizeAttribute() { Roles = idmConfig.AdminRoleName });
+            apiConfig.Filters.Add(new AuthorizeAttribute() { Roles=idmConfig.AdminRoleName });
             
             apiConfig.Formatters.Remove(apiConfig.Formatters.XmlFormatter);
             apiConfig.Formatters.JsonFormatter.SerializerSettings.ContractResolver =

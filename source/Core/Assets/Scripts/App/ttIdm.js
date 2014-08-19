@@ -30,7 +30,12 @@
             angular.extend(promise, resp.data);
             api.resolve();
         }, function (resp) {
-            api.reject('Error loading API');
+            if (resp.status === 401) {
+                api.reject('Error : You are not authorized to use this service.');
+            }
+            else {
+                api.reject('Error loading API');
+            }
         });
         return promise;
     }

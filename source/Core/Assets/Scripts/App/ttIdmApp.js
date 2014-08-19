@@ -10,6 +10,9 @@
                 controller: 'HomeCtrl',
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
+            .when("/error", {
+                templateUrl: PathBase + '/assets/Templates.message.html'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -17,15 +20,18 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($scope, idmApi) {
+    function LayoutCtrl($scope, idmApi, $location) {
         $scope.model = {};
 
         idmApi.then(function () {
             $scope.model.username = idmApi.data.currentUser.username;
             $scope.model.links = idmApi.links;
+        }, function (error) {
+            $scope.model.errors = [error];
+            $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$scope", "idmApi"];
+    LayoutCtrl.$inject = ["$scope", "idmApi", "$location"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl($scope) {
