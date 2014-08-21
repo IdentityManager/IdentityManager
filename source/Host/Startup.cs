@@ -22,7 +22,7 @@ namespace Thinktecture.IdentityManager.Host
                 idm.UseIdentityManager(new IdentityManagerConfiguration
                 {
                     IdentityManagerFactory = () => svc,
-                    SecurityMode = SecurityMode.ExternalOidc,
+                    SecurityMode = SecurityMode.LocalMachine,
                     OidcConfiguration = new OpenIdConnectProviderConfiguration
                     {
                         Authority = "http://localhost:17457/ids",

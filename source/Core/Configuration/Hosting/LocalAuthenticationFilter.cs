@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -24,12 +25,17 @@ namespace Thinktecture.IdentityManager.Configuration.Hosting
 
         public System.Threading.Tasks.Task AuthenticateAsync(HttpAuthenticationContext context, System.Threading.CancellationToken cancellationToken)
         {
-            var id = new ClaimsIdentity(Constants.LocalAuthenticationType);
-            id.AddClaim(new Claim(ClaimTypes.Name, Messages.LocalUsername));
-            id.AddClaim(new Claim(ClaimTypes.Role, this.role));
-            
-            var user = new ClaimsPrincipal(id);
-            context.Principal = user;
+            var ctx = context.Request.GetOwinContext();
+            var localAddresses = new string[] { "127.0.0.1", "::1", ctx.Request.LocalIpAddress };
+            if (localAddresses.Contains(ctx.Request.RemoteIpAddress))
+            {
+                var id = new ClaimsIdentity(Constants.LocalAuthenticationType);
+                id.AddClaim(new Claim(ClaimTypes.Name, Messages.LocalUsername));
+                id.AddClaim(new Claim(ClaimTypes.Role, this.role));
+
+                var user = new ClaimsPrincipal(id);
+                context.Principal = user;
+            }
 
             return Task.FromResult(0);
         }

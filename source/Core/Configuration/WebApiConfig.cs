@@ -41,6 +41,10 @@ namespace Thinktecture.IdentityManager
             else
             {
                 apiConfig.SuppressDefaultHostAuthentication();
+                // for the route for page
+                //[OverrideAuthentication]
+                //[HostAuthentication(Constants.CookieAuthenticationType)]
+                //[HostAuthentication(Constants.ExternalOidcAuthenticationType)]
                 // TODO: bearer tokens
                 // apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.ExternalAuthenticationType));
             }

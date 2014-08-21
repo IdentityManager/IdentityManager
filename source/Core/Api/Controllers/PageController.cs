@@ -17,9 +17,6 @@ namespace Thinktecture.IdentityManager.Api.Controllers
 {
     [SecurityHeaders]
     [OverrideAuthorization, Authorize]
-    [OverrideAuthentication]
-    [HostAuthentication(Constants.CookieAuthenticationType)]
-    [HostAuthentication(Constants.ExternalOidcAuthenticationType)]
     public class PageController : ApiController
     {
         IdentityManagerConfiguration idmConfig;

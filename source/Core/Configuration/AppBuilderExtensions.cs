@@ -25,18 +25,7 @@ namespace Owin
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
 
-            if (config.SecurityMode == SecurityMode.LocalMachine)
-            {
-                app.Use(async (ctx, next) =>
-                {
-                    var localAddresses = new string[] { "127.0.0.1", "::1", ctx.Request.LocalIpAddress };
-                    if (localAddresses.Contains(ctx.Request.RemoteIpAddress))
-                    {
-                        await next();
-                    }
-                });
-            }
-            else
+            if (config.SecurityMode == SecurityMode.ExternalOidc)
             {
                 var cookie = new CookieAuthenticationOptions
                 {
