@@ -17,6 +17,10 @@ namespace Thinktecture.IdentityManager.Api.Controllers
 {
     [SecurityHeaders]
     [OverrideAuthorization, Authorize]
+    [OverrideAuthentication]
+    [HostAuthentication(Constants.LocalAuthenticationType)]
+    [HostAuthentication(Constants.CookieAuthenticationType)]
+    [HostAuthentication(Constants.ExternalOidcAuthenticationType)]
     public class PageController : ApiController
     {
         IdentityManagerConfiguration idmConfig;
@@ -30,7 +34,6 @@ namespace Thinktecture.IdentityManager.Api.Controllers
         [HttpGet]
         public IHttpActionResult Index()
         {
-            var cp = (ClaimsPrincipal)User;
             return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.index.html");
         }
     }

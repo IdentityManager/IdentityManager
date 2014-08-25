@@ -14,6 +14,7 @@ using System.Web.Http;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
+using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 
 namespace Owin
 {
@@ -25,7 +26,12 @@ namespace Owin
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
 
-            if (config.SecurityMode == SecurityMode.ExternalOidc)
+            if (config.SecurityMode == SecurityMode.LocalMachine)
+            {
+                var local = new LocalAuthenticationOptions(config.AdminRoleName);
+                app.Use<LocalAuthenticationMiddleware>(local);
+            }
+            else if (config.SecurityMode == SecurityMode.ExternalOidc)
             {
                 var cookie = new CookieAuthenticationOptions
                 {
@@ -46,6 +52,8 @@ namespace Owin
                     SignInAsAuthenticationType = Constants.CookieAuthenticationType
                 };
                 app.UseOpenIdConnectAuthentication(oidc);
+                
+                //app.UseJsonWebToken();
             }
 
             if (!config.DisableUserInterface)
@@ -62,8 +70,6 @@ namespace Owin
                 });
                 app.UseStageMarker(PipelineStage.MapHandler);
             }
-
-            //app.UseJsonWebToken();
 
             SignatureConversions.AddConversions(app);
 

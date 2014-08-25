@@ -34,7 +34,7 @@ namespace Thinktecture.IdentityManager.Host
             });
 
             // this configures an embedded IdentityServer to act as an external authentication provider
-            // when using IdentityManager in Token security mode
+            // when using IdentityManager in Token security mode. normally you'd configure this elsewhere.
             app.Map("/ids", ids =>
             {
                 IdSvrConfig.Configure(ids);

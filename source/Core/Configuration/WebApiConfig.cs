@@ -34,17 +34,14 @@ namespace Thinktecture.IdentityManager
                     new { controller = "Page" });
             }
 
+            apiConfig.SuppressDefaultHostAuthentication();
+            
             if (idmConfig.SecurityMode == SecurityMode.LocalMachine)
             {
-                apiConfig.Filters.Add(new LocalAuthenticationFilter(idmConfig.AdminRoleName));
+                apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.LocalAuthenticationType));
             }
             else
             {
-                apiConfig.SuppressDefaultHostAuthentication();
-                // for the route for page
-                //[OverrideAuthentication]
-                //[HostAuthentication(Constants.CookieAuthenticationType)]
-                //[HostAuthentication(Constants.ExternalOidcAuthenticationType)]
                 // TODO: bearer tokens
                 // apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.ExternalAuthenticationType));
             }
