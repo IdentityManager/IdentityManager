@@ -258,24 +258,12 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 (function (angular) {
     var app = angular.module("ttIdm", []);
 
-    function config($httpProvider) {
-        //$httpProvider.defaults.headers.get['Angular'] = 'Cool';
-        //$httpProvider.interceptors.push(function ($q) {
-        //    return {
-        //        'request': function (config) {
-        //            console.log(config);
-        //            return config;
-        //        }, 'response': function (response) {
-        //            console.log(response);
-        //            return response;
-        //        }, 'responseError': function (rejection) {
-        //            console.log(rejection);
-        //            return $q.reject(rejection);
-        //        }
-        //    };
-        //});
+    function config($httpProvider, Token) {
+        if (Token) {
+            $httpProvider.defaults.headers.common['Authorization'] = 'Bearer ' + Token;
+        }
     };
-    config.$inject = ["$httpProvider"];
+    config.$inject = ["$httpProvider", "Token"];
     app.config(config);
     
     function idmApi($http, $q, PathBase) {
@@ -432,6 +420,8 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 (function (angular) {
     var pathBase = document.getElementById("pathBase").textContent.trim();
     angular.module("ttIdm").constant("PathBase", pathBase);
+    var token = document.getElementById("token").textContent.trim();
+    angular.module("ttIdm").constant("Token", token);
 })(angular);
 
 ///#source 1 1 /Assets/Scripts/App/ttIdmUI.js
