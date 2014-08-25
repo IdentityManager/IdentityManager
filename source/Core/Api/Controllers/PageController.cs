@@ -34,7 +34,9 @@ namespace Thinktecture.IdentityManager.Api.Controllers
         [HttpGet]
         public IHttpActionResult Index()
         {
-            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.index.html");
+            var cp = (ClaimsPrincipal)User;
+            var token = cp.Claims.Where(x => x.Type == Constants.ClaimTypes.BootstrapToken).Select(x => x.Value).FirstOrDefault();
+            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.index.html", token);
         }
     }
 }
