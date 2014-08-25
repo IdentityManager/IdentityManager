@@ -28,6 +28,7 @@ namespace Thinktecture.IdentityManager
             public const string Email = "email";
             public const string Phone = "phone";
             public const string Role = "role";
+            public const string BootstrapToken = "bootstrap-token";
         }
 
         public const string RoutePrefix = "api";

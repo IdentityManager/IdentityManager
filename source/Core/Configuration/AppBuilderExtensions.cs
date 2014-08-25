@@ -15,6 +15,8 @@ using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
 using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace Owin
 {
@@ -49,7 +51,18 @@ namespace Owin
                     ResponseType = "id_token",
                     Authority = config.OidcConfiguration.Authority,
                     RedirectUri = config.OidcConfiguration.RedirectUri,
-                    SignInAsAuthenticationType = Constants.CookieAuthenticationType
+                    SignInAsAuthenticationType = Constants.CookieAuthenticationType,
+                    Notifications = new OpenIdConnectAuthenticationNotifications
+                    {
+                        SecurityTokenValidated = ctx =>
+                        {
+                            if (ctx.ProtocolMessage.IdToken != null)
+                            {
+                                ctx.AuthenticationTicket.Identity.AddClaim(new Claim(Constants.ClaimTypes.BootstrapToken, ctx.ProtocolMessage.IdToken));
+                            }
+                            return Task.FromResult(0);
+                        }
+                    }
                 };
                 app.UseOpenIdConnectAuthentication(oidc);
                 
