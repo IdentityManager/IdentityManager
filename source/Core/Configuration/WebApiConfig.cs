@@ -43,8 +43,9 @@ namespace Thinktecture.IdentityManager
             }
 
             apiConfig.Filters.Add(new AuthorizeAttribute() { Roles=idmConfig.AdminRoleName });
-            
+
             apiConfig.Formatters.Remove(apiConfig.Formatters.XmlFormatter);
+            apiConfig.Formatters.Remove(apiConfig.Formatters.FormUrlEncodedFormatter);
             apiConfig.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
                 new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
