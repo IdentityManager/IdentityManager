@@ -42,8 +42,7 @@ namespace Thinktecture.IdentityManager
             }
             else
             {
-                // TODO: bearer tokens
-                // apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.ExternalAuthenticationType));
+                apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.BearerAuthenticationType));
             }
 
             apiConfig.Filters.Add(new AuthorizeAttribute() { Roles=idmConfig.AdminRoleName });

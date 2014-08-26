@@ -17,6 +17,7 @@ using Microsoft.Owin.Security.OpenIdConnect;
 using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using Thinktecture.IdentityManager.Configuration.Hosting.JwtOidcMiddleware;
 
 namespace Owin
 {
@@ -65,8 +66,13 @@ namespace Owin
                     }
                 };
                 app.UseOpenIdConnectAuthentication(oidc);
-                
-                //app.UseJsonWebToken();
+
+                app.Use<JwtOidcMiddleware>(app, new JwtOidcOptions()
+                {
+                    AuthenticationType = Constants.BearerAuthenticationType,
+                    Audience = config.OidcConfiguration.ClientId,
+                    Authority = config.OidcConfiguration.Authority,
+                });
             }
 
             if (!config.DisableUserInterface)
