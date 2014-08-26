@@ -3,7 +3,9 @@
  * see license
  */
 using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Api.Filters;
@@ -44,7 +46,9 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             var meta = await GetMetadataAsync();
 
             var data = new Dictionary<string, object>();
-            var name = User != null ? User.Identity.Name : "Unknown User";
+            
+            var cp = (ClaimsPrincipal)User;
+            var name = cp.Claims.Where(x => x.Type == Constants.ClaimTypes.Name).Select(x => x.Value).FirstOrDefault();
             data.Add("currentUser", new {
                 username = name
             });

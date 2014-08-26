@@ -33,7 +33,7 @@ namespace Owin
                 var local = new LocalAuthenticationOptions(config.AdminRoleName);
                 app.Use<LocalAuthenticationMiddleware>(local);
             }
-            else if (config.SecurityMode == SecurityMode.ExternalOidc)
+            else if (config.SecurityMode == SecurityMode.Oidc)
             {
                 var cookie = new CookieAuthenticationOptions
                 {

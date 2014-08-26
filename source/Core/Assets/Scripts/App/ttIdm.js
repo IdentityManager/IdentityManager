@@ -163,8 +163,9 @@
 })(angular);
 
 (function (angular) {
-    var pathBase = document.getElementById("pathBase").textContent.trim();
-    angular.module("ttIdm").constant("PathBase", pathBase);
-    var token = document.getElementById("token").textContent.trim();
-    angular.module("ttIdm").constant("Token", token);
+    var model = document.getElementById("model").textContent.trim();
+    model = JSON.parse(model);
+    for (var key in model) {
+        angular.module("ttIdm").constant(key, model[key]);
+    }
 })(angular);

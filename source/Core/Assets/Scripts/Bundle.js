@@ -418,10 +418,11 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
 })(angular);
 
 (function (angular) {
-    var pathBase = document.getElementById("pathBase").textContent.trim();
-    angular.module("ttIdm").constant("PathBase", pathBase);
-    var token = document.getElementById("token").textContent.trim();
-    angular.module("ttIdm").constant("Token", token);
+    var model = document.getElementById("model").textContent.trim();
+    model = JSON.parse(model);
+    for (var key in model) {
+        angular.module("ttIdm").constant(key, model[key]);
+    }
 })(angular);
 
 ///#source 1 1 /Assets/Scripts/App/ttIdmUI.js
@@ -1016,18 +1017,19 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($scope, idmApi, $location) {
+    function LayoutCtrl($scope, idmApi, $location, Username, LogoutUrl) {
         $scope.model = {};
 
         idmApi.then(function () {
-            $scope.model.username = idmApi.data.currentUser.username;
+            $scope.model.username = Username;
+            $scope.model.logout = LogoutUrl;
             $scope.model.links = idmApi.links;
         }, function (error) {
             $scope.model.errors = [error];
             $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$scope", "idmApi", "$location"];
+    LayoutCtrl.$inject = ["$scope", "idmApi", "$location", "Username", "LogoutUrl"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl($scope) {

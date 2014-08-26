@@ -15,9 +15,9 @@ namespace Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthentication
             var localAddresses = new string[] { "127.0.0.1", "::1", ctx.Request.LocalIpAddress };
             if (localAddresses.Contains(ctx.Request.RemoteIpAddress))
             {
-                var id = new ClaimsIdentity(Constants.LocalAuthenticationType);
-                id.AddClaim(new Claim(ClaimTypes.Name, Messages.LocalUsername));
-                id.AddClaim(new Claim(ClaimTypes.Role, this.Options.RoleToAssign));
+                var id = new ClaimsIdentity(Constants.LocalAuthenticationType, Constants.ClaimTypes.Name, Constants.ClaimTypes.Role);
+                id.AddClaim(new Claim(Constants.ClaimTypes.Name, Messages.LocalUsername));
+                id.AddClaim(new Claim(Constants.ClaimTypes.Role, this.Options.RoleToAssign));
 
                 var ticket = new AuthenticationTicket(id, new AuthenticationProperties());
                 return Task.FromResult(ticket);

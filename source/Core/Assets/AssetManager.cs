@@ -32,7 +32,8 @@ namespace Thinktecture.IdentityManager.Assets
             string value = LoadResourceString(name);
             foreach(var key in values.Keys)
             {
-                value = value.Replace("{" + key + "}", values[key].ToString());
+                var val = values[key];
+                value = value.Replace("{" + key + "}",  val != null ? val.ToString() : "");
             }
             return value;
         }

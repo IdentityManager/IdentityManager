@@ -8,6 +8,6 @@ namespace Thinktecture.IdentityManager
     public enum SecurityMode
     {
         LocalMachine,
-        ExternalOidc
+        Oidc
     }
 }

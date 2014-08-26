@@ -185,6 +185,7 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Templates\loggedout.html" />
     <EmbeddedResource Include="Assets\Templates\roles\new.html" />
     <EmbeddedResource Include="Assets\Templates\roles\list.html" />
     <EmbeddedResource Include="Assets\Templates\roles\edit.html" />

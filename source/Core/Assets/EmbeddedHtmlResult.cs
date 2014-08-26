@@ -11,28 +11,42 @@ using System.Web.Http;
 
 namespace Thinktecture.IdentityManager.Assets
 {
+    class EmbeddedHtmlModel
+    {
+        public string FileName { get; set; }
+        public string Username { get; set; }
+        public string LogoutUrl { get; set; }
+        public string Token { get; set; }
+        public string PathBase { get; set; }
+    }
+
     class EmbeddedHtmlResult : IHttpActionResult
     {
-        HttpRequestMessage request;
-        string name;
-        string token;
-        public EmbeddedHtmlResult(HttpRequestMessage request, string name, string token = null)
+        EmbeddedHtmlModel model;
+        public EmbeddedHtmlResult(EmbeddedHtmlModel model)
         {
-            this.request = request;
-            this.name = name;
-            this.token = token;
+            this.model = model;
         }
 
         public Task<System.Net.Http.HttpResponseMessage> ExecuteAsync(System.Threading.CancellationToken cancellationToken)
         {
-            return Task.FromResult(GetResponseMessage(this.request, this.name, this.token));
+            return Task.FromResult(GetResponseMessage(this.model));
         }
 
-        public static HttpResponseMessage GetResponseMessage(HttpRequestMessage request, string name, string token)
+        public static HttpResponseMessage GetResponseMessage(EmbeddedHtmlModel model)
         {
-            token = token ?? String.Empty;
-            var root = request.GetOwinContext().Request.PathBase;
-            var html = AssetManager.LoadResourceString(name, new { pathBase = root.Value, token });
+            var html = AssetManager.LoadResourceString(model.FileName,
+                new
+                {
+                    pathBase = model.PathBase,
+                    model = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                    {
+                        model.PathBase,
+                        model.Token,
+                        model.Username,
+                        model.LogoutUrl
+                    })
+                });
             return new HttpResponseMessage()
             {
                 Content = new StringContent(html, Encoding.UTF8, "text/html")

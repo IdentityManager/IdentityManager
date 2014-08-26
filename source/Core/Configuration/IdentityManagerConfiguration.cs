@@ -49,7 +49,7 @@ namespace Thinktecture.IdentityManager
                 throw new Exception("IdentityManagerFactory is required.");
             }
 
-            if (this.SecurityMode == IdentityManager.SecurityMode.ExternalOidc)
+            if (this.SecurityMode == IdentityManager.SecurityMode.Oidc)
             {
                 if (this.OidcConfiguration == null)
                 {

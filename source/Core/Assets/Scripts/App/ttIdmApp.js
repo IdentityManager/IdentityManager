@@ -20,18 +20,19 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($scope, idmApi, $location) {
+    function LayoutCtrl($scope, idmApi, $location, Username, LogoutUrl) {
         $scope.model = {};
 
         idmApi.then(function () {
-            $scope.model.username = idmApi.data.currentUser.username;
+            $scope.model.username = Username;
+            $scope.model.logout = LogoutUrl;
             $scope.model.links = idmApi.links;
         }, function (error) {
             $scope.model.errors = [error];
             $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$scope", "idmApi", "$location"];
+    LayoutCtrl.$inject = ["$scope", "idmApi", "$location", "Username", "LogoutUrl"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl($scope) {
