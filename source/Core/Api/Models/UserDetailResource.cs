@@ -65,7 +65,6 @@ namespace Thinktecture.IdentityManager.Api.Models
                         }
                     };
 
-                // TODO: validate props against metadata props
                 if (props.Any())
                 {
                     this["Properties"] = props.ToArray();
