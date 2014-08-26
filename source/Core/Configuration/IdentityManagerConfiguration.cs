@@ -3,10 +3,6 @@
  * see license
  */
 using System;
-using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using Thinktecture.IdentityManager;
 
 namespace Thinktecture.IdentityManager
 {

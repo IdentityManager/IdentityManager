@@ -6,7 +6,6 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using System;
 using System.Web.Http.Dependencies;
-using Thinktecture.IdentityManager;
 
 namespace Thinktecture.IdentityManager
 {

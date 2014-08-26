@@ -2,16 +2,9 @@
  * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
  * see license
  */
-using Owin;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Dependencies;
 using System.Web.Http.ExceptionHandling;
-using System.Web.Http.Filters;
 using Thinktecture.IdentityManager.Configuration.Hosting;
 
 namespace Thinktecture.IdentityManager

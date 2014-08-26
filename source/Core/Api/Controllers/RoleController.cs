@@ -3,17 +3,14 @@
  * see license
  */
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Thinktecture.IdentityManager;
 using Thinktecture.IdentityManager.Api.Filters;
-using Thinktecture.IdentityManager.Api.Models;
 using Thinktecture.IdentityManager.Resources;
-using System.Collections.Generic;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {

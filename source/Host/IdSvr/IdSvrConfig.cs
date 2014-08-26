@@ -1,9 +1,7 @@
 ﻿using Owin;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Web;
 using Thinktecture.IdentityServer.Core.Configuration;
 using Thinktecture.IdentityServer.Core.Models;
 using Thinktecture.IdentityServer.Core.Services.InMemory;

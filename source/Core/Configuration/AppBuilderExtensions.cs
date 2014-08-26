@@ -3,21 +3,20 @@
  * see license
  */
 
-using System;
 using Microsoft.Owin;
-using System.Linq;
-using Thinktecture.IdentityManager;
 using Microsoft.Owin.Extensions;
 using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.StaticFiles;
-using System.Web.Http;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
-using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
-using System.Threading.Tasks;
+using Microsoft.Owin.StaticFiles;
+using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Web.Http;
+using Thinktecture.IdentityManager;
 using Thinktecture.IdentityManager.Configuration.Hosting.JwtOidcMiddleware;
+using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 
 namespace Owin
 {

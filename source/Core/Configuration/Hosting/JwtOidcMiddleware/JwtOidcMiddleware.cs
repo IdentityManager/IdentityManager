@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Protocols;
 using Microsoft.Owin;
-using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security.OAuth;
@@ -9,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Thinktecture.IdentityManager.Configuration.Hosting.JwtOidcMiddleware

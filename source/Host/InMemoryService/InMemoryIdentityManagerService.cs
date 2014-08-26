@@ -7,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using Thinktecture.IdentityManager;
 
 namespace Thinktecture.IdentityManager.Host.InMemoryService
 {

@@ -2,14 +2,10 @@
  * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
  * see license
  */
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http.Routing;
-using Thinktecture.IdentityManager.Api.Models;
 
 namespace Thinktecture.IdentityManager.Api.Models
 {

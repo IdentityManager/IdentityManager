@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Thinktecture.IdentityManager.Resources {
-    using System;
-    
-    
+namespace Thinktecture.IdentityManager.Resources
+{
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

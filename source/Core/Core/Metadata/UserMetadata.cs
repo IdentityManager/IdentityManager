@@ -3,9 +3,8 @@
  * see license
  */
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using Thinktecture.IdentityManager.Resources;
+using System.Linq;
 
 namespace Thinktecture.IdentityManager
 {
