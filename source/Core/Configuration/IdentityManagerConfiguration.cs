@@ -3,27 +3,37 @@
  * see license
  */
 using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Thinktecture.IdentityManager
 {
-    public class OpenIdConnectProviderConfiguration
+    public class OAuth2Configuration
     {
-        public OpenIdConnectProviderConfiguration()
+        public OAuth2Configuration()
         {
-            RoleScope = Constants.RoleScope;
+            Scope = Constants.IdMgrScope;
         }
 
-        public string Authority { get; set; }
+        public string AuthorizationUrl { get; set; }
+        public string Scope { get; set; }
         public string ClientId { get; set; }
-        public string RedirectUri { get; set; }
-        public string RoleScope { get; set; }
+
+        public string Audience { get; set; }
+        public string Issuer { get; set; }
+        
+        public string SigningKey { get; set; }
+        public X509Certificate2 SigningCert { get; set; }
 
         internal void Validate()
         {
-            if (String.IsNullOrWhiteSpace(Authority)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : Authority not configured");
-            if (String.IsNullOrWhiteSpace(ClientId)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : ClientId not configured");
-            if (String.IsNullOrWhiteSpace(RedirectUri)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : RedirectUri not configured");
-            if (String.IsNullOrWhiteSpace(RoleScope)) throw new InvalidOperationException("OpenIdConnectProviderConfiguration : RoleScope not configured");
+            if (String.IsNullOrWhiteSpace(AuthorizationUrl)) throw new InvalidOperationException("OAuth2Configuration : AuthorizationUrl not configured");
+            if (String.IsNullOrWhiteSpace(Scope)) throw new InvalidOperationException("OAuth2Configuration : Scope not configured");
+            if (String.IsNullOrWhiteSpace(ClientId)) throw new InvalidOperationException("OAuth2Configuration : ClientId not configured");
+
+            if (String.IsNullOrWhiteSpace(Audience)) throw new InvalidOperationException("OAuth2Configuration : Audience not configured");
+            if (String.IsNullOrWhiteSpace(Issuer)) throw new InvalidOperationException("OAuth2Configuration : Issuer not configured");
+
+            if (String.IsNullOrWhiteSpace(SigningKey) && SigningCert == null) throw new InvalidOperationException("OAuth2Configuration : Signing key not configured");
         }
     }
 
@@ -38,7 +48,7 @@ namespace Thinktecture.IdentityManager
 
         public string AdminRoleName { get; set; }
         public SecurityMode SecurityMode { get; set; }
-        public OpenIdConnectProviderConfiguration OidcConfiguration { get; set; }
+        public OAuth2Configuration OAuth2Configuration { get; set; }
 
         public bool DisableUserInterface { get; set; }
 
@@ -49,14 +59,19 @@ namespace Thinktecture.IdentityManager
                 throw new Exception("IdentityManagerFactory is required.");
             }
 
-            if (this.SecurityMode == IdentityManager.SecurityMode.Oidc)
+            if (this.SecurityMode == IdentityManager.SecurityMode.OAuth2)
             {
-                if (this.OidcConfiguration == null)
+                if (this.OAuth2Configuration == null)
                 {
                     throw new InvalidOperationException("OidcConfiguration is required.");
                 }
-                this.OidcConfiguration.Validate();
+                this.OAuth2Configuration.Validate();
             }
+            else
+            {
+                this.OAuth2Configuration = null;
+            }
+
             if (String.IsNullOrWhiteSpace(AdminRoleName))
             {
                 throw new InvalidOperationException("AdminRoleName not configured");

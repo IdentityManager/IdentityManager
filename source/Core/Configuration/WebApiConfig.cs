@@ -25,10 +25,6 @@ namespace Thinktecture.IdentityManager
                 apiConfig.Routes.MapHttpRoute("page",
                     "",
                     new { controller = "Page", action = "Index" });
-                
-                apiConfig.Routes.MapHttpRoute("logout",
-                    "logout",
-                    new { controller = "Page", action="Logout" });
             }
 
             apiConfig.SuppressDefaultHostAuthentication();
@@ -42,7 +38,8 @@ namespace Thinktecture.IdentityManager
                 apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.BearerAuthenticationType));
             }
 
-            apiConfig.Filters.Add(new AuthorizeAttribute() { Roles=idmConfig.AdminRoleName });
+            //apiConfig.Filters.Add(new AuthorizeAttribute() { Roles = idmConfig.AdminRoleName });
+            apiConfig.Filters.Add(new AuthorizeAttribute());
 
             apiConfig.Formatters.Remove(apiConfig.Formatters.XmlFormatter);
             apiConfig.Formatters.Remove(apiConfig.Formatters.FormUrlEncodedFormatter);

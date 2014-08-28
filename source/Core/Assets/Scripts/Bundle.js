@@ -252,20 +252,212 @@ c,b=n.get(c,{cache:v}).then(function(a){return a.data})));e.isDefined(b)&&(a.$te
 else q=null;q=a=q}q&&(c=s(f,{params:e.extend({},b.search(),a),pathParams:a}),c.$$route=f)});return c||h[null]&&s(h[null],{params:{},pathParams:{}})}function t(a,b){var c=[];e.forEach((a||"").split(":"),function(a,d){if(0===d)c.push(a);else{var e=a.match(/(\w+)(.*)/),f=e[1];c.push(b[f]);c.push(e[2]||"");delete b[f]}});return c.join("")}var u=!1,r={routes:h,reload:function(){u=!0;a.$evalAsync(l)}};a.$on("$locationChangeSuccess",l);return r}]});n.provider("$routeParams",function(){this.$get=function(){return{}}});
 n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScroll","$animate"];z.$inject=["$compile","$controller","$route"]})(window,window.angular);
 
+///#source 1 1 /Assets/Scripts/App/oauth.js
+function OAuthClient(store) {
+    this.store = store || window.localStorage;
+}
+
+OAuthClient.prototype.makeImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
+    var request = this.createImplicitRequest(authorizeUrl, clientid, callback, scope);
+
+    window.location = request.url;
+};
+
+OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
+    var state = (Date.now() + Math.random()) * Math.random();
+    state = state.toString().replace(".", "");
+
+    var url =
+        authorizeUrl + "?" +
+        "client_id=" + encodeURIComponent(clientid) + "&" +
+        "response_type=token&" +
+        "redirect_uri=" + encodeURIComponent(callback) + "&" +
+        "state=" + encodeURIComponent(state);
+
+    if (scope) {
+        url += "&scope=" + encodeURIComponent(scope);
+    }
+
+    this.store.setItem("OAuthClient.state", state);
+
+    return {
+        state:state,
+        url:url
+    };
+};
+
+OAuthClient.prototype.parseResult = function (queryString) {
+    queryString = queryString || location.hash;
+    var idx = queryString.indexOf("#");
+    if (idx > 0) {
+        queryString = queryString.substr(idx + 1);
+    }
+
+    var params = {},
+        regex = /([^&=]+)=([^&]*)/g,
+        m;
+
+    while (m = regex.exec(queryString)) {
+        params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+    }
+
+    for (var prop in params) {
+        return params;
+    }
+};
+
+OAuthClient.prototype.readImplicitResult = function (queryString) {
+    var result = OAuthClient.prototype.parseResult(queryString);
+    if (!result) {
+        return {
+            error: "No OAuth Response"
+        }
+    }
+
+    if (result.error) {
+        return {
+            error: result.error
+        }
+    }
+
+    var state = this.store.getItem("OAuthClient.state");
+    this.store.removeItem("OAuthClient.state");
+    if (!state || result.state !== state) {
+        return {
+            error: "Invalid State"
+        }
+    }
+
+    var token = result.access_token;
+    if (!token) {
+        return {
+            error: "No Access Token"
+        }
+    }
+
+    var expires_in = result.expires_in;
+    if (!expires_in) {
+        return {
+            error: "No Token Expiration"
+        }
+    }
+
+    return {
+        access_token: token,
+        expires_in: expires_in
+    };
+};
+
+function Token(access_token, expires_at) {
+    this.access_token = access_token;
+    this.expires_at = parseInt(expires_at);
+
+    Object.defineProperty(this, "expired", {
+        get: function () {
+            var now = parseInt(Date.now() / 1000);
+            return this.expires_at < now;
+        }
+    });
+
+    Object.defineProperty(this, "expires_in", {
+        get: function () {
+            var now = parseInt(Date.now() / 1000);
+            return this.expires_at - now;
+        }
+    });
+};
+
+Token.fromOAuthResponse = function (response) {
+    if (response.error) {
+        return new Token(null, 0);
+    }
+
+    var now = parseInt(Date.now() / 1000);
+    var expires_at = now + parseInt(response.expires_in);
+    return new Token(response.access_token, expires_at);
+};
+
+Token.fromJSON = function (json) {
+    if (json) {
+        var obj = JSON.parse(json);
+        return new Token(obj.access_token, obj.expires_at);
+    }
+    return new Token(null, 0);
+};
+
+Token.prototype.toJSON = function () {
+    return JSON.stringify({
+        access_token: this.access_token,
+        expires_at: this.expires_at
+    });
+};
+
 ///#source 1 1 /Assets/Scripts/App/ttIdm.js
 /// <reference path="../Libs/angular.min.js" />
 
 (function (angular) {
     var app = angular.module("ttIdm", []);
 
-    function config($httpProvider, Token) {
-        if (Token) {
-            $httpProvider.defaults.headers.common['Authorization'] = 'Bearer ' + Token;
+    function config($httpProvider, OAuthConfig) {
+        if (OAuthConfig) {
+            $httpProvider.interceptors.push(function () {
+                return {
+                    'request': function (config) {
+                        if (OAuthConfig.token && !OAuthConfig.token.expired) {
+                            config.headers['Authorization'] = 'Bearer ' + OAuthConfig.token.access_token;
+                        }
+                        return config;
+                    }
+                };
+            });
         }
     };
-    config.$inject = ["$httpProvider", "Token"];
+    config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
-    
+
+    function run(OAuthConfig, $location, $window, $rootScope) {
+        var store = $window.localStorage;
+
+        if ($location.path() === "/callback") {
+            var oauth = new OAuthClient($window.localStorage);
+            var result = oauth.readImplicitResult($location.url());
+            if (result.error) {
+                $rootScope.errors = [result.error];
+                $location.url("/error");
+            }
+            else {
+                OAuthConfig.token = Token.fromOAuthResponse(result);
+                store.setItem("idm.token", OAuthConfig.token.toJSON());
+                $location.url("/");
+            }
+        }
+        else if (OAuthConfig) {
+            var tokenJson = store.getItem("idm.token");
+            if (tokenJson) {
+                var token = Token.fromJSON(tokenJson);
+                if (!token.expired) {
+                    OAuthConfig.token = token;
+                }
+            }
+
+            if (!OAuthConfig.token) {
+                var oauth = new OAuthClient($window.localStorage);
+
+                var callback = $location.absUrl();
+                var idx = callback.indexOf('#');
+                if (idx > 0) {
+                    callback = callback.substring(0, idx);
+                }
+                callback += "#/callback";
+
+                var request = oauth.createImplicitRequest(OAuthConfig.AuthorizationUrl, OAuthConfig.ClientId, callback, OAuthConfig.Scope);
+                $window.location = request.url;
+            }
+        }
+    }
+    run.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
+    app.run(run);
+
     function idmApi($http, $q, PathBase) {
         var api = $q.defer();
         var promise = api.promise;
@@ -1017,20 +1209,25 @@ n.directive("ngView",x);n.directive("ngView",z);x.$inject=["$route","$anchorScro
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($scope, idmApi, $location, Username, LogoutUrl) {
+    function LayoutCtrl($rootScope, $scope, idmApi) {
         $scope.model = {};
 
         idmApi.then(function () {
-            $scope.model.username = Username;
-            $scope.model.logout = LogoutUrl;
+            $scope.model.username = idmApi.data.currentUser.username;
             $scope.model.links = idmApi.links;
         }, function (error) {
-            $scope.model.errors = [error];
+            $rootScope.errors = [error];
             $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$scope", "idmApi", "$location", "Username", "LogoutUrl"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi"];
     app.controller("LayoutCtrl", LayoutCtrl);
+
+    //function CallbackCtrl(OAuthConfig, $location, $routeParams) {
+    //    console.log($location.path());
+    //}
+    //CallbackCtrl.$inject = ["OAuthConfig", "$location", "$routeParams"];
+    //app.controller("CallbackCtrl", CallbackCtrl);
 
     function HomeCtrl($scope) {
         $scope.model = {};

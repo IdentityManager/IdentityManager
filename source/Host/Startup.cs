@@ -23,12 +23,14 @@ namespace Thinktecture.IdentityManager.Host
                 {
                     IdentityManagerFactory = () => svc,
                     SecurityMode = SecurityMode.LocalMachine,
-                    OidcConfiguration = new OpenIdConnectProviderConfiguration
+                    OAuth2Configuration = new OAuth2Configuration
                     {
-                        Authority = "http://localhost:17457/ids",
+                        AuthorizationUrl = "http://localhost:17457/ids/connect/authorize",
+                        Issuer = "https://idsrv3.com",
+                        Audience = "https://idsrv3.com/resources",
                         ClientId = "idmgr",
-                        RedirectUri = "http://localhost:17457/idm",
-                        RoleScope = "idmgr"
+                        SigningCert = Cert.Load(),
+                        Scope = "idmgr"
                     }
                 });
             });

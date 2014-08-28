@@ -14,11 +14,6 @@ namespace Thinktecture.IdentityManager.Api.Controllers
 {
     [NoCache]
     [SecurityHeaders]
-    [OverrideAuthorization, Authorize]
-    [OverrideAuthentication]
-    [HostAuthentication(Constants.LocalAuthenticationType)]
-    [HostAuthentication(Constants.CookieAuthenticationType)]
-    [HostAuthentication(Constants.ExternalOidcAuthenticationType)]
     public class PageController : ApiController
     {
         IdentityManagerConfiguration idmConfig;
@@ -30,37 +25,16 @@ namespace Thinktecture.IdentityManager.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IHttpActionResult Index()
         {
-            var cp = (ClaimsPrincipal)User;
-            var name = cp.Claims.Where(x=>x.Type==Constants.ClaimTypes.Name).Select(x=>x.Value).FirstOrDefault();
-            var token = cp.Claims.Where(x => x.Type == Constants.ClaimTypes.BootstrapToken).Select(x => x.Value).FirstOrDefault();
-            var model = new EmbeddedHtmlModel
+            if (idmConfig.SecurityMode == SecurityMode.LocalMachine && 
+                (User == null || User.Identity == null || User.Identity.IsAuthenticated == false))
             {
-                FileName = "Thinktecture.IdentityManager.Assets.Templates.index.html",
-                Username = name,
-                Token = token,
-                PathBase = Request.GetOwinContext().Request.PathBase.Value
-            };
-            if (this.idmConfig.SecurityMode != SecurityMode.LocalMachine)
-            {
-                model.LogoutUrl = Url.Link("logout", null);
+                return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.accessdenied.html");
             }
-            return new EmbeddedHtmlResult(model);
-        }
-        
-        [HttpGet]
-        [AllowAnonymous]
-        public IHttpActionResult Logout()
-        {
-            Request.GetOwinContext().Authentication.SignOut(Constants.CookieAuthenticationType);
-            
-            var model = new EmbeddedHtmlModel
-            {
-                FileName = "Thinktecture.IdentityManager.Assets.Templates.loggedout.html",
-                PathBase = Request.GetOwinContext().Request.PathBase.Value
-            };
-            return new EmbeddedHtmlResult(model);
+
+            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.index.html", idmConfig.OAuth2Configuration);
         }
     }
 }

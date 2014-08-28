@@ -11,40 +11,43 @@ using System.Web.Http;
 
 namespace Thinktecture.IdentityManager.Assets
 {
-    class EmbeddedHtmlModel
-    {
-        public string FileName { get; set; }
-        public string Username { get; set; }
-        public string LogoutUrl { get; set; }
-        public string Token { get; set; }
-        public string PathBase { get; set; }
-    }
-
     class EmbeddedHtmlResult : IHttpActionResult
     {
-        EmbeddedHtmlModel model;
-        public EmbeddedHtmlResult(EmbeddedHtmlModel model)
+        string path;
+        string file;
+        OAuth2Configuration oauthConfig;
+
+        public EmbeddedHtmlResult(HttpRequestMessage request, string file, OAuth2Configuration oauthConfig = null)
         {
-            this.model = model;
+            this.path = request.GetOwinContext().Request.PathBase.Value;
+            this.file = file;
+            this.oauthConfig = oauthConfig;
         }
 
         public Task<System.Net.Http.HttpResponseMessage> ExecuteAsync(System.Threading.CancellationToken cancellationToken)
         {
-            return Task.FromResult(GetResponseMessage(this.model));
+            return Task.FromResult(GetResponseMessage());
         }
 
-        public static HttpResponseMessage GetResponseMessage(EmbeddedHtmlModel model)
+        public HttpResponseMessage GetResponseMessage()
         {
-            var html = AssetManager.LoadResourceString(model.FileName,
-                new
+            object oauth = null;
+            if (oauthConfig != null)
+            {
+                oauth = new
                 {
-                    pathBase = model.PathBase,
+                    oauthConfig.AuthorizationUrl,
+                    oauthConfig.ClientId,
+                    oauthConfig.Scope
+                };
+            }
+            var html = AssetManager.LoadResourceString(this.file,
+                new {
+                    pathBase = this.path,
                     model = Newtonsoft.Json.JsonConvert.SerializeObject(new
                     {
-                        model.PathBase,
-                        model.Token,
-                        model.Username,
-                        model.LogoutUrl
+                        PathBase = this.path,
+                        OAuthConfig = oauth
                     })
                 });
             return new HttpResponseMessage()

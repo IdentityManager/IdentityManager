@@ -19,7 +19,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                 SiteName = "Thinktecture IdentityServer v3",
                 SigningCertificate = Cert.Load(),
                 CspReportEndpoint = EndpointSettings.Enabled,
-                AccessTokenValidationEndpoint = EndpointSettings.Enabled,
+                //AccessTokenValidationEndpoint = EndpointSettings.Enabled,
                 PublicHostName = "http://localhost:17457",
                 Factory = factory,
                 CorsPolicy = CorsPolicy.AllowAll
@@ -50,7 +50,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     Enabled = true,
                     Flow = Flows.Implicit,                    
                     RedirectUris = new List<Uri>{
-                        new Uri("http://localhost:17457/idm")
+                        new Uri("http://localhost:17457/idm/#/callback")
                     },
                     AccessTokenType = AccessTokenType.Jwt
                 },
@@ -60,32 +60,10 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
         static Scope[] GetScopes()
         {
             return new Scope[] {
-                new Scope
-                {
-                    Name = Thinktecture.IdentityServer.Core.Constants.StandardScopes.OpenId, 
-                    DisplayName = "Your user identifier",
-                    Required = true,
-                    IsOpenIdScope = true,
-                    Claims = new List<ScopeClaim>
-                        {
-                            new ScopeClaim
-                            {
-                                AlwaysIncludeInIdToken = true,
-                                Name = "sub",
-                                Description = "subject identifier"
-                            }
-                        }
-                 },
                  new Scope{
                     Name = "idmgr",
                     DisplayName = "IdentityManager",
-                    Description = "Roles for IdentityManager",
-                    IsOpenIdScope = true,
-                    Claims = new ScopeClaim[]{
-                        new ScopeClaim{
-                            Name = "role", Description = "Role for IdentityManager"
-                        }
-                    }
+                    Description = "Authorization for IdentityManager",
                 },
             };
         }

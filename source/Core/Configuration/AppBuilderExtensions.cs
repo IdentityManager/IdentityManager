@@ -8,14 +8,12 @@ using Microsoft.Owin.Extensions;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.OpenIdConnect;
 using Microsoft.Owin.StaticFiles;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager;
-using Thinktecture.IdentityManager.Configuration.Hosting.JwtOidcMiddleware;
 using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 
 namespace Owin
@@ -33,45 +31,21 @@ namespace Owin
                 var local = new LocalAuthenticationOptions(config.AdminRoleName);
                 app.Use<LocalAuthenticationMiddleware>(local);
             }
-            else if (config.SecurityMode == SecurityMode.Oidc)
+            else if (config.SecurityMode == SecurityMode.OAuth2)
             {
-                var cookie = new CookieAuthenticationOptions
+                if (config.OAuth2Configuration.SigningCert != null)
                 {
-                    AuthenticationType = Constants.CookieAuthenticationType,
-                    CookieName = Constants.CookieAuthenticationType,
-                    AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Active
-                };
-                app.UseCookieAuthentication(cookie);
-
-                var oidc = new OpenIdConnectAuthenticationOptions
+                    app.UseJsonWebToken(config.OAuth2Configuration.Issuer,
+                        config.OAuth2Configuration.Audience,
+                        config.OAuth2Configuration.SigningCert);
+                }
+                else
                 {
-                    AuthenticationType = Constants.ExternalOidcAuthenticationType,
-                    ClientId = config.OidcConfiguration.ClientId,
-                    Scope = "openid " + config.OidcConfiguration.RoleScope,
-                    ResponseType = "id_token",
-                    Authority = config.OidcConfiguration.Authority,
-                    RedirectUri = config.OidcConfiguration.RedirectUri,
-                    SignInAsAuthenticationType = Constants.CookieAuthenticationType,
-                    Notifications = new OpenIdConnectAuthenticationNotifications
-                    {
-                        SecurityTokenValidated = ctx =>
-                        {
-                            if (ctx.ProtocolMessage.IdToken != null)
-                            {
-                                ctx.AuthenticationTicket.Identity.AddClaim(new Claim(Constants.ClaimTypes.BootstrapToken, ctx.ProtocolMessage.IdToken));
-                            }
-                            return Task.FromResult(0);
-                        }
-                    }
-                };
-                app.UseOpenIdConnectAuthentication(oidc);
-
-                app.Use<JwtOidcMiddleware>(app, new JwtOidcOptions()
-                {
-                    AuthenticationType = Constants.BearerAuthenticationType,
-                    Audience = config.OidcConfiguration.ClientId,
-                    Authority = config.OidcConfiguration.Authority,
-                });
+                    app.UseJsonWebToken(config.OAuth2Configuration.Issuer,
+                        config.OAuth2Configuration.Audience,
+                        config.OAuth2Configuration.SigningKey);
+                    //app.RequireScopes(config.OAuth2Configuration.Scope);
+                }
             }
 
             if (!config.DisableUserInterface)

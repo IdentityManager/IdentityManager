@@ -47,10 +47,6 @@
     <Reference Include="AutoMapper.Net4">
       <HintPath>..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.Net4.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Protocol.Extensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.IdentityModel.Protocol.Extensions.1.0.0\lib\net45\Microsoft.IdentityModel.Protocol.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Owin.3.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -72,10 +68,6 @@
     </Reference>
     <Reference Include="Microsoft.Owin.Security.OAuth">
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OpenIdConnect, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Owin.Security.OpenIdConnect.3.0.0\lib\net45\Microsoft.Owin.Security.OpenIdConnect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.StaticFiles, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -117,6 +109,12 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Thinktecture.IdentityModel.Owin">
+      <HintPath>..\packages\Thinktecture.IdentityModel.Owin.2.1.1\lib\net45\Thinktecture.IdentityModel.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Thinktecture.IdentityModel.Owin.ScopeValidation">
+      <HintPath>..\packages\Thinktecture.IdentityModel.Owin.ScopeValidation.1.0.0\lib\net45\Thinktecture.IdentityModel.Owin.ScopeValidation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Controllers\PageController.cs" />
@@ -134,8 +132,6 @@
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
     <Compile Include="Configuration\AutofacConfig.cs" />
-    <Compile Include="Configuration\Hosting\JwtOidcMiddleware\JwtOidcMiddleware.cs" />
-    <Compile Include="Configuration\Hosting\JwtOidcMiddleware\JwtOidcOptions.cs" />
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationHandler.cs" />
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationMiddleware.cs" />
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationOptions.cs" />
@@ -185,7 +181,7 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
-    <EmbeddedResource Include="Assets\Templates\loggedout.html" />
+    <EmbeddedResource Include="Assets\Templates\users\accessdenied.html" />
     <EmbeddedResource Include="Assets\Templates\roles\new.html" />
     <EmbeddedResource Include="Assets\Templates\roles\list.html" />
     <EmbeddedResource Include="Assets\Templates\roles\edit.html" />
@@ -206,6 +202,7 @@
       <DependentUpon>Style.css</DependentUpon>
     </Content>
     <EmbeddedResource Include="Assets\Templates\index.html" />
+    <Content Include="Assets\Scripts\App\oauth.js" />
     <Content Include="Assets\Scripts\App\ttIdm.js" />
     <Content Include="Assets\Scripts\App\ttIdmApp.min - Copy %282%29.js">
       <DependentUpon>ttIdmRoles.js</DependentUpon>

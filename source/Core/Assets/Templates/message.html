@@ -1,6 +1,6 @@
-﻿<div ng-show="model.message" class="alert alert-success alert-dismissable">
-    {{model.message}}
+﻿<div ng-show="message" class="alert alert-success alert-dismissable">
+    {{message}}
 </div>
-<div ng-show="model.errors.length" class="alert alert-danger alert-dismissable">
-    {{model.errors[0]}}
+<div ng-show="errors" class="alert alert-danger alert-dismissable">
+    <strong>Error:</strong> {{errors[0]}}
 </div>

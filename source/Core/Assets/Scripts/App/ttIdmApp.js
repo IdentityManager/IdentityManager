@@ -20,20 +20,25 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($scope, idmApi, $location, Username, LogoutUrl) {
+    function LayoutCtrl($rootScope, $scope, idmApi) {
         $scope.model = {};
 
         idmApi.then(function () {
-            $scope.model.username = Username;
-            $scope.model.logout = LogoutUrl;
+            $scope.model.username = idmApi.data.currentUser.username;
             $scope.model.links = idmApi.links;
         }, function (error) {
-            $scope.model.errors = [error];
+            $rootScope.errors = [error];
             $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$scope", "idmApi", "$location", "Username", "LogoutUrl"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi"];
     app.controller("LayoutCtrl", LayoutCtrl);
+
+    //function CallbackCtrl(OAuthConfig, $location, $routeParams) {
+    //    console.log($location.path());
+    //}
+    //CallbackCtrl.$inject = ["OAuthConfig", "$location", "$routeParams"];
+    //app.controller("CallbackCtrl", CallbackCtrl);
 
     function HomeCtrl($scope) {
         $scope.model = {};

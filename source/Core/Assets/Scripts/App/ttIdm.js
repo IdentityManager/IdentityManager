@@ -3,14 +3,66 @@
 (function (angular) {
     var app = angular.module("ttIdm", []);
 
-    function config($httpProvider, Token) {
-        if (Token) {
-            $httpProvider.defaults.headers.common['Authorization'] = 'Bearer ' + Token;
+    function config($httpProvider, OAuthConfig) {
+        if (OAuthConfig) {
+            $httpProvider.interceptors.push(function () {
+                return {
+                    'request': function (config) {
+                        if (OAuthConfig.token && !OAuthConfig.token.expired) {
+                            config.headers['Authorization'] = 'Bearer ' + OAuthConfig.token.access_token;
+                        }
+                        return config;
+                    }
+                };
+            });
         }
     };
-    config.$inject = ["$httpProvider", "Token"];
+    config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
-    
+
+    function run(OAuthConfig, $location, $window, $rootScope) {
+        var store = $window.localStorage;
+
+        if ($location.path() === "/callback") {
+            var oauth = new OAuthClient($window.localStorage);
+            var result = oauth.readImplicitResult($location.url());
+            if (result.error) {
+                $rootScope.errors = [result.error];
+                $location.url("/error");
+            }
+            else {
+                OAuthConfig.token = Token.fromOAuthResponse(result);
+                store.setItem("idm.token", OAuthConfig.token.toJSON());
+                $location.url("/");
+            }
+        }
+        else if (OAuthConfig) {
+            var tokenJson = store.getItem("idm.token");
+            if (tokenJson) {
+                var token = Token.fromJSON(tokenJson);
+                if (!token.expired) {
+                    OAuthConfig.token = token;
+                }
+            }
+
+            if (!OAuthConfig.token) {
+                var oauth = new OAuthClient($window.localStorage);
+
+                var callback = $location.absUrl();
+                var idx = callback.indexOf('#');
+                if (idx > 0) {
+                    callback = callback.substring(0, idx);
+                }
+                callback += "#/callback";
+
+                var request = oauth.createImplicitRequest(OAuthConfig.AuthorizationUrl, OAuthConfig.ClientId, callback, OAuthConfig.Scope);
+                $window.location = request.url;
+            }
+        }
+    }
+    run.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
+    app.run(run);
+
     function idmApi($http, $q, PathBase) {
         var api = $q.defer();
         var promise = api.promise;
