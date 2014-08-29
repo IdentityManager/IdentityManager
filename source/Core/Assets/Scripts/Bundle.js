@@ -458,23 +458,26 @@ Token.prototype.toJSON = function () {
     run.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
     app.run(run);
 
-    function idmApi($http, $q, PathBase) {
+    function idmApi($http, $q, PathBase, OAuthConfig) {
         var api = $q.defer();
         var promise = api.promise;
-        $http.get(PathBase + "/api").then(function (resp) {
-            angular.extend(promise, resp.data);
-            api.resolve();
-        }, function (resp) {
-            if (resp.status === 401) {
-                api.reject('Error : You are not authorized to use this service.');
-            }
-            else {
-                api.reject('Error loading API');
-            }
-        });
+
+        if ((OAuthConfig && OAuthConfig.token) || !OAuthConfig) {
+            $http.get(PathBase + "/api").then(function (resp) {
+                angular.extend(promise, resp.data);
+                api.resolve();
+            }, function (resp) {
+                if (resp.status === 401) {
+                    api.reject('You are not authorized to use this service.');
+                }
+                else {
+                    api.reject('Failed to load API.');
+                }
+            });
+        }
         return promise;
     }
-    idmApi.$inject = ["$http", "$q", "PathBase"];
+    idmApi.$inject = ["$http", "$q", "PathBase", "OAuthConfig"];
     app.factory("idmApi", idmApi);
 
     function idmUsers($http, idmApi, $log) {
@@ -1209,7 +1212,7 @@ Token.prototype.toJSON = function () {
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, $scope, idmApi) {
+    function LayoutCtrl($rootScope, $scope, idmApi, $location) {
         $scope.model = {};
 
         idmApi.then(function () {
@@ -1220,14 +1223,8 @@ Token.prototype.toJSON = function () {
             $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location"];
     app.controller("LayoutCtrl", LayoutCtrl);
-
-    //function CallbackCtrl(OAuthConfig, $location, $routeParams) {
-    //    console.log($location.path());
-    //}
-    //CallbackCtrl.$inject = ["OAuthConfig", "$location", "$routeParams"];
-    //app.controller("CallbackCtrl", CallbackCtrl);
 
     function HomeCtrl($scope) {
         $scope.model = {};

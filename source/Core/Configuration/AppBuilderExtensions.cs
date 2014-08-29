@@ -44,8 +44,11 @@ namespace Owin
                     app.UseJsonWebToken(config.OAuth2Configuration.Issuer,
                         config.OAuth2Configuration.Audience,
                         config.OAuth2Configuration.SigningKey);
-                    //app.RequireScopes(config.OAuth2Configuration.Scope);
                 }
+                app.Use(async(ctx, next) =>
+                {
+                    await next();
+                });
             }
 
             if (!config.DisableUserInterface)

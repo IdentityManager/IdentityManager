@@ -20,7 +20,7 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, $scope, idmApi) {
+    function LayoutCtrl($rootScope, $scope, idmApi, $location) {
         $scope.model = {};
 
         idmApi.then(function () {
@@ -31,14 +31,8 @@
             $location.path("/error");
         });
     }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location"];
     app.controller("LayoutCtrl", LayoutCtrl);
-
-    //function CallbackCtrl(OAuthConfig, $location, $routeParams) {
-    //    console.log($location.path());
-    //}
-    //CallbackCtrl.$inject = ["OAuthConfig", "$location", "$routeParams"];
-    //app.controller("CallbackCtrl", CallbackCtrl);
 
     function HomeCtrl($scope) {
         $scope.model = {};
