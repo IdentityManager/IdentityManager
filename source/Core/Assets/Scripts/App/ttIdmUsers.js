@@ -13,7 +13,11 @@
             })
             .when("/users/create", {
                 controller: 'NewUserCtrl',
-                resolve: { users: "idmUsers" },
+                resolve: {
+                    api: function (idmApi) {
+                        return idmApi.get();
+                    }
+                },
                 templateUrl: PathBase + '/assets/Templates.users.new.html'
             })
             .when("/users/edit/:subject", {
@@ -61,15 +65,15 @@
     ListUsersCtrl.$inject = ["$scope", "idmUsers", "idmPager", "$routeParams", "$location"];
     app.controller("ListUsersCtrl", ListUsersCtrl);
 
-    function NewUserCtrl($scope, idmUsers, idmApi, ttFeedback) {
+    function NewUserCtrl($scope, idmUsers, api, ttFeedback) {
         var feedback = new ttFeedback();
         $scope.feedback = feedback;
-        if (!idmApi.links.createUser) {
+        if (!api.links.createUser) {
             feedback.errors = "Create Not Supported";
             return;
         }
         else {
-            var properties = idmApi.links.createUser.meta
+            var properties = api.links.createUser.meta
                 .map(function (item) {
                     return {
                         meta : item,
@@ -92,7 +96,7 @@
             };
         }
     }
-    NewUserCtrl.$inject = ["$scope", "idmUsers", "idmApi", "ttFeedback"];
+    NewUserCtrl.$inject = ["$scope", "idmUsers", "api", "ttFeedback"];
     app.controller("NewUserCtrl", NewUserCtrl);
 
     function EditUserCtrl($scope, idmUsers, $routeParams, ttFeedback) {

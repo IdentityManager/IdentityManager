@@ -10,6 +10,14 @@
                 controller: 'HomeCtrl',
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
+            .when("/callback", {
+                templateUrl: PathBase + '/assets/Templates.message.html',
+                controller: 'CallbackCtrl'
+            })
+            .when("/logout", {
+                template: "<h2>Logging out...</h2>",
+                controller:"LogoutCtrl"
+            })
             .when("/error", {
                 templateUrl: PathBase + '/assets/Templates.message.html'
             })
@@ -20,24 +28,56 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, $scope, idmApi, $location) {
+    function LayoutCtrl($rootScope, $scope, idmApi, $location, idmToken) {
         $scope.model = {};
 
-        idmApi.then(function () {
-            $scope.model.username = idmApi.data.currentUser.username;
-            $scope.model.links = idmApi.links;
-        }, function (error) {
-            $rootScope.errors = [error];
-            $location.path("/error");
+        idmToken.addOnTokenExpired(function () {
+            $scope.model.links = null;
+            $scope.showLogout = false;
         });
+
+        function load() {
+            $scope.showLogout = idmToken.hasToken();
+
+            idmApi.get().then(function (api) {
+                $scope.model.username = api.data.currentUser.username;
+                $scope.model.links = api.links;
+            });
+        }
+        idmToken.addOnTokenObtained(load);
+        load();
+
     }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
-    function HomeCtrl($scope) {
-        $scope.model = {};
+    function HomeCtrl($scope, idmToken) {
+        if (idmToken.isTokenNeeded()) {
+            $scope.showLogin = true;
+        }
+
+        $scope.login = function () {
+            idmToken.redirectForToken("callback");
+        }
     }
-    HomeCtrl.$inject = ["$scope"];
+    HomeCtrl.$inject = ["$scope", "idmToken"];
     app.controller("HomeCtrl", HomeCtrl);
+
+    function CallbackCtrl(idmToken, $location, $rootScope) {
+        idmToken.processTokenCallback(function () {
+            $location.url("/");
+        }, function (error) {
+            $rootScope.errors = [error];
+        });
+    }
+    CallbackCtrl.$inject = ["idmToken", "$location", "$rootScope"];
+    app.controller("CallbackCtrl", CallbackCtrl);
+
+    function LogoutCtrl(idmToken, $location) {
+        idmToken.removeToken();
+        $location.url("/");
+    }
+    LogoutCtrl.$inject = ["idmToken", "$location"];
+    app.controller("LogoutCtrl", LogoutCtrl);
 
 })(angular);

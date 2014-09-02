@@ -33,6 +33,7 @@ OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, 
 
 OAuthClient.prototype.parseResult = function (queryString) {
     queryString = queryString || location.hash;
+
     var idx = queryString.indexOf("#");
     if (idx > 0) {
         queryString = queryString.substr(idx + 1);
@@ -67,6 +68,7 @@ OAuthClient.prototype.readImplicitResult = function (queryString) {
 
     var state = this.store.getItem("OAuthClient.state");
     this.store.removeItem("OAuthClient.state");
+
     if (!state || result.state !== state) {
         return {
             error: "Invalid State"

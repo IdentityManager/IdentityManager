@@ -13,7 +13,11 @@
             })
             .when("/roles/create", {
                 controller: 'NewRoleCtrl',
-                resolve: { roles: "idmRoles" },
+                resolve: {
+                    api: function (idmApi) {
+                        return idmApi.get();
+                    }
+                },
                 templateUrl: PathBase + '/assets/Templates.roles.new.html'
             })
             .when("/roles/edit/:subject", {
@@ -61,15 +65,15 @@
     ListRolesCtrl.$inject = ["$scope", "idmRoles", "idmPager", "$routeParams", "$location"];
     app.controller("ListRolesCtrl", ListRolesCtrl);
 
-    function NewRoleCtrl($scope, idmRoles, idmApi, ttFeedback) {
+    function NewRoleCtrl($scope, idmRoles, api, ttFeedback) {
         var feedback = new ttFeedback();
         $scope.feedback = feedback;
-        if (!idmApi.links.createRole) {
+        if (!api.links.createRole) {
             feedback.errors = "Create Not Supported";
             return;
         }
         else {
-            var properties = idmApi.links.createRole.meta
+            var properties = api.links.createRole.meta
                 .map(function (item) {
                     return {
                         meta : item,
@@ -92,7 +96,7 @@
             };
         }
     }
-    NewRoleCtrl.$inject = ["$scope", "idmRoles", "idmApi", "ttFeedback"];
+    NewRoleCtrl.$inject = ["$scope", "idmRoles", "api", "ttFeedback"];
     app.controller("NewRoleCtrl", NewRoleCtrl);
 
     function EditRoleCtrl($scope, idmRoles, $routeParams, ttFeedback) {

@@ -239,7 +239,12 @@
             },
             templateUrl: PathBase + '/assets/Templates.message.html',
             link: function (scope, elem, attrs) {
-
+                scope.$watch("model.message", function(){
+                    scope.message = scope.model.message;
+                });
+                scope.$watch("model.errors", function(){
+                    scope.errors = scope.model.errors;
+                });
             }
         };
     }

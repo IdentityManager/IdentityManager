@@ -5,13 +5,19 @@
 
     function config($httpProvider, OAuthConfig) {
         if (OAuthConfig) {
-            $httpProvider.interceptors.push(function () {
+            $httpProvider.interceptors.push(function ($q) {
                 return {
                     'request': function (config) {
-                        if (OAuthConfig.token && !OAuthConfig.token.expired) {
+                        if (OAuthConfig.token) {
                             config.headers['Authorization'] = 'Bearer ' + OAuthConfig.token.access_token;
                         }
                         return config;
+                    },
+                    'responseError': function (response) {
+                        if (response.status === 401) {
+                            idmToken.removeToken();
+                        }
+                        return $q.reject(response);
                     }
                 };
             });
@@ -20,23 +26,10 @@
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function run(OAuthConfig, $location, $window, $rootScope) {
+    function idmToken(OAuthConfig, $location, $window, $rootScope) {
         var store = $window.localStorage;
 
-        if ($location.path() === "/callback") {
-            var oauth = new OAuthClient($window.localStorage);
-            var result = oauth.readImplicitResult($location.url());
-            if (result.error) {
-                $rootScope.errors = [result.error];
-                $location.url("/error");
-            }
-            else {
-                OAuthConfig.token = Token.fromOAuthResponse(result);
-                store.setItem("idm.token", OAuthConfig.token.toJSON());
-                $location.url("/");
-            }
-        }
-        else if (OAuthConfig) {
+        if (OAuthConfig) {
             var tokenJson = store.getItem("idm.token");
             if (tokenJson) {
                 var token = Token.fromJSON(tokenJson);
@@ -44,8 +37,45 @@
                     OAuthConfig.token = token;
                 }
             }
+        }
 
-            if (!OAuthConfig.token) {
+        var tokenExpired = [];
+        function callTokenExpired() {
+            tokenExpired.forEach(function (cb) {
+                cb();
+            });
+        }
+
+        var tokenObtained = [];
+        function callTokenObtained() {
+            tokenObtained.forEach(function (cb) {
+                cb();
+            });
+        }
+
+        return {
+            addOnTokenExpired: function (cb) {
+                tokenExpired.push(cb);
+            },
+            addOnTokenObtained: function (cb) {
+                tokenObtained.push(cb);
+            },
+            hasToken: function () {
+                return OAuthConfig &&
+                       OAuthConfig.token &&
+                       !OAuthConfig.token.expired;
+            },
+            isTokenNeeded: function () {
+                return OAuthConfig &&
+                    (!OAuthConfig.token ||
+                     OAuthConfig.token.expired);
+            },
+            removeToken: function () {
+                store.removeItem("idm.token");
+                OAuthConfig.token = null;
+                callTokenExpired();
+            },
+            redirectForToken: function (callbackPath) {
                 var oauth = new OAuthClient($window.localStorage);
 
                 var callback = $location.absUrl();
@@ -53,36 +83,65 @@
                 if (idx > 0) {
                     callback = callback.substring(0, idx);
                 }
-                callback += "#/callback";
+                callback += "#/" + callbackPath;
 
                 var request = oauth.createImplicitRequest(OAuthConfig.AuthorizationUrl, OAuthConfig.ClientId, callback, OAuthConfig.Scope);
                 $window.location = request.url;
+            },
+            processTokenCallback: function (success, error) {
+                var oauth = new OAuthClient($window.localStorage);
+                var result = oauth.readImplicitResult($location.url());
+                if (result.error) {
+                    if (error) {
+                        error(result.error);
+                    }
+                }
+                else {
+                    OAuthConfig.token = Token.fromOAuthResponse(result);
+                    store.setItem("idm.token", OAuthConfig.token.toJSON());
+                    callTokenObtained();
+                    if (success) {
+                        success();
+                    }
+                }
             }
         }
     }
-    run.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
-    app.run(run);
+    idmToken.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
+    app.factory("idmToken", idmToken);
 
-    function idmApi($http, $q, PathBase, OAuthConfig) {
-        var api = $q.defer();
-        var promise = api.promise;
+    function idmApi(idmToken, $http, $q, PathBase) {
+        var cache = null;
 
-        if ((OAuthConfig && OAuthConfig.token) || !OAuthConfig) {
-            $http.get(PathBase + "/api").then(function (resp) {
-                angular.extend(promise, resp.data);
-                api.resolve();
-            }, function (resp) {
-                if (resp.status === 401) {
-                    api.reject('You are not authorized to use this service.');
+        idmToken.addOnTokenExpired(function () {
+            cache = null;
+        });
+
+        return {
+            get: function () {
+
+                if (cache) {
+                    var d = $q.defer();
+                    d.resolve(cache);
+                    return d.promise;
                 }
-                else {
-                    api.reject('Failed to load API.');
-                }
-            });
-        }
-        return promise;
+
+                return $http.get(PathBase + "/api").then(function (resp) {
+                    cache = resp.data;
+                    return cache;
+                }, function (resp) {
+                    cache = null;
+                    if (resp.status === 401) {
+                        throw 'You are not authorized to use this service.';
+                    }
+                    else {
+                        throw 'Failed to load API.';
+                    }
+                });
+            }
+        };
     }
-    idmApi.$inject = ["$http", "$q", "PathBase", "OAuthConfig"];
+    idmApi.$inject = ["idmToken", "$http", "$q", "PathBase"];
     app.factory("idmApi", idmApi);
 
     function idmUsers($http, idmApi, $log) {
@@ -101,20 +160,20 @@
             }
         }
 
-        var svc = idmApi.then(function () {
+        var svc = idmApi.get().then(function (api) {
             svc.getUsers = function (filter, start, count) {
-                return $http.get(idmApi.links.users, { params: { filter: filter, start: start, count: count } })
+                return $http.get(api.links.users, { params: { filter: filter, start: start, count: count } })
                     .then(mapResponseData, errorHandler("Error Getting Users"));
             };
 
             svc.getUser = function (subject) {
-                return $http.get(idmApi.links.users + "/" + encodeURIComponent(subject))
+                return $http.get(api.links.users + "/" + encodeURIComponent(subject))
                     .then(mapResponseData, errorHandler("Error Getting User"));
             };
 
-            if (idmApi.links.createUser) {
+            if (api.links.createUser) {
                 svc.createUser = function (properties) {
-                    return $http.post(idmApi.links.createUser.href, properties)
+                    return $http.post(api.links.createUser.href, properties)
                         .then(mapResponseData, errorHandler("Error Creating User"));
                 };
             }
@@ -176,14 +235,14 @@
             }
         }
 
-        var svc = idmApi.then(function () {
+        var svc = idmApi.get().then(function (api) {
             svc.getRoles = function (filter, start, count) {
-                return $http.get(idmApi.links.roles, { params: { filter: filter, start: start, count: count } })
+                return $http.get(api.links.roles, { params: { filter: filter, start: start, count: count } })
                     .then(mapResponseData, errorHandler("Error Getting Roles"));
             };
 
             svc.getRole = function (subject) {
-                return $http.get(idmApi.links.roles + "/" + encodeURIComponent(subject))
+                return $http.get(api.links.roles + "/" + encodeURIComponent(subject))
                     .then(mapResponseData, errorHandler("Error Getting Role"));
             };
 
@@ -198,9 +257,9 @@
                     .then(nop, errorHandler(property.meta && property.meta.name && "Error Setting " + property.meta.name || "Error Setting Property"));
             };
 
-            if (idmApi.links.createRole) {
+            if (api.links.createRole) {
                 svc.createRole = function (properties) {
-                    return $http.post(idmApi.links.createRole.href, properties)
+                    return $http.post(api.links.createRole.href, properties)
                         .then(mapResponseData, errorHandler("Error Creating Role"));
                 };
             }
