@@ -90,7 +90,7 @@
                 });
                 idmUsers.createUser(props)
                     .then(function (result) {
-                        $scope.model.last = result;
+                        $scope.last = result;
                         feedback.message = "Create Success";
                     }, feedback.errorHandler);
             };

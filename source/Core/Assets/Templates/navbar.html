@@ -3,12 +3,12 @@
         <a href="#/" class="navbar-brand">Thinktecture IdentityManager</a>
     </div>
     <ul class="nav navbar-nav">
-        <li ng-show="model.links.users"><a href="#/users/list">All Users</a></li>
-        <li ng-show="model.links.createUser"><a href="#/users/create">New User</a></li>
-        <li ng-show="model.links.roles"><a href="#/roles/list">Roles</a></li>
-        <li ng-show="model.links.createRole"><a href="#/roles/create">New Role</a></li>
-        <li ng-show="showLogout"><a href="#/logout">Logout</a></li>
+        <li ng-show="layout.links.users"><a href="#/users/list">All Users</a></li>
+        <li ng-show="layout.links.createUser"><a href="#/users/create">New User</a></li>
+        <li ng-show="layout.links.roles"><a href="#/roles/list">Roles</a></li>
+        <li ng-show="layout.links.createRole"><a href="#/roles/create">New Role</a></li>
+        <li ng-show="layout.showLogout"><a href="#/logout">Logout</a></li>
     </ul>
     
-    <span class="navbar-text pull-right">{{model.username}}</span>
+    <span class="navbar-text pull-right">{{layout.username}}</span>
 </div>

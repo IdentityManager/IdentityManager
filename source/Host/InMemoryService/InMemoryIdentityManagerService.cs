@@ -341,6 +341,11 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
                 SetRoleProperty(createPropsMeta, role, prop.Type, prop.Value);
             }
 
+            if (roles.Any(x=>x.Name.Equals(role.Name, StringComparison.OrdinalIgnoreCase)))
+            {
+                return Task.FromResult(new IdentityManagerResult<CreateResult>("Role name already in use."));
+            }
+
             roles.Add(role);
 
             return Task.FromResult(new IdentityManagerResult<CreateResult>(new CreateResult() { Subject = role.ID }));

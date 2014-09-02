@@ -1029,7 +1029,7 @@ Token.prototype.toJSON = function () {
                 });
                 idmUsers.createUser(props)
                     .then(function (result) {
-                        $scope.model.last = result;
+                        $scope.last = result;
                         feedback.message = "Create Success";
                     }, feedback.errorHandler);
             };
@@ -1213,7 +1213,7 @@ Token.prototype.toJSON = function () {
                 });
                 idmRoles.createRole(props)
                     .then(function (result) {
-                        $scope.model.last = result;
+                        $scope.last = result;
                         feedback.message = "Create Success";
                     }, feedback.errorHandler);
             };
@@ -1295,24 +1295,23 @@ Token.prototype.toJSON = function () {
     app.config(config);
 
     function LayoutCtrl($rootScope, $scope, idmApi, $location, idmToken) {
-        $scope.model = {};
+        $scope.layout = {};
 
         idmToken.addOnTokenExpired(function () {
-            $scope.model.links = null;
-            $scope.showLogout = false;
+            $scope.layout.links = null;
+            $scope.layout.showLogout = false;
         });
 
         function load() {
-            $scope.showLogout = idmToken.hasToken();
+            $scope.layout.showLogout = idmToken.hasToken();
 
             idmApi.get().then(function (api) {
-                $scope.model.username = api.data.currentUser.username;
-                $scope.model.links = api.links;
+                $scope.layout.username = api.data.currentUser.username;
+                $scope.layout.links = api.links;
             });
         }
         idmToken.addOnTokenObtained(load);
         load();
-
     }
     LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
     app.controller("LayoutCtrl", LayoutCtrl);

@@ -29,24 +29,23 @@
     app.config(config);
 
     function LayoutCtrl($rootScope, $scope, idmApi, $location, idmToken) {
-        $scope.model = {};
+        $scope.layout = {};
 
         idmToken.addOnTokenExpired(function () {
-            $scope.model.links = null;
-            $scope.showLogout = false;
+            $scope.layout.links = null;
+            $scope.layout.showLogout = false;
         });
 
         function load() {
-            $scope.showLogout = idmToken.hasToken();
+            $scope.layout.showLogout = idmToken.hasToken();
 
             idmApi.get().then(function (api) {
-                $scope.model.username = api.data.currentUser.username;
-                $scope.model.links = api.links;
+                $scope.layout.username = api.data.currentUser.username;
+                $scope.layout.links = api.links;
             });
         }
         idmToken.addOnTokenObtained(load);
         load();
-
     }
     LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
     app.controller("LayoutCtrl", LayoutCtrl);
