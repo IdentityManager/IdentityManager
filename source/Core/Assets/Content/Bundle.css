@@ -5783,9 +5783,10 @@ body {
   padding: 10px 0;
   border-bottom: 1px solid #eeeeee;
 }
-form label.column {
+.form-group label {
   display: inline-block;
   width: 150px;
+  position: relative;
 }
 .dropdown .dropdown-toggle {
   cursor: pointer;
@@ -5862,8 +5863,8 @@ form label.column {
   display: none !important;
 }
 .form-group label input[type="checkbox"] {
-  position: relative;
-  left: 44px;
+  position: absolute;
+  left: 155px;
 }
 .user-roles .alert {
   margin-top: 20px;
