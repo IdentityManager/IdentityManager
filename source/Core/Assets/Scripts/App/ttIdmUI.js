@@ -59,6 +59,20 @@
         return Feedback;
     });
 
+    function ttFocus() {
+        return {
+            link: function (scope, elem) {
+                scope.$on("$routeChangeSuccess", function () {
+                    scope.$applyAsync(function(){
+                        elem.find("input:visible:first").focus();
+                    });
+                });
+            }
+        }
+    }
+    ttFocus.$inject = [];
+    app.directive("ttFocus", ttFocus);
+
     function ttMatch() {
         return {
             restrict: 'A',
