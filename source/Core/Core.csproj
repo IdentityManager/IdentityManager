@@ -136,6 +136,7 @@
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationMiddleware.cs" />
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationOptions.cs" />
     <Compile Include="Configuration\Hosting\TraceLogger.cs" />
+    <Compile Include="Configuration\OAuth2Configuration.cs" />
     <Compile Include="Configuration\IdentityManagerConfiguration.cs" />
     <Compile Include="Configuration\SecurityMode.cs" />
     <Compile Include="Configuration\WebApiConfig.cs" />
