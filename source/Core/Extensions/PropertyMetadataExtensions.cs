@@ -13,10 +13,10 @@ namespace Thinktecture.IdentityManager
     {
         public static IEnumerable<string> Validate(
             this IEnumerable<PropertyMetadata> propertiesMetadata, 
-            IEnumerable<Property> properties)
+            IEnumerable<PropertyValue> properties)
         {
             if (propertiesMetadata == null) throw new ArgumentNullException("propertiesMetadata");
-            properties = properties ?? Enumerable.Empty<Property>();
+            properties = properties ?? Enumerable.Empty<PropertyValue>();
 
             var errors = new List<string>();
 

@@ -69,7 +69,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [HttpPost, Route("", Name = Constants.RouteNames.CreateUser)]
-        public async Task<IHttpActionResult> CreateUserAsync(Property[] properties)
+        public async Task<IHttpActionResult> CreateUserAsync(PropertyValue[] properties)
         {
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsCreate)
@@ -203,7 +203,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
 
         [HttpPost, Route("{subject}/claims", Name = Constants.RouteNames.AddClaim)]
-        public async Task<IHttpActionResult> AddClaimAsync(string subject, ClaimModel model)
+        public async Task<IHttpActionResult> AddClaimAsync(string subject, ClaimValue model)
         {
             var meta = await GetMetadataAsync();
             if (!meta.UserMetadata.SupportsClaims)
@@ -314,10 +314,10 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(result.ToError());
         }
         
-        private IEnumerable<string> ValidateCreateProperties(UserMetadata userMetadata, IEnumerable<Property> properties)
+        private IEnumerable<string> ValidateCreateProperties(UserMetadata userMetadata, IEnumerable<PropertyValue> properties)
         {
             if (userMetadata == null) throw new ArgumentNullException("userMetadata");
-            properties = properties ?? Enumerable.Empty<Property>();
+            properties = properties ?? Enumerable.Empty<PropertyValue>();
 
             var meta = userMetadata.GetCreateProperties();
             return meta.Validate(properties);

@@ -2,12 +2,12 @@
  * Copyright (c) Dominick Baier, Brock Allen.  All rights reserved.
  * see license
  */
+
 using System.ComponentModel.DataAnnotations;
 using Thinktecture.IdentityManager.Resources;
-
-namespace Thinktecture.IdentityManager.Api.Models
+namespace Thinktecture.IdentityManager
 {
-    public class ClaimModel
+    public class ClaimValue
     {
         [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "ClaimTypeRequired")]
         public string Type { get; set; }

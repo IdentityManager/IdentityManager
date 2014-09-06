@@ -12,7 +12,7 @@ namespace Thinktecture.IdentityManager
         Task<IdentityManagerMetadata> GetMetadataAsync();
         
         // users
-        Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<Property> properties);
+        Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<PropertyValue> properties);
         Task<IdentityManagerResult> DeleteUserAsync(string subject);
         
         Task<IdentityManagerResult<QueryResult<UserSummary>>> QueryUsersAsync(string filter, int start, int count);
@@ -24,7 +24,7 @@ namespace Thinktecture.IdentityManager
         Task<IdentityManagerResult> RemoveUserClaimAsync(string subject, string type, string value);
 
         // roles
-        Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties);
+        Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<PropertyValue> properties);
         Task<IdentityManagerResult> DeleteRoleAsync(string subject);
 
         Task<IdentityManagerResult<QueryResult<RoleSummary>>> QueryRolesAsync(string filter, int start, int count);

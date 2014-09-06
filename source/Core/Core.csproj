@@ -142,7 +142,6 @@
     <Compile Include="Configuration\WebApiConfig.cs" />
     <Compile Include="Api\Controllers\MetaController.cs" />
     <Compile Include="Api\Controllers\UserController.cs" />
-    <Compile Include="Api\Models\ClaimModel.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Core\DisposableIdentityManagerService.cs" />
     <Compile Include="Core\Metadata\ExpressionPropertyMetadata.cs" />
@@ -154,6 +153,7 @@
     <Compile Include="Core\Metadata\PropertyMetadata.cs" />
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IIdentityManagerService.cs" />
+    <Compile Include="Core\ClaimValue.cs" />
     <Compile Include="Core\RoleDetail.cs" />
     <Compile Include="Core\UserDetail.cs" />
     <Compile Include="Core\RoleSummary.cs" />
@@ -167,7 +167,7 @@
     <Compile Include="Extensions\UserMetadataExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\QueryResult.cs" />
-    <Compile Include="Core\Property.cs" />
+    <Compile Include="Core\PropertyValue.cs" />
     <Compile Include="Core\Metadata\IdentityManagerMetadata.cs" />
     <Compile Include="Core\IdentityManagerResult`1.cs" />
     <Compile Include="Core\IdentityManagerResult.cs" />

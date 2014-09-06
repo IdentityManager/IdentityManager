@@ -99,7 +99,7 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             return Task.FromResult(GetMetadata());
         }
 
-        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<Property> properties)
+        public System.Threading.Tasks.Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<PropertyValue> properties)
         {
             var errors = ValidateUserProperties(properties);
             if (errors.Any())
@@ -175,16 +175,16 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
                 return Task.FromResult(new IdentityManagerResult<UserDetail>((UserDetail)null));
             }
 
-            var props = new List<Property>();
+            var props = new List<PropertyValue>();
             foreach(var prop in GetMetadata().UserMetadata.UpdateProperties)
             {
-                props.Add(new Property{
+                props.Add(new PropertyValue{
                     Type = prop.Type, 
                     Value = GetUserProperty(prop, user)
                 });
             }
-           
-            var claims = user.Claims.Select(x => new Property { Type = x.Type, Value = x.Value });
+
+            var claims = user.Claims.Select(x => new ClaimValue { Type = x.Type, Value = x.Value });
 
             return Task.FromResult(new IdentityManagerResult<UserDetail>(new UserDetail
             {
@@ -292,7 +292,7 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             }
         }
 
-        IEnumerable<string> ValidateUserProperties(IEnumerable<Property> properties)
+        IEnumerable<string> ValidateUserProperties(IEnumerable<PropertyValue> properties)
         {
             return properties.Select(x => ValidateUserProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
         }
@@ -326,7 +326,7 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
         
         #region Roles
 
-        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties)
+        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<PropertyValue> properties)
         {
             var errors = ValidateRoleProperties(properties);
             if (errors.Any())
@@ -418,10 +418,10 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
                 return Task.FromResult(new IdentityManagerResult<RoleDetail>((RoleDetail)null));
             }
 
-            var props = new List<Property>();
+            var props = new List<PropertyValue>();
             foreach (var prop in GetMetadata().RoleMetadata.UpdateProperties)
             {
-                props.Add(new Property
+                props.Add(new PropertyValue
                 {
                     Type = prop.Type,
                     Value = GetRoleProperty(prop, role)
@@ -479,7 +479,7 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             throw new InvalidOperationException("Invalid Property Type : " + type);
         }
 
-        IEnumerable<string> ValidateRoleProperties(IEnumerable<Property> properties)
+        IEnumerable<string> ValidateRoleProperties(IEnumerable<PropertyValue> properties)
         {
             return properties.Select(x => ValidateRoleProperty(x.Type, x.Value)).Aggregate((x, y) => x.Concat(y));
         }

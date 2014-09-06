@@ -8,7 +8,7 @@ namespace Thinktecture.IdentityManager
 {
     public class UserDetail : UserSummary
     {
-        public IEnumerable<Property> Properties { get; set; }
-        public IEnumerable<Property> Claims { get; set; }
+        public IEnumerable<PropertyValue> Properties { get; set; }
+        public IEnumerable<ClaimValue> Claims { get; set; }
     }
 }

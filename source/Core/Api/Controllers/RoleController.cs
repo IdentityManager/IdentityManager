@@ -74,7 +74,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
         }
         
         [HttpPost, Route("", Name = Constants.RouteNames.CreateRole)]
-        public async Task<IHttpActionResult> CreateRoleAsync(Property[] properties)
+        public async Task<IHttpActionResult> CreateRoleAsync(PropertyValue[] properties)
         {
             var meta = await GetMetadataAsync();
             if (!meta.RoleMetadata.SupportsCreate)
@@ -183,10 +183,10 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             return BadRequest(ModelState.ToError());
         }
 
-        private IEnumerable<string> ValidateCreateProperties(RoleMetadata roleMetadata, IEnumerable<Property> properties)
+        private IEnumerable<string> ValidateCreateProperties(RoleMetadata roleMetadata, IEnumerable<PropertyValue> properties)
         {
             if (roleMetadata == null) throw new ArgumentNullException("roleMetadata");
-            properties = properties ?? Enumerable.Empty<Property>();
+            properties = properties ?? Enumerable.Empty<PropertyValue>();
 
             var meta = roleMetadata.GetCreateProperties();
             return meta.Validate(properties);

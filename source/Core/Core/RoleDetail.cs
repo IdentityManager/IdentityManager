@@ -8,6 +8,6 @@ namespace Thinktecture.IdentityManager
 {
     public class RoleDetail : RoleSummary
     {
-        public IEnumerable<Property> Properties { get; set; }
+        public IEnumerable<PropertyValue> Properties { get; set; }
     }
 }

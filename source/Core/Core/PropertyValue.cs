@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using Thinktecture.IdentityManager.Resources;
 namespace Thinktecture.IdentityManager
 {
-    public class Property
+    public class PropertyValue
     {
         [Required(ErrorMessageResourceType = typeof(Messages), ErrorMessageResourceName = "PropertyTypeRequired")]
         public string Type { get; set; }

@@ -36,7 +36,7 @@ namespace Thinktecture.IdentityManager
             return inner.GetMetadataAsync();
         }
 
-        public Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<Property> properties)
+        public Task<IdentityManagerResult<CreateResult>> CreateUserAsync(IEnumerable<PropertyValue> properties)
         {
             return inner.CreateUserAsync(properties);
         }
@@ -81,7 +81,7 @@ namespace Thinktecture.IdentityManager
             return inner.GetRoleAsync(subject);
         }
 
-        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<Property> properties)
+        public Task<IdentityManagerResult<CreateResult>> CreateRoleAsync(IEnumerable<PropertyValue> properties)
         {
             return inner.CreateRoleAsync(properties);
         }
