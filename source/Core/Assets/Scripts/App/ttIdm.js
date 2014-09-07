@@ -5,7 +5,7 @@
 
     function config($httpProvider, OAuthConfig) {
         if (OAuthConfig) {
-            $httpProvider.interceptors.push(function ($q) {
+            function intercept($q, idmToken) {
                 return {
                     'request': function (config) {
                         if (OAuthConfig.token) {
@@ -20,13 +20,15 @@
                         return $q.reject(response);
                     }
                 };
-            });
+            };
+            intercept.$inject = ["$q", "idmToken"];
+            $httpProvider.interceptors.push(intercept);
         }
     };
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(OAuthConfig, $location, $window, $rootScope) {
+    function idmToken(OAuthConfig, $location, $window) {
         var store = $window.localStorage;
 
         if (OAuthConfig) {
@@ -61,14 +63,14 @@
                 tokenObtained.push(cb);
             },
             hasToken: function () {
-                return OAuthConfig &&
-                       OAuthConfig.token &&
-                       !OAuthConfig.token.expired;
+                return !!(OAuthConfig &&
+                          OAuthConfig.token &&
+                          !OAuthConfig.token.expired);
             },
             isTokenNeeded: function () {
-                return OAuthConfig &&
-                    (!OAuthConfig.token ||
-                     OAuthConfig.token.expired);
+                return !!(OAuthConfig &&
+                          (!OAuthConfig.token ||
+                           OAuthConfig.token.expired));
             },
             removeToken: function () {
                 store.removeItem("idm.token");
@@ -107,7 +109,7 @@
             }
         }
     }
-    idmToken.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
+    idmToken.$inject = ["OAuthConfig", "$location", "$window"];
     app.factory("idmToken", idmToken);
 
     function idmApi(idmToken, $http, $q, PathBase) {

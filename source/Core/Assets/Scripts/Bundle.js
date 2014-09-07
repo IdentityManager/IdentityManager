@@ -308,6 +308,8 @@ OAuthClient.prototype.parseResult = function (queryString) {
         regex = /([^&=]+)=([^&]*)/g,
         m;
 
+    // TODO: perhaps build a counter here to prevent spinning on malformed requests
+
     while (m = regex.exec(queryString)) {
         params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
     }
@@ -391,8 +393,12 @@ Token.fromOAuthResponse = function (response) {
 
 Token.fromJSON = function (json) {
     if (json) {
-        var obj = JSON.parse(json);
-        return new Token(obj.access_token, obj.expires_at);
+        try{
+            var obj = JSON.parse(json);
+            return new Token(obj.access_token, obj.expires_at);
+        }
+        catch (e) {
+        }
     }
     return new Token(null, 0);
 };
@@ -412,7 +418,7 @@ Token.prototype.toJSON = function () {
 
     function config($httpProvider, OAuthConfig) {
         if (OAuthConfig) {
-            $httpProvider.interceptors.push(function ($q) {
+            function intercept($q, idmToken) {
                 return {
                     'request': function (config) {
                         if (OAuthConfig.token) {
@@ -427,13 +433,15 @@ Token.prototype.toJSON = function () {
                         return $q.reject(response);
                     }
                 };
-            });
+            };
+            intercept.$inject = ["$q", "idmToken"];
+            $httpProvider.interceptors.push(intercept);
         }
     };
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(OAuthConfig, $location, $window, $rootScope) {
+    function idmToken(OAuthConfig, $location, $window) {
         var store = $window.localStorage;
 
         if (OAuthConfig) {
@@ -468,14 +476,14 @@ Token.prototype.toJSON = function () {
                 tokenObtained.push(cb);
             },
             hasToken: function () {
-                return OAuthConfig &&
-                       OAuthConfig.token &&
-                       !OAuthConfig.token.expired;
+                return !!(OAuthConfig &&
+                          OAuthConfig.token &&
+                          !OAuthConfig.token.expired);
             },
             isTokenNeeded: function () {
-                return OAuthConfig &&
-                    (!OAuthConfig.token ||
-                     OAuthConfig.token.expired);
+                return !!(OAuthConfig &&
+                          (!OAuthConfig.token ||
+                           OAuthConfig.token.expired));
             },
             removeToken: function () {
                 store.removeItem("idm.token");
@@ -514,7 +522,7 @@ Token.prototype.toJSON = function () {
             }
         }
     }
-    idmToken.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
+    idmToken.$inject = ["OAuthConfig", "$location", "$window"];
     app.factory("idmToken", idmToken);
 
     function idmApi(idmToken, $http, $q, PathBase) {
