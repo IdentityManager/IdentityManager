@@ -43,6 +43,8 @@ OAuthClient.prototype.parseResult = function (queryString) {
         regex = /([^&=]+)=([^&]*)/g,
         m;
 
+    // TODO: perhaps build a counter here to prevent spinning on malformed requests
+
     while (m = regex.exec(queryString)) {
         params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
     }
@@ -126,8 +128,12 @@ Token.fromOAuthResponse = function (response) {
 
 Token.fromJSON = function (json) {
     if (json) {
-        var obj = JSON.parse(json);
-        return new Token(obj.access_token, obj.expires_at);
+        try{
+            var obj = JSON.parse(json);
+            return new Token(obj.access_token, obj.expires_at);
+        }
+        catch (e) {
+        }
     }
     return new Token(null, 0);
 };
