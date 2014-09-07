@@ -28,7 +28,7 @@
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(OAuthConfig, $location, $window, $rootScope) {
+    function idmToken(OAuthClient, Token, OAuthConfig, $location, $window, $rootScope) {
         var store = $window.localStorage;
 
         if (OAuthConfig) {
@@ -118,7 +118,7 @@
             }
         }
     }
-    idmToken.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
+    idmToken.$inject = ["OAuthClient", "Token", "OAuthConfig", "$location", "$window", "$rootScope"];
     app.factory("idmToken", idmToken);
 
     function idmApi(idmToken, $http, $q, PathBase) {
@@ -293,4 +293,6 @@
     for (var key in model) {
         angular.module("ttIdm").constant(key, model[key]);
     }
+    angular.module("ttIdm").constant("OAuthClient", OAuthClient);
+    angular.module("ttIdm").constant("Token", Token);
 })(angular);
