@@ -31,11 +31,6 @@
     function LayoutCtrl($rootScope, $scope, idmApi, $location, idmToken) {
         $scope.layout = {};
 
-        idmToken.addOnTokenExpired(function () {
-            $scope.layout.links = null;
-            $scope.layout.showLogout = false;
-        });
-
         function load() {
             $scope.layout.showLogout = idmToken.hasToken();
 
@@ -46,6 +41,11 @@
         }
         idmToken.addOnTokenObtained(load);
         load();
+
+        idmToken.addOnTokenExpired(function () {
+            $scope.layout.links = null;
+            $scope.layout.showLogout = false;
+        });
     }
     LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
     app.controller("LayoutCtrl", LayoutCtrl);
@@ -54,6 +54,14 @@
         if (idmToken.isTokenNeeded()) {
             $scope.showLogin = true;
         }
+
+        idmToken.addOnTokenExpired(function () {
+            $scope.showLogin = true;
+        });
+
+        idmToken.addOnTokenObtained(function () {
+            $scope.showLogin = false;
+        });
 
         $scope.login = function () {
             idmToken.redirectForToken("callback");

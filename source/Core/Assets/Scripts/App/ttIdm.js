@@ -28,7 +28,7 @@
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(OAuthConfig, $location, $window) {
+    function idmToken(OAuthConfig, $location, $window, $rootScope) {
         var store = $window.localStorage;
 
         if (OAuthConfig) {
@@ -37,21 +37,30 @@
                 var token = Token.fromJSON(tokenJson);
                 if (!token.expired) {
                     OAuthConfig.token = token;
+                    callTokenObtained();
                 }
+            }
+
+            if (!OAuthConfig.token) {
+                callTokenExpired();
             }
         }
 
         var tokenExpired = [];
         function callTokenExpired() {
-            tokenExpired.forEach(function (cb) {
-                cb();
+            $rootScope.$evalAsync(function () {
+                tokenExpired.forEach(function (cb) {
+                    cb();
+                });
             });
         }
 
         var tokenObtained = [];
         function callTokenObtained() {
-            tokenObtained.forEach(function (cb) {
-                cb();
+            $rootScope.$evalAsync(function () {
+                tokenObtained.forEach(function (cb) {
+                    cb();
+                });
             });
         }
 
@@ -109,7 +118,7 @@
             }
         }
     }
-    idmToken.$inject = ["OAuthConfig", "$location", "$window"];
+    idmToken.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
     app.factory("idmToken", idmToken);
 
     function idmApi(idmToken, $http, $q, PathBase) {

@@ -441,7 +441,7 @@ Token.prototype.toJSON = function () {
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(OAuthConfig, $location, $window) {
+    function idmToken(OAuthConfig, $location, $window, $rootScope) {
         var store = $window.localStorage;
 
         if (OAuthConfig) {
@@ -450,21 +450,30 @@ Token.prototype.toJSON = function () {
                 var token = Token.fromJSON(tokenJson);
                 if (!token.expired) {
                     OAuthConfig.token = token;
+                    callTokenObtained();
                 }
+            }
+
+            if (!OAuthConfig.token) {
+                callTokenExpired();
             }
         }
 
         var tokenExpired = [];
         function callTokenExpired() {
-            tokenExpired.forEach(function (cb) {
-                cb();
+            $rootScope.$evalAsync(function () {
+                tokenExpired.forEach(function (cb) {
+                    cb();
+                });
             });
         }
 
         var tokenObtained = [];
         function callTokenObtained() {
-            tokenObtained.forEach(function (cb) {
-                cb();
+            $rootScope.$evalAsync(function () {
+                tokenObtained.forEach(function (cb) {
+                    cb();
+                });
             });
         }
 
@@ -522,7 +531,7 @@ Token.prototype.toJSON = function () {
             }
         }
     }
-    idmToken.$inject = ["OAuthConfig", "$location", "$window"];
+    idmToken.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
     app.factory("idmToken", idmToken);
 
     function idmApi(idmToken, $http, $q, PathBase) {
@@ -1329,11 +1338,6 @@ Token.prototype.toJSON = function () {
     function LayoutCtrl($rootScope, $scope, idmApi, $location, idmToken) {
         $scope.layout = {};
 
-        idmToken.addOnTokenExpired(function () {
-            $scope.layout.links = null;
-            $scope.layout.showLogout = false;
-        });
-
         function load() {
             $scope.layout.showLogout = idmToken.hasToken();
 
@@ -1344,6 +1348,11 @@ Token.prototype.toJSON = function () {
         }
         idmToken.addOnTokenObtained(load);
         load();
+
+        idmToken.addOnTokenExpired(function () {
+            $scope.layout.links = null;
+            $scope.layout.showLogout = false;
+        });
     }
     LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
     app.controller("LayoutCtrl", LayoutCtrl);
@@ -1352,6 +1361,14 @@ Token.prototype.toJSON = function () {
         if (idmToken.isTokenNeeded()) {
             $scope.showLogin = true;
         }
+
+        idmToken.addOnTokenExpired(function () {
+            $scope.showLogin = true;
+        });
+
+        idmToken.addOnTokenObtained(function () {
+            $scope.showLogin = false;
+        });
 
         $scope.login = function () {
             idmToken.redirectForToken("callback");
