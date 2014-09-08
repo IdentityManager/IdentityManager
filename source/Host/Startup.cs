@@ -22,7 +22,7 @@ namespace Thinktecture.IdentityManager.Host
                 idm.UseIdentityManager(new IdentityManagerConfiguration
                 {
                     IdentityManagerFactory = () => svc,
-                    SecurityMode = SecurityMode.OAuth2,
+                    SecurityMode = SecurityMode.LocalMachine,
                     OAuth2Configuration = new OAuth2Configuration
                     {
                         AuthorizationUrl = "http://localhost:17457/ids/connect/authorize",
