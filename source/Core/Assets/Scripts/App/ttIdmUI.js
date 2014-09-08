@@ -264,4 +264,15 @@
     }
     idmMessage.$inject = ["PathBase"];
     app.directive("idmMessage", idmMessage);
+
+    function idmPreventDefault() {
+        return {
+            link: function (scope, elem) {
+                elem.on("click", function (e) {
+                    e.preventDefault();
+                });
+            }
+        }
+    }
+    app.directive("idmPreventDefault", idmPreventDefault);
 })(angular);

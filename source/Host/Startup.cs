@@ -22,7 +22,7 @@ namespace Thinktecture.IdentityManager.Host
                 idm.UseIdentityManager(new IdentityManagerConfiguration
                 {
                     IdentityManagerFactory = () => svc,
-                    SecurityMode = SecurityMode.LocalMachine,
+                    SecurityMode = SecurityMode.OAuth2,
                     OAuth2Configuration = new OAuth2Configuration
                     {
                         AuthorizationUrl = "http://localhost:17457/ids/connect/authorize",
@@ -30,7 +30,8 @@ namespace Thinktecture.IdentityManager.Host
                         Audience = "https://idsrv3.com/resources",
                         ClientId = "idmgr",
                         SigningCert = Cert.Load(),
-                        Scope = "idmgr"
+                        Scope = "idmgr",
+                        PersistToken = true
                     }
                 });
             });

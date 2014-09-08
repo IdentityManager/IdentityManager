@@ -182,6 +182,7 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Templates\frame.html" />
     <EmbeddedResource Include="Assets\Templates\users\accessdenied.html" />
     <EmbeddedResource Include="Assets\Templates\roles\new.html" />
     <EmbeddedResource Include="Assets\Templates\roles\list.html" />
@@ -203,6 +204,7 @@
       <DependentUpon>Style.css</DependentUpon>
     </Content>
     <EmbeddedResource Include="Assets\Templates\index.html" />
+    <Content Include="Assets\Scripts\App\frame.js" />
     <Content Include="Assets\Scripts\App\oauth.js" />
     <Content Include="Assets\Scripts\App\ttIdm.js" />
     <Content Include="Assets\Scripts\App\ttIdmApp.min - Copy %282%29.js">
@@ -227,6 +229,9 @@
     <Content Include="Assets\Scripts\App\ttIdmUI.min.js">
       <DependentUpon>ttIdmUI.js</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Scripts\Frame.js">
+      <DependentUpon>Frame.js.bundle</DependentUpon>
+    </EmbeddedResource>
     <Content Include="Assets\Scripts\Libs\angular-route.min.js" />
     <Content Include="Assets\Scripts\Libs\angular.min.js" />
     <Content Include="Assets\Scripts\Libs\bootstrap.min.js" />
@@ -255,6 +260,7 @@
     <None Include="Assets\Scripts\App\ttIdmUI.min.js.map">
       <DependentUpon>ttIdmUI.min.js</DependentUpon>
     </None>
+    <None Include="Assets\Scripts\Frame.js.bundle" />
     <None Include="packages.config" />
     <None Include="..\default.licenseheader">
       <Link>default.licenseheader</Link>

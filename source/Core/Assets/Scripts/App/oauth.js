@@ -6,7 +6,7 @@ OAuthClient.prototype.makeImplicitRequest = function (authorizeUrl, clientid, ca
     var request = this.createImplicitRequest(authorizeUrl, clientid, callback, scope);
 
     window.location = request.url;
-};
+}
 
 OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
     var state = (Date.now() + Math.random()) * Math.random();
@@ -29,7 +29,7 @@ OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, 
         state:state,
         url:url
     };
-};
+}
 
 OAuthClient.prototype.parseResult = function (queryString) {
     queryString = queryString || location.hash;
@@ -52,7 +52,7 @@ OAuthClient.prototype.parseResult = function (queryString) {
     for (var prop in params) {
         return params;
     }
-};
+}
 
 OAuthClient.prototype.readImplicitResult = function (queryString) {
     var result = OAuthClient.prototype.parseResult(queryString);
@@ -95,7 +95,7 @@ OAuthClient.prototype.readImplicitResult = function (queryString) {
         access_token: token,
         expires_in: expires_in
     };
-};
+}
 
 function Token(access_token, expires_at) {
     this.access_token = access_token;
@@ -114,7 +114,7 @@ function Token(access_token, expires_at) {
             return this.expires_at - now;
         }
     });
-};
+}
 
 Token.fromOAuthResponse = function (response) {
     if (response.error) {
@@ -124,7 +124,7 @@ Token.fromOAuthResponse = function (response) {
     var now = parseInt(Date.now() / 1000);
     var expires_at = now + parseInt(response.expires_in);
     return new Token(response.access_token, expires_at);
-};
+}
 
 Token.fromJSON = function (json) {
     if (json) {
@@ -136,11 +136,69 @@ Token.fromJSON = function (json) {
         }
     }
     return new Token(null, 0);
-};
+}
 
 Token.prototype.toJSON = function () {
     return JSON.stringify({
         access_token: this.access_token,
         expires_at: this.expires_at
     });
-};
+}
+
+function FrameLoader(url, success, error) {
+    this.url = url;
+    this.success = success;
+    this.error = error;
+}
+
+FrameLoader.prototype.load = function () {
+    var frameHtml = '<iframe style="xdisplay:none" width="500px" height="500px"></iframe>';
+    var frame = $(frameHtml).appendTo("body").get(0);
+
+    function cleanup() {
+        window.removeEventListener("message", message, false);
+        if (handle) {
+            window.clearTimeout(handle);
+        }
+        handle = null;
+        frame.remove();
+    }
+
+    function cancel(e) {
+        cleanup();
+        if (this.error) {
+            this.error();
+        }
+    }
+
+    function message(e) {
+        if (handle && e.origin === location.protocol + "//" + location.host) {
+            cleanup();
+            if (this.success) {
+                this.success(e.data);
+            }
+        }
+    }
+
+    var handle = window.setTimeout(cancel.bind(this), 5000);
+    window.addEventListener("message", message.bind(this), false);
+    frame.src = this.url;
+}
+
+function OAuthFrame(authorizeUrl, clientid, callback, scope, success, error) {
+    this.authorizeUrl = authorizeUrl;
+    this.clientid = clientid;
+    this.callback = callback;
+    this.scope = scope;
+    this.success = success;
+    this.error = error;
+}
+
+OAuthFrame.prototype.tryRenewToken = function () {
+    var oauth = new OAuthClient();
+    var request = oauth.createImplicitRequest(this.authorizeUrl, this.clientid, this.callback, this.scope);
+    var frame = new FrameLoader(request.url, this.success, this.error);
+    frame.load();
+}
+
+;

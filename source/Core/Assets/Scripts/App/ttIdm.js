@@ -14,7 +14,7 @@
                         return config;
                     },
                     'responseError': function (response) {
-                        if (response.status === 401) {
+                        if (response.status === 401 && OAuthConfig.token) {
                             idmToken.removeToken();
                         }
                         return $q.reject(response);
@@ -28,21 +28,49 @@
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(OAuthClient, Token, OAuthConfig, $location, $window, $rootScope) {
+    function idmToken(PathBase, OAuthClient, Token, OAuthConfig, OAuthFrame, $location, $window, $rootScope) {
         var store = $window.localStorage;
+        var oauth = new OAuthClient(store);
+        var frame = null;
 
-        if (OAuthConfig) {
-            var tokenJson = store.getItem("idm.token");
-            if (tokenJson) {
-                var token = Token.fromJSON(tokenJson);
-                if (!token.expired) {
-                    OAuthConfig.token = token;
-                    callTokenObtained();
+        function persistToken(token) {
+            if (OAuthConfig && OAuthConfig.PersistToken && token) {
+                store.setItem("idm.token", token.toJSON());
+            }
+            else {
+                store.removeItem("idm.token");
+            }
+        }
+
+        function loadToken() {
+            if (OAuthConfig && OAuthConfig.PersistToken) {
+                var tokenJson = store.getItem("idm.token");
+                if (tokenJson) {
+                    var token = Token.fromJSON(tokenJson);
+                    if (!token.expired) {
+                        return token;
+                    }
                 }
             }
+        }
 
-            if (!OAuthConfig.token) {
-                callTokenExpired();
+        if (OAuthConfig) {
+            OAuthConfig.token = loadToken();
+
+            if (OAuthConfig.AutomaticallyRenewToken) {
+                var iframeCallback = $window.location.protocol + "//" + $window.location.host + PathBase + "/frame";
+                frame = new OAuthFrame(OAuthConfig.AuthorizationUrl,
+                    OAuthConfig.ClientId,
+                    iframeCallback,
+                    OAuthConfig.Scope,
+                    function (hash) {
+                        var result = oauth.readImplicitResult(hash);
+                        if (!result.error) {
+                            OAuthConfig.token = Token.fromOAuthResponse(result);
+                            persistToken(OAuthConfig.token);
+                            callTokenObtained();
+                        }
+                    });
             }
         }
 
@@ -64,12 +92,16 @@
             });
         }
 
-        return {
+        var svc = {
             addOnTokenExpired: function (cb) {
                 tokenExpired.push(cb);
             },
             addOnTokenObtained: function (cb) {
                 tokenObtained.push(cb);
+            },
+            getToken: function () {
+                return OAuthConfig &&
+                    OAuthConfig.token;
             },
             hasToken: function () {
                 return !!(OAuthConfig &&
@@ -82,13 +114,11 @@
                            OAuthConfig.token.expired));
             },
             removeToken: function () {
-                store.removeItem("idm.token");
+                persistToken(null);
                 OAuthConfig.token = null;
                 callTokenExpired();
             },
             redirectForToken: function (callbackPath) {
-                var oauth = new OAuthClient($window.localStorage);
-
                 var callback = $location.absUrl();
                 var idx = callback.indexOf('#');
                 if (idx > 0) {
@@ -100,7 +130,6 @@
                 $window.location = request.url;
             },
             processTokenCallback: function (success, error) {
-                var oauth = new OAuthClient($window.localStorage);
                 var result = oauth.readImplicitResult($location.url());
                 if (result.error) {
                     if (error) {
@@ -109,16 +138,23 @@
                 }
                 else {
                     OAuthConfig.token = Token.fromOAuthResponse(result);
-                    store.setItem("idm.token", OAuthConfig.token.toJSON());
+                    persistToken(OAuthConfig.token);
                     callTokenObtained();
                     if (success) {
                         success();
                     }
                 }
+            },
+            tryRenewToken: function () {
+                if (frame) {
+                    frame.tryRenewToken();
+                }
             }
-        }
+        };
+
+        return svc;
     }
-    idmToken.$inject = ["OAuthClient", "Token", "OAuthConfig", "$location", "$window", "$rootScope"];
+    idmToken.$inject = ["PathBase", "OAuthClient", "Token", "OAuthConfig", "OAuthFrame", "$location", "$window", "$rootScope"];
     app.factory("idmToken", idmToken);
 
     function idmApi(idmToken, $http, $q, PathBase) {
@@ -207,11 +243,11 @@
 
             svc.addClaim = function (claims, claim) {
                 return $http.post(claims.links.create, claim)
-                    .then(nop,  errorHandler("Error Adding Claim"));
+                    .then(nop, errorHandler("Error Adding Claim"));
             };
             svc.removeClaim = function (claim) {
                 return $http.delete(claim.links.delete)
-                    .then(nop,  errorHandler("Error Removing Claim"));
+                    .then(nop, errorHandler("Error Removing Claim"));
             };
 
             svc.addRole = function (role) {
@@ -295,4 +331,5 @@
     }
     angular.module("ttIdm").constant("OAuthClient", OAuthClient);
     angular.module("ttIdm").constant("Token", Token);
+    angular.module("ttIdm").constant("OAuthFrame", OAuthFrame);
 })(angular);

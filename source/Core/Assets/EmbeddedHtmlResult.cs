@@ -38,7 +38,9 @@ namespace Thinktecture.IdentityManager.Assets
                 {
                     oauthConfig.AuthorizationUrl,
                     oauthConfig.ClientId,
-                    oauthConfig.Scope
+                    oauthConfig.Scope,
+                    oauthConfig.PersistToken,
+                    oauthConfig.AutomaticallyRenewToken
                 };
             }
             var html = AssetManager.LoadResourceString(this.file,

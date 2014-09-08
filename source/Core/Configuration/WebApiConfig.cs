@@ -25,6 +25,9 @@ namespace Thinktecture.IdentityManager
                 apiConfig.Routes.MapHttpRoute("page",
                     "",
                     new { controller = "Page", action = "Index" });
+                apiConfig.Routes.MapHttpRoute("frame",
+                    "frame",
+                    new { controller = "Page", action = "Frame" });
             }
 
             apiConfig.SuppressDefaultHostAuthentication();

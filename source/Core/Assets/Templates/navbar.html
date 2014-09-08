@@ -7,6 +7,7 @@
         <li ng-show="layout.links.createUser"><a href="#/users/create">New User</a></li>
         <li ng-show="layout.links.roles"><a href="#/roles/list">Roles</a></li>
         <li ng-show="layout.links.createRole"><a href="#/roles/create">New Role</a></li>
+        <li ng-show="layout.showLogin"><a href="#/" ng-click="login()" idm-prevent-default>Login</a></li>
         <li ng-show="layout.showLogout"><a href="#/logout">Logout</a></li>
     </ul>
     

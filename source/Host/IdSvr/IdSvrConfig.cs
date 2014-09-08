@@ -22,7 +22,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                 //AccessTokenValidationEndpoint = EndpointSettings.Enabled,
                 PublicHostName = "http://localhost:17457",
                 Factory = factory,
-                CorsPolicy = CorsPolicy.AllowAll
+                CorsPolicy = CorsPolicy.AllowAll,
             };
             app.UseIdentityServer(idsrvOptions);
         }
@@ -50,9 +50,11 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     Enabled = true,
                     Flow = Flows.Implicit,                    
                     RedirectUris = new List<Uri>{
-                        new Uri("http://localhost:17457/idm/#/callback")
+                        new Uri("http://localhost:17457/idm/#/callback"),
+                        new Uri("http://localhost:17457/idm/frame"),
                     },
-                    AccessTokenType = AccessTokenType.Jwt
+                    AccessTokenType = AccessTokenType.Jwt,
+                    //AccessTokenLifetime = 50
                 },
             };
         }

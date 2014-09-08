@@ -28,13 +28,25 @@ namespace Thinktecture.IdentityManager.Api.Controllers
         [AllowAnonymous]
         public IHttpActionResult Index()
         {
-            if (idmConfig.SecurityMode == SecurityMode.LocalMachine && 
+            if (idmConfig.SecurityMode == SecurityMode.LocalMachine &&
                 (User == null || User.Identity == null || User.Identity.IsAuthenticated == false))
             {
                 return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.accessdenied.html");
             }
 
             return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.index.html", idmConfig.OAuth2Configuration);
+        }
+        
+        [HttpGet]
+        [AllowAnonymous]
+        public IHttpActionResult Frame()
+        {
+            if (idmConfig.SecurityMode != SecurityMode.OAuth2)
+            {
+                return NotFound();
+            }
+
+            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.frame.html");
         }
     }
 }

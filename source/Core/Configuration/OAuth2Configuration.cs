@@ -24,6 +24,9 @@ namespace Thinktecture.IdentityManager
         public string SigningKey { get; set; }
         public X509Certificate2 SigningCert { get; set; }
 
+        public bool PersistToken { get; set; }
+        public bool AutomaticallyRenewToken { get; set; }
+
         internal void Validate()
         {
             if (String.IsNullOrWhiteSpace(AuthorizationUrl)) throw new InvalidOperationException("OAuth2Configuration : AuthorizationUrl not configured");

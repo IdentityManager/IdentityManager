@@ -16,7 +16,7 @@
             })
             .when("/logout", {
                 template: "<h2>Logging out...</h2>",
-                controller:"LogoutCtrl"
+                controller: "LogoutCtrl"
             })
             .when("/error", {
                 templateUrl: PathBase + '/assets/Templates.message.html'
@@ -46,28 +46,36 @@
             $scope.layout.links = null;
             $scope.layout.showLogout = false;
         });
-    }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
-    app.controller("LayoutCtrl", LayoutCtrl);
 
-    function HomeCtrl($scope, idmToken) {
         if (idmToken.isTokenNeeded()) {
-            $scope.showLogin = true;
+            $scope.layout.showLogin = true;
+
+            if ($location.path() !== "/" &&
+                $location.path() !== "/callback" && 
+                $location.path() !== "/error" &&
+                $location.path() !== "/logout") {
+                $location.path("/");
+            }
         }
 
         idmToken.addOnTokenExpired(function () {
-            $scope.showLogin = true;
+            $scope.layout.showLogin = true;
         });
 
         idmToken.addOnTokenObtained(function () {
-            $scope.showLogin = false;
+            $scope.layout.showLogin = false;
         });
 
         $scope.login = function () {
             idmToken.redirectForToken("callback");
         }
     }
-    HomeCtrl.$inject = ["$scope", "idmToken"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
+    app.controller("LayoutCtrl", LayoutCtrl);
+
+    function HomeCtrl() {
+    }
+    HomeCtrl.$inject = [];
     app.controller("HomeCtrl", HomeCtrl);
 
     function CallbackCtrl(idmToken, $location, $rootScope) {
@@ -86,5 +94,77 @@
     }
     LogoutCtrl.$inject = ["idmToken", "$location"];
     app.controller("LogoutCtrl", LogoutCtrl);
+
+    function tokenMonitor(idmToken, $timeout) {
+
+        function callback() {
+            idmToken.tryRenewToken();
+        }
+
+        var intervalPromise = null;
+        function cancel() {
+            if (intervalPromise) {
+                $timeout.cancel(intervalPromise);
+            }
+        }
+
+        function setup(duration) {
+            cancel();
+            intervalPromise = $timeout(callback, duration * 1000);
+        }
+
+        function configure() {
+            var token = idmToken.getToken();
+            if (token) {
+                var duration = token.expires_in;
+                if (duration > 40) {
+                    setup(duration - 30);
+                }
+                else {
+                    callback();
+                }
+            }
+        }
+        configure();
+
+        idmToken.addOnTokenExpired(cancel);
+        idmToken.addOnTokenObtained(configure);
+    }
+    tokenMonitor.$inject = ["idmToken", "$timeout"];
+    app.run(tokenMonitor);
+
+    function autoLogout(idmToken, $timeout, $location, $rootScope) {
+        function callback() {
+            idmToken.removeToken();
+        }
+
+        var intervalPromise = null;
+        function cancel() {
+            if (intervalPromise) {
+                $timeout.cancel(intervalPromise);
+            }
+        }
+
+        function setup(duration) {
+            intervalPromise = $timeout(callback, duration * 1000);
+        }
+
+        function configure() {
+            cancel();
+            var token = idmToken.getToken();
+            if (token) {
+                setup(token.expires_in);
+            }
+        }
+        configure();
+
+        idmToken.addOnTokenExpired(function () {
+            $location.url("/error");
+            $rootScope.errors = ["Your session has expired."];
+        });
+        idmToken.addOnTokenObtained(configure);
+    }
+    autoLogout.$inject = ["idmToken", "$timeout", "$location", "$rootScope"];
+    app.run(autoLogout);
 
 })(angular);

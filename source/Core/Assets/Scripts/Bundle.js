@@ -271,7 +271,7 @@ OAuthClient.prototype.makeImplicitRequest = function (authorizeUrl, clientid, ca
     var request = this.createImplicitRequest(authorizeUrl, clientid, callback, scope);
 
     window.location = request.url;
-};
+}
 
 OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
     var state = (Date.now() + Math.random()) * Math.random();
@@ -294,7 +294,7 @@ OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, 
         state:state,
         url:url
     };
-};
+}
 
 OAuthClient.prototype.parseResult = function (queryString) {
     queryString = queryString || location.hash;
@@ -317,7 +317,7 @@ OAuthClient.prototype.parseResult = function (queryString) {
     for (var prop in params) {
         return params;
     }
-};
+}
 
 OAuthClient.prototype.readImplicitResult = function (queryString) {
     var result = OAuthClient.prototype.parseResult(queryString);
@@ -360,7 +360,7 @@ OAuthClient.prototype.readImplicitResult = function (queryString) {
         access_token: token,
         expires_in: expires_in
     };
-};
+}
 
 function Token(access_token, expires_at) {
     this.access_token = access_token;
@@ -379,7 +379,7 @@ function Token(access_token, expires_at) {
             return this.expires_at - now;
         }
     });
-};
+}
 
 Token.fromOAuthResponse = function (response) {
     if (response.error) {
@@ -389,7 +389,7 @@ Token.fromOAuthResponse = function (response) {
     var now = parseInt(Date.now() / 1000);
     var expires_at = now + parseInt(response.expires_in);
     return new Token(response.access_token, expires_at);
-};
+}
 
 Token.fromJSON = function (json) {
     if (json) {
@@ -401,14 +401,72 @@ Token.fromJSON = function (json) {
         }
     }
     return new Token(null, 0);
-};
+}
 
 Token.prototype.toJSON = function () {
     return JSON.stringify({
         access_token: this.access_token,
         expires_at: this.expires_at
     });
-};
+}
+
+function FrameLoader(url, success, error) {
+    this.url = url;
+    this.success = success;
+    this.error = error;
+}
+
+FrameLoader.prototype.load = function () {
+    var frameHtml = '<iframe style="xdisplay:none" width="500px" height="500px"></iframe>';
+    var frame = $(frameHtml).appendTo("body").get(0);
+
+    function cleanup() {
+        window.removeEventListener("message", message, false);
+        if (handle) {
+            window.clearTimeout(handle);
+        }
+        handle = null;
+        frame.remove();
+    }
+
+    function cancel(e) {
+        cleanup();
+        if (this.error) {
+            this.error();
+        }
+    }
+
+    function message(e) {
+        if (handle && e.origin === location.protocol + "//" + location.host) {
+            cleanup();
+            if (this.success) {
+                this.success(e.data);
+            }
+        }
+    }
+
+    var handle = window.setTimeout(cancel.bind(this), 5000);
+    window.addEventListener("message", message.bind(this), false);
+    frame.src = this.url;
+}
+
+function OAuthFrame(authorizeUrl, clientid, callback, scope, success, error) {
+    this.authorizeUrl = authorizeUrl;
+    this.clientid = clientid;
+    this.callback = callback;
+    this.scope = scope;
+    this.success = success;
+    this.error = error;
+}
+
+OAuthFrame.prototype.tryRenewToken = function () {
+    var oauth = new OAuthClient();
+    var request = oauth.createImplicitRequest(this.authorizeUrl, this.clientid, this.callback, this.scope);
+    var frame = new FrameLoader(request.url, this.success, this.error);
+    frame.load();
+}
+
+;
 
 ///#source 1 1 /Assets/Scripts/App/ttIdm.js
 /// <reference path="../Libs/angular.min.js" />
@@ -427,7 +485,7 @@ Token.prototype.toJSON = function () {
                         return config;
                     },
                     'responseError': function (response) {
-                        if (response.status === 401) {
+                        if (response.status === 401 && OAuthConfig.token) {
                             idmToken.removeToken();
                         }
                         return $q.reject(response);
@@ -441,21 +499,49 @@ Token.prototype.toJSON = function () {
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(OAuthConfig, $location, $window, $rootScope) {
+    function idmToken(PathBase, OAuthClient, Token, OAuthConfig, OAuthFrame, $location, $window, $rootScope) {
         var store = $window.localStorage;
+        var oauth = new OAuthClient(store);
+        var frame = null;
 
-        if (OAuthConfig) {
-            var tokenJson = store.getItem("idm.token");
-            if (tokenJson) {
-                var token = Token.fromJSON(tokenJson);
-                if (!token.expired) {
-                    OAuthConfig.token = token;
-                    callTokenObtained();
+        function persistToken(token) {
+            if (OAuthConfig && OAuthConfig.PersistToken && token) {
+                store.setItem("idm.token", token.toJSON());
+            }
+            else {
+                store.removeItem("idm.token");
+            }
+        }
+
+        function loadToken() {
+            if (OAuthConfig && OAuthConfig.PersistToken) {
+                var tokenJson = store.getItem("idm.token");
+                if (tokenJson) {
+                    var token = Token.fromJSON(tokenJson);
+                    if (!token.expired) {
+                        return token;
+                    }
                 }
             }
+        }
 
-            if (!OAuthConfig.token) {
-                callTokenExpired();
+        if (OAuthConfig) {
+            OAuthConfig.token = loadToken();
+
+            if (OAuthConfig.AutomaticallyRenewToken) {
+                var iframeCallback = $window.location.protocol + "//" + $window.location.host + PathBase + "/frame";
+                frame = new OAuthFrame(OAuthConfig.AuthorizationUrl,
+                    OAuthConfig.ClientId,
+                    iframeCallback,
+                    OAuthConfig.Scope,
+                    function (hash) {
+                        var result = oauth.readImplicitResult(hash);
+                        if (!result.error) {
+                            OAuthConfig.token = Token.fromOAuthResponse(result);
+                            persistToken(OAuthConfig.token);
+                            callTokenObtained();
+                        }
+                    });
             }
         }
 
@@ -477,12 +563,16 @@ Token.prototype.toJSON = function () {
             });
         }
 
-        return {
+        var svc = {
             addOnTokenExpired: function (cb) {
                 tokenExpired.push(cb);
             },
             addOnTokenObtained: function (cb) {
                 tokenObtained.push(cb);
+            },
+            getToken: function () {
+                return OAuthConfig &&
+                    OAuthConfig.token;
             },
             hasToken: function () {
                 return !!(OAuthConfig &&
@@ -495,13 +585,11 @@ Token.prototype.toJSON = function () {
                            OAuthConfig.token.expired));
             },
             removeToken: function () {
-                store.removeItem("idm.token");
+                persistToken(null);
                 OAuthConfig.token = null;
                 callTokenExpired();
             },
             redirectForToken: function (callbackPath) {
-                var oauth = new OAuthClient($window.localStorage);
-
                 var callback = $location.absUrl();
                 var idx = callback.indexOf('#');
                 if (idx > 0) {
@@ -513,7 +601,6 @@ Token.prototype.toJSON = function () {
                 $window.location = request.url;
             },
             processTokenCallback: function (success, error) {
-                var oauth = new OAuthClient($window.localStorage);
                 var result = oauth.readImplicitResult($location.url());
                 if (result.error) {
                     if (error) {
@@ -522,16 +609,23 @@ Token.prototype.toJSON = function () {
                 }
                 else {
                     OAuthConfig.token = Token.fromOAuthResponse(result);
-                    store.setItem("idm.token", OAuthConfig.token.toJSON());
+                    persistToken(OAuthConfig.token);
                     callTokenObtained();
                     if (success) {
                         success();
                     }
                 }
+            },
+            tryRenewToken: function () {
+                if (frame) {
+                    frame.tryRenewToken();
+                }
             }
-        }
+        };
+
+        return svc;
     }
-    idmToken.$inject = ["OAuthConfig", "$location", "$window", "$rootScope"];
+    idmToken.$inject = ["PathBase", "OAuthClient", "Token", "OAuthConfig", "OAuthFrame", "$location", "$window", "$rootScope"];
     app.factory("idmToken", idmToken);
 
     function idmApi(idmToken, $http, $q, PathBase) {
@@ -620,11 +714,11 @@ Token.prototype.toJSON = function () {
 
             svc.addClaim = function (claims, claim) {
                 return $http.post(claims.links.create, claim)
-                    .then(nop,  errorHandler("Error Adding Claim"));
+                    .then(nop, errorHandler("Error Adding Claim"));
             };
             svc.removeClaim = function (claim) {
                 return $http.delete(claim.links.delete)
-                    .then(nop,  errorHandler("Error Removing Claim"));
+                    .then(nop, errorHandler("Error Removing Claim"));
             };
 
             svc.addRole = function (role) {
@@ -706,6 +800,9 @@ Token.prototype.toJSON = function () {
     for (var key in model) {
         angular.module("ttIdm").constant(key, model[key]);
     }
+    angular.module("ttIdm").constant("OAuthClient", OAuthClient);
+    angular.module("ttIdm").constant("Token", Token);
+    angular.module("ttIdm").constant("OAuthFrame", OAuthFrame);
 })(angular);
 
 ///#source 1 1 /Assets/Scripts/App/ttIdmUI.js
@@ -975,6 +1072,17 @@ Token.prototype.toJSON = function () {
     }
     idmMessage.$inject = ["PathBase"];
     app.directive("idmMessage", idmMessage);
+
+    function idmPreventDefault() {
+        return {
+            link: function (scope, elem) {
+                elem.on("click", function (e) {
+                    e.preventDefault();
+                });
+            }
+        }
+    }
+    app.directive("idmPreventDefault", idmPreventDefault);
 })(angular);
 
 ///#source 1 1 /Assets/Scripts/App/ttIdmUsers.js
@@ -1323,7 +1431,7 @@ Token.prototype.toJSON = function () {
             })
             .when("/logout", {
                 template: "<h2>Logging out...</h2>",
-                controller:"LogoutCtrl"
+                controller: "LogoutCtrl"
             })
             .when("/error", {
                 templateUrl: PathBase + '/assets/Templates.message.html'
@@ -1353,28 +1461,36 @@ Token.prototype.toJSON = function () {
             $scope.layout.links = null;
             $scope.layout.showLogout = false;
         });
-    }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
-    app.controller("LayoutCtrl", LayoutCtrl);
 
-    function HomeCtrl($scope, idmToken) {
         if (idmToken.isTokenNeeded()) {
-            $scope.showLogin = true;
+            $scope.layout.showLogin = true;
+
+            if ($location.path() !== "/" &&
+                $location.path() !== "/callback" && 
+                $location.path() !== "/error" &&
+                $location.path() !== "/logout") {
+                $location.path("/");
+            }
         }
 
         idmToken.addOnTokenExpired(function () {
-            $scope.showLogin = true;
+            $scope.layout.showLogin = true;
         });
 
         idmToken.addOnTokenObtained(function () {
-            $scope.showLogin = false;
+            $scope.layout.showLogin = false;
         });
 
         $scope.login = function () {
             idmToken.redirectForToken("callback");
         }
     }
-    HomeCtrl.$inject = ["$scope", "idmToken"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
+    app.controller("LayoutCtrl", LayoutCtrl);
+
+    function HomeCtrl() {
+    }
+    HomeCtrl.$inject = [];
     app.controller("HomeCtrl", HomeCtrl);
 
     function CallbackCtrl(idmToken, $location, $rootScope) {
@@ -1393,6 +1509,78 @@ Token.prototype.toJSON = function () {
     }
     LogoutCtrl.$inject = ["idmToken", "$location"];
     app.controller("LogoutCtrl", LogoutCtrl);
+
+    function tokenMonitor(idmToken, $timeout) {
+
+        function callback() {
+            idmToken.tryRenewToken();
+        }
+
+        var intervalPromise = null;
+        function cancel() {
+            if (intervalPromise) {
+                $timeout.cancel(intervalPromise);
+            }
+        }
+
+        function setup(duration) {
+            cancel();
+            intervalPromise = $timeout(callback, duration * 1000);
+        }
+
+        function configure() {
+            var token = idmToken.getToken();
+            if (token) {
+                var duration = token.expires_in;
+                if (duration > 40) {
+                    setup(duration - 30);
+                }
+                else {
+                    callback();
+                }
+            }
+        }
+        configure();
+
+        idmToken.addOnTokenExpired(cancel);
+        idmToken.addOnTokenObtained(configure);
+    }
+    tokenMonitor.$inject = ["idmToken", "$timeout"];
+    app.run(tokenMonitor);
+
+    function autoLogout(idmToken, $timeout, $location, $rootScope) {
+        function callback() {
+            idmToken.removeToken();
+        }
+
+        var intervalPromise = null;
+        function cancel() {
+            if (intervalPromise) {
+                $timeout.cancel(intervalPromise);
+            }
+        }
+
+        function setup(duration) {
+            intervalPromise = $timeout(callback, duration * 1000);
+        }
+
+        function configure() {
+            cancel();
+            var token = idmToken.getToken();
+            if (token) {
+                setup(token.expires_in);
+            }
+        }
+        configure();
+
+        idmToken.addOnTokenExpired(function () {
+            $location.url("/error");
+            $rootScope.errors = ["Your session has expired."];
+        });
+        idmToken.addOnTokenObtained(configure);
+    }
+    autoLogout.$inject = ["idmToken", "$timeout", "$location", "$rootScope"];
+    app.run(autoLogout);
 
 })(angular);
 
