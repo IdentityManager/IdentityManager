@@ -417,7 +417,7 @@ function FrameLoader(url, success, error) {
 }
 
 FrameLoader.prototype.load = function () {
-    var frameHtml = '<iframe style="xdisplay:none" width="500px" height="500px"></iframe>';
+    var frameHtml = '<iframe style="display:none"></iframe>';
     var frame = $(frameHtml).appendTo("body").get(0);
 
     function cleanup() {
@@ -545,10 +545,10 @@ OAuthFrame.prototype.tryRenewToken = function () {
             }
         }
 
-        var tokenExpired = [];
-        function callTokenExpired() {
+        var tokenRemoved = [];
+        function callTokenRemoved() {
             $rootScope.$evalAsync(function () {
-                tokenExpired.forEach(function (cb) {
+                tokenRemoved.forEach(function (cb) {
                     cb();
                 });
             });
@@ -564,8 +564,8 @@ OAuthFrame.prototype.tryRenewToken = function () {
         }
 
         var svc = {
-            addOnTokenExpired: function (cb) {
-                tokenExpired.push(cb);
+            addOnTokenRemoved: function (cb) {
+                tokenRemoved.push(cb);
             },
             addOnTokenObtained: function (cb) {
                 tokenObtained.push(cb);
@@ -587,7 +587,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
             removeToken: function () {
                 persistToken(null);
                 OAuthConfig.token = null;
-                callTokenExpired();
+                callTokenRemoved();
             },
             redirectForToken: function (callbackPath) {
                 var callback = $location.absUrl();
@@ -631,7 +631,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
     function idmApi(idmToken, $http, $q, PathBase) {
         var cache = null;
 
-        idmToken.addOnTokenExpired(function () {
+        idmToken.addOnTokenRemoved(function () {
             cache = null;
         });
 
@@ -1457,7 +1457,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
         idmToken.addOnTokenObtained(load);
         load();
 
-        idmToken.addOnTokenExpired(function () {
+        idmToken.addOnTokenRemoved(function () {
             $scope.layout.links = null;
             $scope.layout.showLogout = false;
         });
@@ -1473,7 +1473,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
             }
         }
 
-        idmToken.addOnTokenExpired(function () {
+        idmToken.addOnTokenRemoved(function () {
             $scope.layout.showLogin = true;
         });
 
@@ -1542,7 +1542,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
         }
         configure();
 
-        idmToken.addOnTokenExpired(cancel);
+        idmToken.addOnTokenRemoved(cancel);
         idmToken.addOnTokenObtained(configure);
     }
     tokenMonitor.$inject = ["idmToken", "$timeout"];
@@ -1551,20 +1551,25 @@ OAuthFrame.prototype.tryRenewToken = function () {
     function autoLogout(idmToken, $timeout, $location, $rootScope) {
         function callback() {
             idmToken.removeToken();
+            $location.url("/error");
+            $rootScope.errors = ["Your session has expired."];
         }
 
         var intervalPromise = null;
         function cancel() {
             if (intervalPromise) {
+                console.log("autoLogout cancel");
                 $timeout.cancel(intervalPromise);
             }
         }
 
         function setup(duration) {
+            console.log("autoLogout setup", duration);
             intervalPromise = $timeout(callback, duration * 1000);
         }
 
         function configure() {
+            console.log("autoLogout configure");
             cancel();
             var token = idmToken.getToken();
             if (token) {
@@ -1573,10 +1578,6 @@ OAuthFrame.prototype.tryRenewToken = function () {
         }
         configure();
 
-        idmToken.addOnTokenExpired(function () {
-            $location.url("/error");
-            $rootScope.errors = ["Your session has expired."];
-        });
         idmToken.addOnTokenObtained(configure);
     }
     autoLogout.$inject = ["idmToken", "$timeout", "$location", "$rootScope"];

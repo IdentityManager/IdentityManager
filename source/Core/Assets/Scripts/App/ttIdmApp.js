@@ -42,7 +42,7 @@
         idmToken.addOnTokenObtained(load);
         load();
 
-        idmToken.addOnTokenExpired(function () {
+        idmToken.addOnTokenRemoved(function () {
             $scope.layout.links = null;
             $scope.layout.showLogout = false;
         });
@@ -58,7 +58,7 @@
             }
         }
 
-        idmToken.addOnTokenExpired(function () {
+        idmToken.addOnTokenRemoved(function () {
             $scope.layout.showLogin = true;
         });
 
@@ -127,7 +127,7 @@
         }
         configure();
 
-        idmToken.addOnTokenExpired(cancel);
+        idmToken.addOnTokenRemoved(cancel);
         idmToken.addOnTokenObtained(configure);
     }
     tokenMonitor.$inject = ["idmToken", "$timeout"];
@@ -136,20 +136,25 @@
     function autoLogout(idmToken, $timeout, $location, $rootScope) {
         function callback() {
             idmToken.removeToken();
+            $location.url("/error");
+            $rootScope.errors = ["Your session has expired."];
         }
 
         var intervalPromise = null;
         function cancel() {
             if (intervalPromise) {
+                console.log("autoLogout cancel");
                 $timeout.cancel(intervalPromise);
             }
         }
 
         function setup(duration) {
+            console.log("autoLogout setup", duration);
             intervalPromise = $timeout(callback, duration * 1000);
         }
 
         function configure() {
+            console.log("autoLogout configure");
             cancel();
             var token = idmToken.getToken();
             if (token) {
@@ -158,10 +163,6 @@
         }
         configure();
 
-        idmToken.addOnTokenExpired(function () {
-            $location.url("/error");
-            $rootScope.errors = ["Your session has expired."];
-        });
         idmToken.addOnTokenObtained(configure);
     }
     autoLogout.$inject = ["idmToken", "$timeout", "$location", "$rootScope"];

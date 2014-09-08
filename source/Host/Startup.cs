@@ -31,7 +31,8 @@ namespace Thinktecture.IdentityManager.Host
                         ClientId = "idmgr",
                         SigningCert = Cert.Load(),
                         Scope = "idmgr",
-                        PersistToken = true
+                        //PersistToken = true,
+                        //AutomaticallyRenewToken = true
                     }
                 });
             });

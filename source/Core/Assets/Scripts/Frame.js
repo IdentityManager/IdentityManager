@@ -159,7 +159,7 @@ function FrameLoader(url, success, error) {
 }
 
 FrameLoader.prototype.load = function () {
-    var frameHtml = '<iframe style="xdisplay:none" width="500px" height="500px"></iframe>';
+    var frameHtml = '<iframe style="display:none"></iframe>';
     var frame = $(frameHtml).appendTo("body").get(0);
 
     function cleanup() {

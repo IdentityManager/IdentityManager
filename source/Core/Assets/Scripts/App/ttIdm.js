@@ -74,10 +74,10 @@
             }
         }
 
-        var tokenExpired = [];
-        function callTokenExpired() {
+        var tokenRemoved = [];
+        function callTokenRemoved() {
             $rootScope.$evalAsync(function () {
-                tokenExpired.forEach(function (cb) {
+                tokenRemoved.forEach(function (cb) {
                     cb();
                 });
             });
@@ -93,8 +93,8 @@
         }
 
         var svc = {
-            addOnTokenExpired: function (cb) {
-                tokenExpired.push(cb);
+            addOnTokenRemoved: function (cb) {
+                tokenRemoved.push(cb);
             },
             addOnTokenObtained: function (cb) {
                 tokenObtained.push(cb);
@@ -116,7 +116,7 @@
             removeToken: function () {
                 persistToken(null);
                 OAuthConfig.token = null;
-                callTokenExpired();
+                callTokenRemoved();
             },
             redirectForToken: function (callbackPath) {
                 var callback = $location.absUrl();
@@ -160,7 +160,7 @@
     function idmApi(idmToken, $http, $q, PathBase) {
         var cache = null;
 
-        idmToken.addOnTokenExpired(function () {
+        idmToken.addOnTokenRemoved(function () {
             cache = null;
         });
 
