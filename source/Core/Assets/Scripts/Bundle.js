@@ -1558,18 +1558,15 @@ OAuthFrame.prototype.tryRenewToken = function () {
         var intervalPromise = null;
         function cancel() {
             if (intervalPromise) {
-                console.log("autoLogout cancel");
                 $timeout.cancel(intervalPromise);
             }
         }
 
         function setup(duration) {
-            console.log("autoLogout setup", duration);
             intervalPromise = $timeout(callback, duration * 1000);
         }
 
         function configure() {
-            console.log("autoLogout configure");
             cancel();
             var token = idmToken.getToken();
             if (token) {
