@@ -153,7 +153,7 @@ function FrameLoader(url, success, error) {
 
 FrameLoader.prototype.load = function () {
     var frameHtml = '<iframe style="display:none"></iframe>';
-    var frame = $(frameHtml).appendTo("body").get(0);
+    var frame = $(frameHtml).appendTo("body");
 
     function cleanup() {
         window.removeEventListener("message", message, false);
@@ -182,7 +182,7 @@ FrameLoader.prototype.load = function () {
 
     var handle = window.setTimeout(cancel.bind(this), 5000);
     window.addEventListener("message", message.bind(this), false);
-    frame.src = this.url;
+    frame.attr("src", this.url);
 }
 
 function OAuthFrame(authorizeUrl, clientid, callback, scope, success, error) {
