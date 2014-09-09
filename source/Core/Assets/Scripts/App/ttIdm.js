@@ -63,13 +63,12 @@
                     OAuthConfig.ClientId,
                     iframeCallback,
                     OAuthConfig.Scope,
-                    function (hash) {
-                        var result = oauth.readImplicitResult(hash);
-                        if (!result.error) {
-                            OAuthConfig.token = Token.fromOAuthResponse(result);
-                            persistToken(OAuthConfig.token);
-                            callTokenObtained();
-                        }
+                    function (result) {
+                        OAuthConfig.token = Token.fromOAuthResponse(result);
+                        persistToken(OAuthConfig.token);
+                        callTokenObtained();
+                    }, function () {
+                        // error callback
                     });
             }
         }
