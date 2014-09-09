@@ -135,9 +135,12 @@
 
     function autoLogout(idmToken, $timeout, $location, $rootScope) {
         function callback() {
-            idmToken.removeToken();
-            $location.url("/error");
-            $rootScope.errors = ["Your session has expired."];
+            var token = idmToken.getToken();
+            if (!token || token.expired) {
+                idmToken.removeToken();
+                $location.url("/error");
+                $rootScope.errors = ["Your session has expired."];
+            }
         }
 
         var intervalPromise = null;
