@@ -277,6 +277,7 @@ OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, 
     var state = (Date.now() + Math.random()) * Math.random();
     state = state.toString().replace(".", "");
 
+    // TODO : add prompt=none
     var url =
         authorizeUrl + "?" +
         "client_id=" + encodeURIComponent(clientid) + "&" +
@@ -418,7 +419,7 @@ function FrameLoader(url, success, error) {
 
 FrameLoader.prototype.load = function () {
     var frameHtml = '<iframe style="display:none"></iframe>';
-    var frame = $(frameHtml).appendTo("body").get(0);
+    var frame = $(frameHtml).appendTo("body");
 
     function cleanup() {
         window.removeEventListener("message", message, false);
@@ -447,7 +448,7 @@ FrameLoader.prototype.load = function () {
 
     var handle = window.setTimeout(cancel.bind(this), 5000);
     window.addEventListener("message", message.bind(this), false);
-    frame.src = this.url;
+    frame.attr("src", this.url);
 }
 
 function OAuthFrame(authorizeUrl, clientid, callback, scope, success, error) {
@@ -462,7 +463,15 @@ function OAuthFrame(authorizeUrl, clientid, callback, scope, success, error) {
 OAuthFrame.prototype.tryRenewToken = function () {
     var oauth = new OAuthClient();
     var request = oauth.createImplicitRequest(this.authorizeUrl, this.clientid, this.callback, this.scope);
-    var frame = new FrameLoader(request.url, this.success, this.error);
+
+    var frame = new FrameLoader(request.url, function (hash) {
+        var result = oauth.readImplicitResult(hash);
+        if (!result.error) {
+            this.success(result);
+        }
+        this.error();
+    }.bind(this), this.error);
+
     frame.load();
 }
 
@@ -534,13 +543,12 @@ OAuthFrame.prototype.tryRenewToken = function () {
                     OAuthConfig.ClientId,
                     iframeCallback,
                     OAuthConfig.Scope,
-                    function (hash) {
-                        var result = oauth.readImplicitResult(hash);
-                        if (!result.error) {
-                            OAuthConfig.token = Token.fromOAuthResponse(result);
-                            persistToken(OAuthConfig.token);
-                            callTokenObtained();
-                        }
+                    function (result) {
+                        OAuthConfig.token = Token.fromOAuthResponse(result);
+                        persistToken(OAuthConfig.token);
+                        callTokenObtained();
+                    }, function () {
+                        // error callback
                     });
             }
         }
@@ -1550,9 +1558,12 @@ OAuthFrame.prototype.tryRenewToken = function () {
 
     function autoLogout(idmToken, $timeout, $location, $rootScope) {
         function callback() {
-            idmToken.removeToken();
-            $location.url("/error");
-            $rootScope.errors = ["Your session has expired."];
+            var token = idmToken.getToken();
+            if (!token || token.expired) {
+                idmToken.removeToken();
+                $location.url("/error");
+                $rootScope.errors = ["Your session has expired."];
+            }
         }
 
         var intervalPromise = null;

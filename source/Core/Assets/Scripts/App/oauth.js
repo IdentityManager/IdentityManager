@@ -12,6 +12,7 @@ OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, 
     var state = (Date.now() + Math.random()) * Math.random();
     state = state.toString().replace(".", "");
 
+    // TODO : add prompt=none
     var url =
         authorizeUrl + "?" +
         "client_id=" + encodeURIComponent(clientid) + "&" +
