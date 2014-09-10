@@ -36,11 +36,11 @@ namespace Thinktecture.IdentityManager.Assets
             {
                 oauth = new
                 {
-                    oauthConfig.AuthorizationUrl,
-                    oauthConfig.ClientId,
-                    oauthConfig.Scope,
-                    oauthConfig.PersistToken,
-                    oauthConfig.AutomaticallyRenewToken
+                    authorizationUrl = oauthConfig.AuthorizationUrl,
+                    clientId = oauthConfig.ClientId,
+                    scope = oauthConfig.Scope,
+                    persistToken = oauthConfig.PersistToken,
+                    automaticallyRenewToken = oauthConfig.AutomaticallyRenewToken
                 };
             }
             var html = AssetManager.LoadResourceString(this.file,

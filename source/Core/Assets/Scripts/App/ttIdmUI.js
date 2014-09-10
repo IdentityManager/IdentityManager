@@ -274,5 +274,6 @@
             }
         }
     }
+    idmPreventDefault.$inject = [];
     app.directive("idmPreventDefault", idmPreventDefault);
 })(angular);

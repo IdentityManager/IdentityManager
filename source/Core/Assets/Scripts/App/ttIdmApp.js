@@ -28,26 +28,26 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, $scope, idmApi, $location, idmToken) {
+    function LayoutCtrl($rootScope, $scope, idmApi, $location, idmTokenManager) {
         $scope.layout = {};
 
         function load() {
-            $scope.layout.showLogout = idmToken.hasToken();
+            $scope.layout.showLogout = idmTokenManager.token && !idmTokenManager.token.expired;
 
             idmApi.get().then(function (api) {
                 $scope.layout.username = api.data.currentUser.username;
                 $scope.layout.links = api.links;
             });
         }
-        idmToken.addOnTokenObtained(load);
+        idmTokenManager.addOnTokenObtained(load);
         load();
 
-        idmToken.addOnTokenRemoved(function () {
+        idmTokenManager.addOnTokenRemoved(function () {
             $scope.layout.links = null;
             $scope.layout.showLogout = false;
         });
 
-        if (idmToken.isTokenNeeded()) {
+        if (idmTokenManager.isTokenNeeded) {
             $scope.layout.showLogin = true;
 
             if ($location.path() !== "/" &&
@@ -58,19 +58,24 @@
             }
         }
 
-        idmToken.addOnTokenRemoved(function () {
+        idmTokenManager.addOnTokenRemoved(function () {
             $scope.layout.showLogin = true;
         });
 
-        idmToken.addOnTokenObtained(function () {
+        idmTokenManager.addOnTokenObtained(function () {
             $scope.layout.showLogin = false;
         });
 
+        idmTokenManager.addOnTokenExpired(function () {
+            $location.url("/error");
+            $rootScope.errors = ["Your session has expired."];
+        });
+
         $scope.login = function () {
-            idmToken.redirectForToken("callback");
+            idmTokenManager.redirectForToken();
         }
     }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmTokenManager"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl() {
@@ -78,94 +83,21 @@
     HomeCtrl.$inject = [];
     app.controller("HomeCtrl", HomeCtrl);
 
-    function CallbackCtrl(idmToken, $location, $rootScope) {
-        idmToken.processTokenCallback(function () {
+    function CallbackCtrl(idmTokenManager, $location, $rootScope) {
+        idmTokenManager.processTokenCallback(function () {
             $location.url("/");
         }, function (error) {
             $rootScope.errors = [error];
         });
     }
-    CallbackCtrl.$inject = ["idmToken", "$location", "$rootScope"];
+    CallbackCtrl.$inject = ["idmTokenManager", "$location", "$rootScope"];
     app.controller("CallbackCtrl", CallbackCtrl);
 
-    function LogoutCtrl(idmToken, $location) {
-        idmToken.removeToken();
+    function LogoutCtrl(idmTokenManager, $location) {
+        idmTokenManager.removeToken();
         $location.url("/");
     }
-    LogoutCtrl.$inject = ["idmToken", "$location"];
+    LogoutCtrl.$inject = ["idmTokenManager", "$location"];
     app.controller("LogoutCtrl", LogoutCtrl);
-
-    function tokenMonitor(idmToken, $timeout) {
-
-        function callback() {
-            idmToken.tryRenewToken();
-        }
-
-        var intervalPromise = null;
-        function cancel() {
-            if (intervalPromise) {
-                $timeout.cancel(intervalPromise);
-            }
-        }
-
-        function setup(duration) {
-            cancel();
-            intervalPromise = $timeout(callback, duration * 1000);
-        }
-
-        function configure() {
-            var token = idmToken.getToken();
-            if (token) {
-                var duration = token.expires_in;
-                if (duration > 40) {
-                    setup(duration - 30);
-                }
-                else {
-                    callback();
-                }
-            }
-        }
-        configure();
-
-        idmToken.addOnTokenRemoved(cancel);
-        idmToken.addOnTokenObtained(configure);
-    }
-    tokenMonitor.$inject = ["idmToken", "$timeout"];
-    app.run(tokenMonitor);
-
-    function autoLogout(idmToken, $timeout, $location, $rootScope) {
-        function callback() {
-            var token = idmToken.getToken();
-            if (!token || token.expired) {
-                idmToken.removeToken();
-                $location.url("/error");
-                $rootScope.errors = ["Your session has expired."];
-            }
-        }
-
-        var intervalPromise = null;
-        function cancel() {
-            if (intervalPromise) {
-                $timeout.cancel(intervalPromise);
-            }
-        }
-
-        function setup(duration) {
-            intervalPromise = $timeout(callback, duration * 1000);
-        }
-
-        function configure() {
-            cancel();
-            var token = idmToken.getToken();
-            if (token) {
-                setup(token.expires_in);
-            }
-        }
-        configure();
-
-        idmToken.addOnTokenObtained(configure);
-    }
-    autoLogout.$inject = ["idmToken", "$timeout", "$location", "$rootScope"];
-    app.run(autoLogout);
 
 })(angular);

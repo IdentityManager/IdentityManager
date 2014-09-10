@@ -263,33 +263,40 @@ q)}f=l}else f=null;else f=null;f=c=f}f&&(a=s(b,{params:d.extend({},e.search(),c)
 function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.params,a);e.path(k(this.current.$$route.originalPath,a));e.search(d.extend({},e.search(),b))}else throw y("norout");}};a.$on("$locationChangeSuccess",l);return q}]});var y=d.$$minErr("ngRoute");r.provider("$routeParams",function(){this.$get=function(){return{}}});r.directive("ngView",v);r.directive("ngView",x);v.$inject=["$route","$anchorScroll","$animate"];x.$inject=["$compile","$controller","$route"]})(window,window.angular);
 
 ///#source 1 1 /Assets/Scripts/App/oauth.js
-function OAuthClient(store) {
-    this.store = store || window.localStorage;
+function OAuthClient(settings) {
+    this.settings = settings;
+    this.store = settings.store || window.localStorage;
 }
 
-OAuthClient.prototype.makeImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
-    var request = this.createImplicitRequest(authorizeUrl, clientid, callback, scope);
+OAuthClient.stateKey = "OAuthClient.state";
 
+OAuthClient.prototype.makeImplicitRequest = function () {
+    var request = this.createImplicitRequest();
     window.location = request.url;
 }
 
-OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
+OAuthClient.prototype.createImplicitRequest = function (prompt) {
     var state = (Date.now() + Math.random()) * Math.random();
     state = state.toString().replace(".", "");
 
-    // TODO : add prompt=none
+    var settings = this.settings;
     var url =
-        authorizeUrl + "?" +
-        "client_id=" + encodeURIComponent(clientid) + "&" +
+        settings.authorizationUrl + "?" +
+        "client_id=" + encodeURIComponent(settings.clientId) + "&" +
         "response_type=token&" +
-        "redirect_uri=" + encodeURIComponent(callback) + "&" +
+        "redirect_uri=" + encodeURIComponent(settings.callbackUrl) + "&" +
         "state=" + encodeURIComponent(state);
 
-    if (scope) {
-        url += "&scope=" + encodeURIComponent(scope);
+    if (settings.scope) {
+        url += "&scope=" + encodeURIComponent(settings.scope);
     }
 
-    this.store.setItem("OAuthClient.state", state);
+    prompt = prompt || settings.prompt;
+    if (prompt) {
+        url += "&prompt=" + encodeURIComponent(prompt);
+    }
+
+    this.store.setItem(OAuthClient.stateKey, state);
 
     return {
         state:state,
@@ -300,8 +307,8 @@ OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, 
 OAuthClient.prototype.parseResult = function (queryString) {
     queryString = queryString || location.hash;
 
-    var idx = queryString.indexOf("#");
-    if (idx > 0) {
+    var idx = queryString.lastIndexOf("#");
+    if (idx >= 0) {
         queryString = queryString.substr(idx + 1);
     }
 
@@ -309,10 +316,14 @@ OAuthClient.prototype.parseResult = function (queryString) {
         regex = /([^&=]+)=([^&]*)/g,
         m;
 
-    // TODO: perhaps build a counter here to prevent spinning on malformed requests
-
+    var counter = 0;
     while (m = regex.exec(queryString)) {
         params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        if (counter++ > 20) {
+            return {
+                error : "Response exceeded expected number of parameters"
+            };
+        }
     }
 
     for (var prop in params) {
@@ -321,6 +332,9 @@ OAuthClient.prototype.parseResult = function (queryString) {
 }
 
 OAuthClient.prototype.readImplicitResult = function (queryString) {
+    var state = this.store.getItem(OAuthClient.stateKey);
+    this.store.removeItem(OAuthClient.stateKey);
+
     var result = OAuthClient.prototype.parseResult(queryString);
     if (!result) {
         return {
@@ -333,9 +347,6 @@ OAuthClient.prototype.readImplicitResult = function (queryString) {
             error: result.error
         }
     }
-
-    var state = this.store.getItem("OAuthClient.state");
-    this.store.removeItem("OAuthClient.state");
 
     if (!state || result.state !== state) {
         return {
@@ -411,13 +422,11 @@ Token.prototype.toJSON = function () {
     });
 }
 
-function FrameLoader(url, success, error) {
+function FrameLoader(url) {
     this.url = url;
-    this.success = success;
-    this.error = error;
 }
 
-FrameLoader.prototype.load = function () {
+FrameLoader.prototype.load = function (success, error) {
     var frameHtml = '<iframe style="display:none"></iframe>';
     var frame = $(frameHtml).appendTo("body");
 
@@ -432,51 +441,223 @@ FrameLoader.prototype.load = function () {
 
     function cancel(e) {
         cleanup();
-        if (this.error) {
-            this.error();
+        if (error) {
+            error();
         }
     }
 
     function message(e) {
         if (handle && e.origin === location.protocol + "//" + location.host) {
             cleanup();
-            if (this.success) {
-                this.success(e.data);
+            if (success) {
+                success(e.data);
             }
         }
     }
 
-    var handle = window.setTimeout(cancel.bind(this), 5000);
-    window.addEventListener("message", message.bind(this), false);
+    var handle = window.setTimeout(cancel, 5000);
+    window.addEventListener("message", message, false);
     frame.attr("src", this.url);
 }
 
-function OAuthFrame(authorizeUrl, clientid, callback, scope, success, error) {
-    this.authorizeUrl = authorizeUrl;
-    this.clientid = clientid;
-    this.callback = callback;
-    this.scope = scope;
-    this.success = success;
-    this.error = error;
+function OAuthFrame(settings) {
+    this.settings = settings;
 }
 
-OAuthFrame.prototype.tryRenewToken = function () {
-    var oauth = new OAuthClient();
-    var request = oauth.createImplicitRequest(this.authorizeUrl, this.clientid, this.callback, this.scope);
+OAuthFrame.prototype.tryRenewToken = function (success, error) {
+    var oauth = new OAuthClient(this.settings);
+    var request = oauth.createImplicitRequest();
 
-    var frame = new FrameLoader(request.url, function (hash) {
+    var frame = new FrameLoader(request.url);
+    frame.load(function (hash) {
         var result = oauth.readImplicitResult(hash);
         if (!result.error) {
-            this.success(result);
+            success(result);
         }
-        this.error();
-    }.bind(this), this.error);
+        error();
+    }, error);
+}
 
-    frame.load();
+function TokenManager(settings) {
+    this.settings = settings;
+    this.store = settings.store || window.localStorage;
+    this.oauth = new OAuthClient(settings);
+    
+    this.tokenRemovedCallbacks = [];
+    this.tokenExpiredCallbacks = [];
+    this.tokenObtainedCallbacks = [];
+
+    this.loadToken();
+    this.configureAutoRenewToken();
+    this.configureTokenExpiration();
+}
+
+TokenManager.storageKey = "TokenManager.token";
+TokenManager.prototype.saveToken = function (token) {
+    this.token = token;
+
+    if (this.settings.persistToken && token && !token.expired) {
+        this.store.setItem(TokenManager.storageKey, token.toJSON());
+    }
+    else {
+        this.store.removeItem(TokenManager.storageKey);
+    }
+}
+TokenManager.prototype.loadToken = function () {
+    if (this.settings.persistToken) {
+        var tokenJson = this.store.getItem(TokenManager.storageKey);
+        if (tokenJson) {
+            var token = Token.fromJSON(tokenJson);
+            if (!token.expired) {
+                this.token = token;
+            }
+        }
+    }
+}
+
+TokenManager.prototype.callTokenRemoved = function () {
+    this.tokenRemovedCallbacks.forEach(function (cb) {
+        cb();
+    });
+}
+TokenManager.prototype.callTokenExpired = function () {
+    this.tokenExpiredCallbacks.forEach(function (cb) {
+        cb();
+    });
+}
+TokenManager.prototype.callTokenObtained = function () {
+    this.tokenObtainedCallbacks.forEach(function (cb) {
+        cb();
+    });
+}
+TokenManager.prototype.addOnTokenRemoved = function (cb) {
+    this.tokenRemovedCallbacks.push(cb);
+}
+TokenManager.prototype.addOnTokenObtained = function (cb) {
+    this.tokenObtainedCallbacks.push(cb);
+}
+TokenManager.prototype.addOnTokenExpired = function (cb) {
+    this.tokenExpiredCallbacks.push(cb);
+}
+
+TokenManager.prototype.removeToken = function () {
+    this.saveToken(null);
+    this.callTokenRemoved();
+}
+TokenManager.prototype.redirectForToken = function () {
+    var request = this.oauth.createImplicitRequest();
+    window.location = request.url;
+}
+TokenManager.prototype.processTokenCallback = function (success, error) {
+    var result = this.oauth.readImplicitResult(location.hash);
+    if (result.error) {
+        if (error) {
+            error(result.error);
+        }
+    }
+    else {
+        var token = Token.fromOAuthResponse(result);
+        this.saveToken(token);
+        this.callTokenObtained();
+        if (success) {
+            success();
+        }
+    }
+}
+
+TokenManager.prototype.tryRenewToken = function () {
+    var settings = {};
+    for (var key in this.settings) {
+        settings[key] = this.settings[key];
+    }
+    settings.callbackUrl = settings.frameCallbackUrl;
+
+    var frame = new OAuthFrame(settings);
+    frame.tryRenewToken(
+        function (result) {
+            var token = Token.fromOAuthResponse(result);
+            this.saveToken(token);
+            this.callTokenObtained();
+        }.bind(this), function () {
+            // error callback
+        });
+}
+TokenManager.prototype.configureAutoRenewToken = function () {
+    if (this.settings.automaticallyRenewToken) {
+        var mgr = this;
+
+        function callback() {
+            mgr.tryRenewToken();
+        }
+
+        var handle = null;
+        function cancel() {
+            if (handle) {
+                window.clearTimeout(handle);
+            }
+        }
+
+        function setup(duration) {
+            cancel();
+            handle = window.setTimeout(callback, duration * 1000);
+        }
+
+        function configure() {
+            var token = mgr.token;
+            if (token) {
+                var duration = token.expires_in;
+                if (duration > 40) {
+                    setup(duration - 30);
+                }
+                else {
+                    callback();
+                }
+            }
+        }
+        configure();
+
+        this.addOnTokenRemoved(cancel);
+        this.addOnTokenObtained(configure);
+    }
+}
+
+TokenManager.prototype.configureTokenExpiration = function () {
+    var mgr = this;
+
+    function callback() {
+        var token = mgr.token;
+        if (!token || token.expired) {
+            mgr.saveToken(null);
+            mgr.callTokenRemoved()
+            mgr.callTokenExpired();
+        }
+    }
+
+    var handle = null;
+    function cancel() {
+        if (handle) {
+            window.clearTimeout(handle);
+            handle = null;
+        }
+    }
+
+    function setup(duration) {
+        handle = window.setTimeout(callback, duration * 1000);
+    }
+
+    function configure() {
+        cancel();
+        var token = mgr.token;
+        if (token && token.expires_in > 0) {
+            setup(token.expires_in);
+        }
+    }
+    configure();
+
+    mgr.addOnTokenObtained(configure);
 }
 
 ;
-
 ///#source 1 1 /Assets/Scripts/App/ttIdm.js
 /// <reference path="../Libs/angular.min.js" />
 
@@ -485,161 +666,82 @@ OAuthFrame.prototype.tryRenewToken = function () {
 
     function config($httpProvider, OAuthConfig) {
         if (OAuthConfig) {
-            function intercept($q, idmToken) {
+            function intercept($q, idmTokenManager) {
                 return {
                     'request': function (config) {
-                        if (OAuthConfig.token) {
-                            config.headers['Authorization'] = 'Bearer ' + OAuthConfig.token.access_token;
+                        if (idmTokenManager.token) {
+                            config.headers['Authorization'] = 'Bearer ' + idmTokenManager.token.access_token;
                         }
                         return config;
                     },
                     'responseError': function (response) {
-                        if (response.status === 401 && OAuthConfig.token) {
-                            idmToken.removeToken();
+                        if (response.status === 401 && idmTokenManager.token) {
+                            idmTokenManager.removeToken();
                         }
                         return $q.reject(response);
                     }
                 };
             };
-            intercept.$inject = ["$q", "idmToken"];
+            intercept.$inject = ["$q", "idmTokenManager"];
             $httpProvider.interceptors.push(intercept);
         }
     };
     config.$inject = ["$httpProvider", "OAuthConfig"];
     app.config(config);
 
-    function idmToken(PathBase, OAuthClient, Token, OAuthConfig, OAuthFrame, $location, $window, $rootScope) {
-        var store = $window.localStorage;
-        var oauth = new OAuthClient(store);
-        var frame = null;
-
-        function persistToken(token) {
-            if (OAuthConfig && OAuthConfig.PersistToken && token) {
-                store.setItem("idm.token", token.toJSON());
-            }
-            else {
-                store.removeItem("idm.token");
-            }
-        }
-
-        function loadToken() {
-            if (OAuthConfig && OAuthConfig.PersistToken) {
-                var tokenJson = store.getItem("idm.token");
-                if (tokenJson) {
-                    var token = Token.fromJSON(tokenJson);
-                    if (!token.expired) {
-                        return token;
-                    }
-                }
-            }
-        }
-
+    function idmTokenManager(TokenManager, OAuthConfig, PathBase, $window, $rootScope) {
         if (OAuthConfig) {
-            OAuthConfig.token = loadToken();
+            OAuthConfig.callbackUrl = $window.location.protocol + "//" + $window.location.host + PathBase + "/#/callback";
+            OAuthConfig.frameCallbackUrl = $window.location.protocol + "//" + $window.location.host + PathBase + "/frame";
 
-            if (OAuthConfig.AutomaticallyRenewToken) {
-                var iframeCallback = $window.location.protocol + "//" + $window.location.host + PathBase + "/frame";
-                frame = new OAuthFrame(OAuthConfig.AuthorizationUrl,
-                    OAuthConfig.ClientId,
-                    iframeCallback,
-                    OAuthConfig.Scope,
-                    function (result) {
-                        OAuthConfig.token = Token.fromOAuthResponse(result);
-                        persistToken(OAuthConfig.token);
-                        callTokenObtained();
-                    }, function () {
-                        // error callback
+            var svc = new TokenManager(OAuthConfig);
+
+            Object.defineProperty(svc, "isTokenNeeded", {
+                get: function () {
+                    return !!(OAuthConfig &&
+                             (!svc.token ||
+                              svc.token.expired));
+                }
+            });
+
+            svc.callTokenRemoved = function () {
+                $rootScope.$applyAsync(function () {
+                    svc.tokenRemovedCallbacks.forEach(function (cb) {
+                        cb();
                     });
-            }
-        }
-
-        var tokenRemoved = [];
-        function callTokenRemoved() {
-            $rootScope.$evalAsync(function () {
-                tokenRemoved.forEach(function (cb) {
-                    cb();
                 });
-            });
-        }
-
-        var tokenObtained = [];
-        function callTokenObtained() {
-            $rootScope.$evalAsync(function () {
-                tokenObtained.forEach(function (cb) {
-                    cb();
-                });
-            });
-        }
-
-        var svc = {
-            addOnTokenRemoved: function (cb) {
-                tokenRemoved.push(cb);
-            },
-            addOnTokenObtained: function (cb) {
-                tokenObtained.push(cb);
-            },
-            getToken: function () {
-                return OAuthConfig &&
-                    OAuthConfig.token;
-            },
-            hasToken: function () {
-                return !!(OAuthConfig &&
-                          OAuthConfig.token &&
-                          !OAuthConfig.token.expired);
-            },
-            isTokenNeeded: function () {
-                return !!(OAuthConfig &&
-                          (!OAuthConfig.token ||
-                           OAuthConfig.token.expired));
-            },
-            removeToken: function () {
-                persistToken(null);
-                OAuthConfig.token = null;
-                callTokenRemoved();
-            },
-            redirectForToken: function (callbackPath) {
-                var callback = $location.absUrl();
-                var idx = callback.indexOf('#');
-                if (idx > 0) {
-                    callback = callback.substring(0, idx);
-                }
-                callback += "#/" + callbackPath;
-
-                var request = oauth.createImplicitRequest(OAuthConfig.AuthorizationUrl, OAuthConfig.ClientId, callback, OAuthConfig.Scope);
-                $window.location = request.url;
-            },
-            processTokenCallback: function (success, error) {
-                var result = oauth.readImplicitResult($location.url());
-                if (result.error) {
-                    if (error) {
-                        error(result.error);
-                    }
-                }
-                else {
-                    OAuthConfig.token = Token.fromOAuthResponse(result);
-                    persistToken(OAuthConfig.token);
-                    callTokenObtained();
-                    if (success) {
-                        success();
-                    }
-                }
-            },
-            tryRenewToken: function () {
-                if (frame) {
-                    frame.tryRenewToken();
-                }
             }
-        };
+            svc.callTokenExpired = function () {
+                $rootScope.$applyAsync(function () {
+                    svc.tokenExpiredCallbacks.forEach(function (cb) {
+                        cb();
+                    });
+                });
+            }
+            svc.callTokenObtained = function () {
+                $rootScope.$applyAsync(function () {
+                    svc.tokenObtainedCallbacks.forEach(function (cb) {
+                        cb();
+                    });
+                });
+            }
 
-        return svc;
+            return svc;
+        }
+
+        var nopSvc = {};
+        for (var key in TokenManager.prototype) {
+            nopSvc[key] = function () { };
+        }
+        return nopSvc;
     }
-    idmToken.$inject = ["PathBase", "OAuthClient", "Token", "OAuthConfig", "OAuthFrame", "$location", "$window", "$rootScope"];
-    app.factory("idmToken", idmToken);
+    idmTokenManager.$inject = ["TokenManager", "OAuthConfig", "PathBase", "$window", "$rootScope"];
+    app.factory("idmTokenManager", idmTokenManager);
 
-    function idmApi(idmToken, $http, $q, PathBase) {
+    function idmApi(idmTokenManager, $http, $q, PathBase) {
         var cache = null;
 
-        idmToken.addOnTokenRemoved(function () {
+        idmTokenManager.addOnTokenRemoved(function () {
             cache = null;
         });
 
@@ -667,7 +769,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
             }
         };
     }
-    idmApi.$inject = ["idmToken", "$http", "$q", "PathBase"];
+    idmApi.$inject = ["idmTokenManager", "$http", "$q", "PathBase"];
     app.factory("idmApi", idmApi);
 
     function idmUsers($http, idmApi, $log) {
@@ -808,9 +910,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
     for (var key in model) {
         angular.module("ttIdm").constant(key, model[key]);
     }
-    angular.module("ttIdm").constant("OAuthClient", OAuthClient);
-    angular.module("ttIdm").constant("Token", Token);
-    angular.module("ttIdm").constant("OAuthFrame", OAuthFrame);
+    angular.module("ttIdm").constant("TokenManager", TokenManager);
 })(angular);
 
 ///#source 1 1 /Assets/Scripts/App/ttIdmUI.js
@@ -1090,6 +1190,7 @@ OAuthFrame.prototype.tryRenewToken = function () {
             }
         }
     }
+    idmPreventDefault.$inject = [];
     app.directive("idmPreventDefault", idmPreventDefault);
 })(angular);
 
@@ -1451,26 +1552,26 @@ OAuthFrame.prototype.tryRenewToken = function () {
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, $scope, idmApi, $location, idmToken) {
+    function LayoutCtrl($rootScope, $scope, idmApi, $location, idmTokenManager) {
         $scope.layout = {};
 
         function load() {
-            $scope.layout.showLogout = idmToken.hasToken();
+            $scope.layout.showLogout = idmTokenManager.token && !idmTokenManager.token.expired;
 
             idmApi.get().then(function (api) {
                 $scope.layout.username = api.data.currentUser.username;
                 $scope.layout.links = api.links;
             });
         }
-        idmToken.addOnTokenObtained(load);
+        idmTokenManager.addOnTokenObtained(load);
         load();
 
-        idmToken.addOnTokenRemoved(function () {
+        idmTokenManager.addOnTokenRemoved(function () {
             $scope.layout.links = null;
             $scope.layout.showLogout = false;
         });
 
-        if (idmToken.isTokenNeeded()) {
+        if (idmTokenManager.isTokenNeeded) {
             $scope.layout.showLogin = true;
 
             if ($location.path() !== "/" &&
@@ -1481,19 +1582,24 @@ OAuthFrame.prototype.tryRenewToken = function () {
             }
         }
 
-        idmToken.addOnTokenRemoved(function () {
+        idmTokenManager.addOnTokenRemoved(function () {
             $scope.layout.showLogin = true;
         });
 
-        idmToken.addOnTokenObtained(function () {
+        idmTokenManager.addOnTokenObtained(function () {
             $scope.layout.showLogin = false;
         });
 
+        idmTokenManager.addOnTokenExpired(function () {
+            $location.url("/error");
+            $rootScope.errors = ["Your session has expired."];
+        });
+
         $scope.login = function () {
-            idmToken.redirectForToken("callback");
+            idmTokenManager.redirectForToken();
         }
     }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmToken"];
+    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmTokenManager"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl() {
@@ -1501,95 +1607,22 @@ OAuthFrame.prototype.tryRenewToken = function () {
     HomeCtrl.$inject = [];
     app.controller("HomeCtrl", HomeCtrl);
 
-    function CallbackCtrl(idmToken, $location, $rootScope) {
-        idmToken.processTokenCallback(function () {
+    function CallbackCtrl(idmTokenManager, $location, $rootScope) {
+        idmTokenManager.processTokenCallback(function () {
             $location.url("/");
         }, function (error) {
             $rootScope.errors = [error];
         });
     }
-    CallbackCtrl.$inject = ["idmToken", "$location", "$rootScope"];
+    CallbackCtrl.$inject = ["idmTokenManager", "$location", "$rootScope"];
     app.controller("CallbackCtrl", CallbackCtrl);
 
-    function LogoutCtrl(idmToken, $location) {
-        idmToken.removeToken();
+    function LogoutCtrl(idmTokenManager, $location) {
+        idmTokenManager.removeToken();
         $location.url("/");
     }
-    LogoutCtrl.$inject = ["idmToken", "$location"];
+    LogoutCtrl.$inject = ["idmTokenManager", "$location"];
     app.controller("LogoutCtrl", LogoutCtrl);
-
-    function tokenMonitor(idmToken, $timeout) {
-
-        function callback() {
-            idmToken.tryRenewToken();
-        }
-
-        var intervalPromise = null;
-        function cancel() {
-            if (intervalPromise) {
-                $timeout.cancel(intervalPromise);
-            }
-        }
-
-        function setup(duration) {
-            cancel();
-            intervalPromise = $timeout(callback, duration * 1000);
-        }
-
-        function configure() {
-            var token = idmToken.getToken();
-            if (token) {
-                var duration = token.expires_in;
-                if (duration > 40) {
-                    setup(duration - 30);
-                }
-                else {
-                    callback();
-                }
-            }
-        }
-        configure();
-
-        idmToken.addOnTokenRemoved(cancel);
-        idmToken.addOnTokenObtained(configure);
-    }
-    tokenMonitor.$inject = ["idmToken", "$timeout"];
-    app.run(tokenMonitor);
-
-    function autoLogout(idmToken, $timeout, $location, $rootScope) {
-        function callback() {
-            var token = idmToken.getToken();
-            if (!token || token.expired) {
-                idmToken.removeToken();
-                $location.url("/error");
-                $rootScope.errors = ["Your session has expired."];
-            }
-        }
-
-        var intervalPromise = null;
-        function cancel() {
-            if (intervalPromise) {
-                $timeout.cancel(intervalPromise);
-            }
-        }
-
-        function setup(duration) {
-            intervalPromise = $timeout(callback, duration * 1000);
-        }
-
-        function configure() {
-            cancel();
-            var token = idmToken.getToken();
-            if (token) {
-                setup(token.expires_in);
-            }
-        }
-        configure();
-
-        idmToken.addOnTokenObtained(configure);
-    }
-    autoLogout.$inject = ["idmToken", "$timeout", "$location", "$rootScope"];
-    app.run(autoLogout);
 
 })(angular);
 

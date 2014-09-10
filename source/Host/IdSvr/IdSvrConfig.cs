@@ -54,7 +54,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                         new Uri("http://localhost:17457/idm/frame"),
                     },
                     AccessTokenType = AccessTokenType.Jwt,
-                    //AccessTokenLifetime = 50
+                    AccessTokenLifetime = 50
                 },
             };
         }

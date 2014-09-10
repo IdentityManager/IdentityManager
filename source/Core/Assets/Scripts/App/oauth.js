@@ -1,30 +1,37 @@
-﻿function OAuthClient(store) {
-    this.store = store || window.localStorage;
+﻿function OAuthClient(settings) {
+    this.settings = settings;
+    this.store = settings.store || window.localStorage;
 }
 
-OAuthClient.prototype.makeImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
-    var request = this.createImplicitRequest(authorizeUrl, clientid, callback, scope);
+OAuthClient.stateKey = "OAuthClient.state";
 
+OAuthClient.prototype.makeImplicitRequest = function () {
+    var request = this.createImplicitRequest();
     window.location = request.url;
 }
 
-OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, callback, scope) {
+OAuthClient.prototype.createImplicitRequest = function (prompt) {
     var state = (Date.now() + Math.random()) * Math.random();
     state = state.toString().replace(".", "");
 
-    // TODO : add prompt=none
+    var settings = this.settings;
     var url =
-        authorizeUrl + "?" +
-        "client_id=" + encodeURIComponent(clientid) + "&" +
+        settings.authorizationUrl + "?" +
+        "client_id=" + encodeURIComponent(settings.clientId) + "&" +
         "response_type=token&" +
-        "redirect_uri=" + encodeURIComponent(callback) + "&" +
+        "redirect_uri=" + encodeURIComponent(settings.callbackUrl) + "&" +
         "state=" + encodeURIComponent(state);
 
-    if (scope) {
-        url += "&scope=" + encodeURIComponent(scope);
+    if (settings.scope) {
+        url += "&scope=" + encodeURIComponent(settings.scope);
     }
 
-    this.store.setItem("OAuthClient.state", state);
+    prompt = prompt || settings.prompt;
+    if (prompt) {
+        url += "&prompt=" + encodeURIComponent(prompt);
+    }
+
+    this.store.setItem(OAuthClient.stateKey, state);
 
     return {
         state:state,
@@ -35,8 +42,8 @@ OAuthClient.prototype.createImplicitRequest = function (authorizeUrl, clientid, 
 OAuthClient.prototype.parseResult = function (queryString) {
     queryString = queryString || location.hash;
 
-    var idx = queryString.indexOf("#");
-    if (idx > 0) {
+    var idx = queryString.lastIndexOf("#");
+    if (idx >= 0) {
         queryString = queryString.substr(idx + 1);
     }
 
@@ -44,10 +51,14 @@ OAuthClient.prototype.parseResult = function (queryString) {
         regex = /([^&=]+)=([^&]*)/g,
         m;
 
-    // TODO: perhaps build a counter here to prevent spinning on malformed requests
-
+    var counter = 0;
     while (m = regex.exec(queryString)) {
         params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        if (counter++ > 20) {
+            return {
+                error : "Response exceeded expected number of parameters"
+            };
+        }
     }
 
     for (var prop in params) {
@@ -56,6 +67,9 @@ OAuthClient.prototype.parseResult = function (queryString) {
 }
 
 OAuthClient.prototype.readImplicitResult = function (queryString) {
+    var state = this.store.getItem(OAuthClient.stateKey);
+    this.store.removeItem(OAuthClient.stateKey);
+
     var result = OAuthClient.prototype.parseResult(queryString);
     if (!result) {
         return {
@@ -68,9 +82,6 @@ OAuthClient.prototype.readImplicitResult = function (queryString) {
             error: result.error
         }
     }
-
-    var state = this.store.getItem("OAuthClient.state");
-    this.store.removeItem("OAuthClient.state");
 
     if (!state || result.state !== state) {
         return {
@@ -146,13 +157,11 @@ Token.prototype.toJSON = function () {
     });
 }
 
-function FrameLoader(url, success, error) {
+function FrameLoader(url) {
     this.url = url;
-    this.success = success;
-    this.error = error;
 }
 
-FrameLoader.prototype.load = function () {
+FrameLoader.prototype.load = function (success, error) {
     var frameHtml = '<iframe style="display:none"></iframe>';
     var frame = $(frameHtml).appendTo("body");
 
@@ -167,47 +176,220 @@ FrameLoader.prototype.load = function () {
 
     function cancel(e) {
         cleanup();
-        if (this.error) {
-            this.error();
+        if (error) {
+            error();
         }
     }
 
     function message(e) {
         if (handle && e.origin === location.protocol + "//" + location.host) {
             cleanup();
-            if (this.success) {
-                this.success(e.data);
+            if (success) {
+                success(e.data);
             }
         }
     }
 
-    var handle = window.setTimeout(cancel.bind(this), 5000);
-    window.addEventListener("message", message.bind(this), false);
+    var handle = window.setTimeout(cancel, 5000);
+    window.addEventListener("message", message, false);
     frame.attr("src", this.url);
 }
 
-function OAuthFrame(authorizeUrl, clientid, callback, scope, success, error) {
-    this.authorizeUrl = authorizeUrl;
-    this.clientid = clientid;
-    this.callback = callback;
-    this.scope = scope;
-    this.success = success;
-    this.error = error;
+function OAuthFrame(settings) {
+    this.settings = settings;
 }
 
-OAuthFrame.prototype.tryRenewToken = function () {
-    var oauth = new OAuthClient();
-    var request = oauth.createImplicitRequest(this.authorizeUrl, this.clientid, this.callback, this.scope);
+OAuthFrame.prototype.tryRenewToken = function (success, error) {
+    var oauth = new OAuthClient(this.settings);
+    var request = oauth.createImplicitRequest();
 
-    var frame = new FrameLoader(request.url, function (hash) {
+    var frame = new FrameLoader(request.url);
+    frame.load(function (hash) {
         var result = oauth.readImplicitResult(hash);
         if (!result.error) {
-            this.success(result);
+            success(result);
         }
-        this.error();
-    }.bind(this), this.error);
+        error();
+    }, error);
+}
 
-    frame.load();
+function TokenManager(settings) {
+    this.settings = settings;
+    this.store = settings.store || window.localStorage;
+    this.oauth = new OAuthClient(settings);
+    
+    this.tokenRemovedCallbacks = [];
+    this.tokenExpiredCallbacks = [];
+    this.tokenObtainedCallbacks = [];
+
+    this.loadToken();
+    this.configureAutoRenewToken();
+    this.configureTokenExpiration();
+}
+
+TokenManager.storageKey = "TokenManager.token";
+TokenManager.prototype.saveToken = function (token) {
+    this.token = token;
+
+    if (this.settings.persistToken && token && !token.expired) {
+        this.store.setItem(TokenManager.storageKey, token.toJSON());
+    }
+    else {
+        this.store.removeItem(TokenManager.storageKey);
+    }
+}
+TokenManager.prototype.loadToken = function () {
+    if (this.settings.persistToken) {
+        var tokenJson = this.store.getItem(TokenManager.storageKey);
+        if (tokenJson) {
+            var token = Token.fromJSON(tokenJson);
+            if (!token.expired) {
+                this.token = token;
+            }
+        }
+    }
+}
+
+TokenManager.prototype.callTokenRemoved = function () {
+    this.tokenRemovedCallbacks.forEach(function (cb) {
+        cb();
+    });
+}
+TokenManager.prototype.callTokenExpired = function () {
+    this.tokenExpiredCallbacks.forEach(function (cb) {
+        cb();
+    });
+}
+TokenManager.prototype.callTokenObtained = function () {
+    this.tokenObtainedCallbacks.forEach(function (cb) {
+        cb();
+    });
+}
+TokenManager.prototype.addOnTokenRemoved = function (cb) {
+    this.tokenRemovedCallbacks.push(cb);
+}
+TokenManager.prototype.addOnTokenObtained = function (cb) {
+    this.tokenObtainedCallbacks.push(cb);
+}
+TokenManager.prototype.addOnTokenExpired = function (cb) {
+    this.tokenExpiredCallbacks.push(cb);
+}
+
+TokenManager.prototype.removeToken = function () {
+    this.saveToken(null);
+    this.callTokenRemoved();
+}
+TokenManager.prototype.redirectForToken = function () {
+    var request = this.oauth.createImplicitRequest();
+    window.location = request.url;
+}
+TokenManager.prototype.processTokenCallback = function (success, error) {
+    var result = this.oauth.readImplicitResult(location.hash);
+    if (result.error) {
+        if (error) {
+            error(result.error);
+        }
+    }
+    else {
+        var token = Token.fromOAuthResponse(result);
+        this.saveToken(token);
+        this.callTokenObtained();
+        if (success) {
+            success();
+        }
+    }
+}
+
+TokenManager.prototype.tryRenewToken = function () {
+    var settings = {};
+    for (var key in this.settings) {
+        settings[key] = this.settings[key];
+    }
+    settings.callbackUrl = settings.frameCallbackUrl;
+
+    var frame = new OAuthFrame(settings);
+    frame.tryRenewToken(
+        function (result) {
+            var token = Token.fromOAuthResponse(result);
+            this.saveToken(token);
+            this.callTokenObtained();
+        }.bind(this), function () {
+            // error callback
+        });
+}
+TokenManager.prototype.configureAutoRenewToken = function () {
+    if (this.settings.automaticallyRenewToken) {
+        var mgr = this;
+
+        function callback() {
+            mgr.tryRenewToken();
+        }
+
+        var handle = null;
+        function cancel() {
+            if (handle) {
+                window.clearTimeout(handle);
+            }
+        }
+
+        function setup(duration) {
+            cancel();
+            handle = window.setTimeout(callback, duration * 1000);
+        }
+
+        function configure() {
+            var token = mgr.token;
+            if (token) {
+                var duration = token.expires_in;
+                if (duration > 40) {
+                    setup(duration - 30);
+                }
+                else {
+                    callback();
+                }
+            }
+        }
+        configure();
+
+        this.addOnTokenRemoved(cancel);
+        this.addOnTokenObtained(configure);
+    }
+}
+
+TokenManager.prototype.configureTokenExpiration = function () {
+    var mgr = this;
+
+    function callback() {
+        var token = mgr.token;
+        if (!token || token.expired) {
+            mgr.saveToken(null);
+            mgr.callTokenRemoved()
+            mgr.callTokenExpired();
+        }
+    }
+
+    var handle = null;
+    function cancel() {
+        if (handle) {
+            window.clearTimeout(handle);
+            handle = null;
+        }
+    }
+
+    function setup(duration) {
+        handle = window.setTimeout(callback, duration * 1000);
+    }
+
+    function configure() {
+        cancel();
+        var token = mgr.token;
+        if (token && token.expires_in > 0) {
+            setup(token.expires_in);
+        }
+    }
+    configure();
+
+    mgr.addOnTokenObtained(configure);
 }
 
 ;
