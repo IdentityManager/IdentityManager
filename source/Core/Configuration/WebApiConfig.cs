@@ -22,10 +22,10 @@ namespace Thinktecture.IdentityManager
             apiConfig.MapHttpAttributeRoutes();
             if (!idmConfig.DisableUserInterface)
             {
-                apiConfig.Routes.MapHttpRoute("page",
+                apiConfig.Routes.MapHttpRoute(Constants.RouteNames.Home,
                     "",
                     new { controller = "Page", action = "Index" });
-                apiConfig.Routes.MapHttpRoute("frame",
+                apiConfig.Routes.MapHttpRoute(Constants.RouteNames.OAuthFrameCallback,
                     "frame",
                     new { controller = "Page", action = "Frame" });
             }

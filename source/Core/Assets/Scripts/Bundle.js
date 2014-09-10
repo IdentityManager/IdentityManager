@@ -472,29 +472,11 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
         frame.attr("src", this.url);
     }
 
-    function OAuthFrame(settings) {
-        this.settings = copy(settings);
-        //this.settings.prompt = "none";
-    }
-
-    OAuthFrame.prototype.tryRenewToken = function (success, error) {
-        var oauth = new OAuthClient(this.settings);
-        var request = oauth.createImplicitRequest({prompt:"none"});
-
-        var frame = new FrameLoader(request.url);
-        frame.load(function (hash) {
-            var result = oauth.readImplicitResult(hash);
-            if (!result.error) {
-                success(result);
-            }
-            error();
-        }, error);
-    }
-
     function TokenManager(settings) {
+        settings = settings || {};
+
         this.settings = settings;
         this.store = settings.store || window.localStorage;
-        this.oauth = new OAuthClient(settings);
 
         this.tokenRemovedCallbacks = [];
         this.tokenExpiredCallbacks = [];
@@ -558,11 +540,13 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
         this.callTokenRemoved();
     }
     TokenManager.prototype.redirectForToken = function () {
-        var request = this.oauth.createImplicitRequest();
+        var oauth = new OAuthClient(this.settings);
+        var request = oauth.createImplicitRequest();
         window.location = request.url;
     }
     TokenManager.prototype.processTokenCallback = function (success, error) {
-        var result = this.oauth.readImplicitResult(location.hash);
+        var oauth = new OAuthClient(this.settings);
+        var result = oauth.readImplicitResult(location.hash);
         if (result.error) {
             if (error) {
                 error(result.error);
@@ -581,19 +565,33 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
     TokenManager.prototype.tryRenewToken = function () {
         var settings = copy(this.settings);
         settings.callbackUrl = settings.frameCallbackUrl;
+        settings.prompt = "none";
 
-        var frame = new OAuthFrame(settings);
-        frame.tryRenewToken(
-            function (result) {
+        var oauth = new OAuthClient(settings);
+        var request = oauth.createImplicitRequest();
+
+        var frame = new FrameLoader(request.url);
+        frame.load(function (hash) {
+            var result = oauth.readImplicitResult(hash);
+            if (!result.error) {
                 var token = Token.fromOAuthResponse(result);
                 this.saveToken(token);
                 this.callTokenObtained();
-            }.bind(this), function () {
-                // error callback
-            });
+            }
+        }.bind(this), function () {
+            // error/timeout
+        });
+    }
+    TokenManager.prototype.checkForRenewedToken = function () {
+        if (window.top && window !== window.top) {
+            var hash = window.location.hash;
+            if (hash) {
+                window.top.postMessage(hash, location.protocol + "//" + location.host);
+            }
+        };
     }
     TokenManager.prototype.configureAutoRenewToken = function () {
-        if (this.settings.automaticallyRenewToken) {
+        if (this.settings.frameCallbackUrl) {
             var mgr = this;
 
             function callback() {
@@ -710,8 +708,6 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
     function idmTokenManager(TokenManager, OAuthConfig, PathBase, $window, $rootScope) {
         if (OAuthConfig) {
             OAuthConfig.callbackUrl = $window.location.protocol + "//" + $window.location.host + PathBase + "/#/callback";
-            OAuthConfig.frameCallbackUrl = $window.location.protocol + "//" + $window.location.host + PathBase + "/frame";
-
             var svc = new TokenManager(OAuthConfig);
 
             Object.defineProperty(svc, "isTokenNeeded", {

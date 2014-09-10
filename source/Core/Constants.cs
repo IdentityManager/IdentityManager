@@ -47,6 +47,9 @@ namespace Thinktecture.IdentityManager
             public const string CreateRole = "CreateRole";
             public const string DeleteRole = "DeleteRole ";
             public const string UpdateRoleProperty = "UpdateRoleProperty";
+
+            public const string Home = "Home";
+            public const string OAuthFrameCallback = "FrameCallback";
         }
     }
 }

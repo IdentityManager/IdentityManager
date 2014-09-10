@@ -207,28 +207,13 @@
     <Content Include="Assets\Scripts\App\frame.js" />
     <Content Include="Assets\Scripts\App\oauth.js" />
     <Content Include="Assets\Scripts\App\ttIdm.js" />
-    <Content Include="Assets\Scripts\App\ttIdmApp.min - Copy %282%29.js">
-      <DependentUpon>ttIdmRoles.js</DependentUpon>
-    </Content>
-    <Content Include="Assets\Scripts\App\ttIdmApp.min - Copy.js">
-      <DependentUpon>ttIdmApp.js</DependentUpon>
-    </Content>
     <Content Include="Assets\Scripts\App\ttIdmApp.js" />
     <Content Include="Assets\Scripts\App\ttIdmRoles.js" />
     <Content Include="Assets\Scripts\App\ttIdmUsers.js" />
-    <Content Include="Assets\Scripts\App\ttIdmApp.min.js">
-      <DependentUpon>ttIdmUsers.js</DependentUpon>
-    </Content>
     <Content Include="Assets\Scripts\App\ttIdmUI.js" />
     <EmbeddedResource Include="Assets\Scripts\Bundle.js">
       <DependentUpon>Bundle.js.bundle</DependentUpon>
     </EmbeddedResource>
-    <Content Include="Assets\Scripts\App\ttIdm.min.js">
-      <DependentUpon>ttIdm.js</DependentUpon>
-    </Content>
-    <Content Include="Assets\Scripts\App\ttIdmUI.min.js">
-      <DependentUpon>ttIdmUI.js</DependentUpon>
-    </Content>
     <EmbeddedResource Include="Assets\Scripts\Frame.js">
       <DependentUpon>Frame.js.bundle</DependentUpon>
     </EmbeddedResource>
@@ -245,21 +230,6 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="Assets\Scripts\App\ttIdm.min.js.map">
-      <DependentUpon>ttIdm.min.js</DependentUpon>
-    </None>
-    <None Include="Assets\Scripts\App\ttIdmApp.min.js - Copy %282%29.map">
-      <DependentUpon>ttIdmApp.min - Copy %282%29.js</DependentUpon>
-    </None>
-    <None Include="Assets\Scripts\App\ttIdmApp.min.js - Copy.map">
-      <DependentUpon>ttIdmApp.min - Copy.js</DependentUpon>
-    </None>
-    <None Include="Assets\Scripts\App\ttIdmApp.min.js.map">
-      <DependentUpon>ttIdmApp.min.js</DependentUpon>
-    </None>
-    <None Include="Assets\Scripts\App\ttIdmUI.min.js.map">
-      <DependentUpon>ttIdmUI.min.js</DependentUpon>
-    </None>
     <None Include="Assets\Scripts\Frame.js.bundle" />
     <None Include="packages.config" />
     <None Include="..\default.licenseheader">

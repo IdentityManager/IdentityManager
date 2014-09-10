@@ -31,8 +31,6 @@
     function idmTokenManager(TokenManager, OAuthConfig, PathBase, $window, $rootScope) {
         if (OAuthConfig) {
             OAuthConfig.callbackUrl = $window.location.protocol + "//" + $window.location.host + PathBase + "/#/callback";
-            OAuthConfig.frameCallbackUrl = $window.location.protocol + "//" + $window.location.host + PathBase + "/frame";
-
             var svc = new TokenManager(OAuthConfig);
 
             Object.defineProperty(svc, "isTokenNeeded", {

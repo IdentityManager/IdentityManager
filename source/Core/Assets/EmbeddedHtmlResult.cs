@@ -16,12 +16,17 @@ namespace Thinktecture.IdentityManager.Assets
         string path;
         string file;
         OAuth2Configuration oauthConfig;
+        string frameCallbackUrl;
 
         public EmbeddedHtmlResult(HttpRequestMessage request, string file, OAuth2Configuration oauthConfig = null)
         {
             this.path = request.GetOwinContext().Request.PathBase.Value;
             this.file = file;
             this.oauthConfig = oauthConfig;
+            if (oauthConfig != null && oauthConfig.AutomaticallyRenewToken)
+            {
+                this.frameCallbackUrl = request.GetUrlHelper().Link(Constants.RouteNames.OAuthFrameCallback, null);
+            }
         }
 
         public Task<System.Net.Http.HttpResponseMessage> ExecuteAsync(System.Threading.CancellationToken cancellationToken)
@@ -40,7 +45,7 @@ namespace Thinktecture.IdentityManager.Assets
                     clientId = oauthConfig.ClientId,
                     scope = oauthConfig.Scope,
                     persistToken = oauthConfig.PersistToken,
-                    automaticallyRenewToken = oauthConfig.AutomaticallyRenewToken
+                    frameCallbackUrl = this.frameCallbackUrl
                 };
             }
             var html = AssetManager.LoadResourceString(this.file,
