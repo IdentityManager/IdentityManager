@@ -31,40 +31,33 @@
     function LayoutCtrl($rootScope, $scope, idmApi, $location, idmTokenManager) {
         $scope.layout = {};
 
-        function load() {
+        function removed() {
+            $scope.layout.username = null;
+            $scope.layout.links = null;
             $scope.layout.showLogout = idmTokenManager.token && !idmTokenManager.token.expired;
+            $scope.layout.showLogin = idmTokenManager.isTokenNeeded;
+        }
+
+        function load() {
+            removed();
 
             idmApi.get().then(function (api) {
                 $scope.layout.username = api.data.currentUser.username;
                 $scope.layout.links = api.links;
             });
         }
+
         idmTokenManager.addOnTokenObtained(load);
+        idmTokenManager.addOnTokenRemoved(removed);
         load();
 
-        idmTokenManager.addOnTokenRemoved(function () {
-            $scope.layout.links = null;
-            $scope.layout.showLogout = false;
-        });
-
-        if (idmTokenManager.isTokenNeeded) {
-            $scope.layout.showLogin = true;
-
-            if ($location.path() !== "/" &&
-                $location.path() !== "/callback" && 
-                $location.path() !== "/error" &&
-                $location.path() !== "/logout") {
+        if (idmTokenManager.isTokenNeeded &&
+            $location.path() !== "/" &&
+            $location.path() !== "/callback" && 
+            $location.path() !== "/error" &&
+            $location.path() !== "/logout") {
                 $location.path("/");
-            }
         }
-
-        idmTokenManager.addOnTokenRemoved(function () {
-            $scope.layout.showLogin = true;
-        });
-
-        idmTokenManager.addOnTokenObtained(function () {
-            $scope.layout.showLogin = false;
-        });
 
         idmTokenManager.addOnTokenExpired(function () {
             $location.url("/error");

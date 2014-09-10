@@ -43,25 +43,22 @@
                 }
             });
 
-            svc.callTokenRemoved = function () {
-                $rootScope.$applyAsync(function () {
-                    svc.tokenRemovedCallbacks.forEach(function (cb) {
-                        cb();
-                    });
-                });
-            }
-            svc.callTokenExpired = function () {
-                $rootScope.$applyAsync(function () {
-                    svc.tokenExpiredCallbacks.forEach(function (cb) {
-                        cb();
-                    });
-                });
-            }
+            var callTokenObtained = svc.callTokenObtained.bind(svc);
             svc.callTokenObtained = function () {
                 $rootScope.$applyAsync(function () {
-                    svc.tokenObtainedCallbacks.forEach(function (cb) {
-                        cb();
-                    });
+                    callTokenObtained();
+                });
+            }
+            var callTokenRemoved = svc.callTokenRemoved.bind(svc);
+            svc.callTokenRemoved = function () {
+                $rootScope.$applyAsync(function () {
+                    callTokenRemoved();
+                });
+            }
+            var callTokenExpired = svc.callTokenExpired.bind(svc);
+            svc.callTokenExpired = function () {
+                $rootScope.$applyAsync(function () {
+                    callTokenExpired();
                 });
             }
 
