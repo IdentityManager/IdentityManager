@@ -304,7 +304,7 @@ return d||(f=$b[b],$b[b]=e,e=null!=c(a,b,d)?b.toLowerCase():null,$b[b]=f),e}});v
         }
     }
 
-    TokenManager.prototype.tryRenewToken = function () {
+    TokenManager.prototype.tryRenewToken = function (success, error) {
         var settings = copy(this.settings);
         settings.callbackUrl = settings.frameCallbackUrl;
         settings.prompt = "none";
@@ -319,9 +319,14 @@ return d||(f=$b[b],$b[b]=e,e=null!=c(a,b,d)?b.toLowerCase():null,$b[b]=f),e}});v
                 var token = Token.fromOAuthResponse(result);
                 this.saveToken(token);
                 this.callTokenObtained();
+                if (success) {
+                    success();
+                }
             }
         }.bind(this), function () {
-            // error/timeout
+            if (error) {
+                error();
+            }
         });
     }
     TokenManager.prototype.checkForRenewedToken = function () {
@@ -333,7 +338,7 @@ return d||(f=$b[b],$b[b]=e,e=null!=c(a,b,d)?b.toLowerCase():null,$b[b]=f),e}});v
         };
     }
     TokenManager.prototype.configureAutoRenewToken = function () {
-        if (this.settings.frameCallbackUrl) {
+        if (this.settings.autoRenewToken) {
             var mgr = this;
 
             function callback() {

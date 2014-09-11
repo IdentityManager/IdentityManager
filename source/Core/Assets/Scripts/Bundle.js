@@ -562,7 +562,7 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
         }
     }
 
-    TokenManager.prototype.tryRenewToken = function () {
+    TokenManager.prototype.tryRenewToken = function (success, error) {
         var settings = copy(this.settings);
         settings.callbackUrl = settings.frameCallbackUrl;
         settings.prompt = "none";
@@ -577,9 +577,14 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
                 var token = Token.fromOAuthResponse(result);
                 this.saveToken(token);
                 this.callTokenObtained();
+                if (success) {
+                    success();
+                }
             }
         }.bind(this), function () {
-            // error/timeout
+            if (error) {
+                error();
+            }
         });
     }
     TokenManager.prototype.checkForRenewedToken = function () {
@@ -591,7 +596,7 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
         };
     }
     TokenManager.prototype.configureAutoRenewToken = function () {
-        if (this.settings.frameCallbackUrl) {
+        if (this.settings.autoRenewToken) {
             var mgr = this;
 
             function callback() {

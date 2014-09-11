@@ -45,7 +45,8 @@ namespace Thinktecture.IdentityManager.Assets
                     clientId = oauthConfig.ClientId,
                     scope = oauthConfig.Scope,
                     persistToken = oauthConfig.PersistToken,
-                    frameCallbackUrl = this.frameCallbackUrl
+                    frameCallbackUrl = this.frameCallbackUrl,
+                    autoRenewToken = !String.IsNullOrWhiteSpace(this.frameCallbackUrl)
                 };
             }
             var html = AssetManager.LoadResourceString(this.file,
