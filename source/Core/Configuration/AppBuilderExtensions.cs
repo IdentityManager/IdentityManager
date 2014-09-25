@@ -23,7 +23,7 @@ using Thinktecture.IdentityModel.Owin.ScopeValidation;
 
 namespace Owin
 {
-    public static class AppBuilderExtensions
+    public static class IdentityManagerAppBuilderExtensions
     {
         public static void UseIdentityManager(this IAppBuilder app, IdentityManagerConfiguration config)
         {
