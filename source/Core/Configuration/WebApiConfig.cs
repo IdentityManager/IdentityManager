@@ -41,8 +41,7 @@ namespace Thinktecture.IdentityManager
                 apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.BearerAuthenticationType));
             }
 
-            //apiConfig.Filters.Add(new AuthorizeAttribute() { Roles = idmConfig.AdminRoleName });
-            apiConfig.Filters.Add(new AuthorizeAttribute());
+            apiConfig.Filters.Add(new AuthorizeAttribute() { Roles = idmConfig.AdminRoleName });
 
             apiConfig.Formatters.Remove(apiConfig.Formatters.XmlFormatter);
             apiConfig.Formatters.Remove(apiConfig.Formatters.FormUrlEncodedFormatter);

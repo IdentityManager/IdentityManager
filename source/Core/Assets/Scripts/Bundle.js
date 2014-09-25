@@ -699,6 +699,9 @@ function(d){f.current.pathParams[d]||(b[d]=a[d])});a=d.extend({},this.current.pa
                         if (response.status === 401 && idmTokenManager.token) {
                             idmTokenManager.removeToken();
                         }
+                        if (response.status === 403 && idmTokenManager.token) {
+                            idmTokenManager.removeToken();
+                        }
                         return $q.reject(response);
                     }
                 };

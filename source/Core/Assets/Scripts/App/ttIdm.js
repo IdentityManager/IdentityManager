@@ -17,6 +17,9 @@
                         if (response.status === 401 && idmTokenManager.token) {
                             idmTokenManager.removeToken();
                         }
+                        if (response.status === 403 && idmTokenManager.token) {
+                            idmTokenManager.removeToken();
+                        }
                         return $q.reject(response);
                     }
                 };

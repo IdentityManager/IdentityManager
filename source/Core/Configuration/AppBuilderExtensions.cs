@@ -8,13 +8,18 @@ using Microsoft.Owin.Extensions;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.StaticFiles;
 using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens;
 using System.Security.Claims;
+using System.ServiceModel.Security.Tokens;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager;
 using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
+using Thinktecture.IdentityModel.Owin.ScopeValidation;
 
 namespace Owin
 {
@@ -26,6 +31,8 @@ namespace Owin
             if (config == null) throw new ArgumentNullException("config");
             config.Validate();
 
+            JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+
             if (config.SecurityMode == SecurityMode.LocalMachine)
             {
                 var local = new LocalAuthenticationOptions(config.AdminRoleName);
@@ -33,19 +40,33 @@ namespace Owin
             }
             else if (config.SecurityMode == SecurityMode.OAuth2)
             {
+                var jwtParams = new System.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    RoleClaimType = Constants.ClaimTypes.Role,
+                    ValidAudience = config.OAuth2Configuration.Audience,
+                    ValidIssuer = config.OAuth2Configuration.Issuer,
+                };
                 if (config.OAuth2Configuration.SigningCert != null)
                 {
-                    app.UseJsonWebToken(config.OAuth2Configuration.Issuer,
-                        config.OAuth2Configuration.Audience,
-                        config.OAuth2Configuration.SigningCert);
+                    jwtParams.IssuerSigningToken = new X509SecurityToken(config.OAuth2Configuration.SigningCert);
                 }
                 else
                 {
-                    app.UseJsonWebToken(config.OAuth2Configuration.Issuer,
-                        config.OAuth2Configuration.Audience,
-                        config.OAuth2Configuration.SigningKey);
+                    var bytes = Convert.FromBase64String(config.OAuth2Configuration.SigningKey);
+                    jwtParams.IssuerSigningToken = new BinarySecretSecurityToken(bytes);
                 }
-                app.Use(async(ctx, next) =>
+
+                app.UseJwtBearerAuthentication(new JwtBearerAuthenticationOptions {
+                    TokenValidationParameters = jwtParams
+                });
+                app.RequireScopes(new ScopeValidationOptions {
+                    AllowAnonymousAccess = true,
+                    Scopes = new string[] {
+                        config.OAuth2Configuration.Scope
+                    }
+                });
+
+                app.Use(async (ctx, next) =>
                 {
                     await next();
                 });

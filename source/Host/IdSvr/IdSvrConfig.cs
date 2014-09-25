@@ -35,7 +35,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     Username = "admin", 
                     Password = "admin",
                     Claims = new Claim[]{
-                        new Claim("role", "IdentityManagerAdministrator"),                    
+                        new Claim(Constants.ClaimTypes.Role, "IdentityManagerAdministrator"),
                     }
                 }
             };
@@ -66,6 +66,10 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     Name = "idmgr",
                     DisplayName = "IdentityManager",
                     Description = "Authorization for IdentityManager",
+                    Type = ScopeType.Resource,
+                    Claims = new ScopeClaim[]{
+                        new ScopeClaim(Constants.ClaimTypes.Role)
+                    }
                 },
             };
         }

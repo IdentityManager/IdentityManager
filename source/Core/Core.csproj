@@ -115,6 +115,9 @@
     <Reference Include="Thinktecture.IdentityModel.Owin">
       <HintPath>..\packages\Thinktecture.IdentityModel.Owin.2.1.1\lib\net45\Thinktecture.IdentityModel.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Thinktecture.IdentityModel.Owin.ScopeValidation">
+      <HintPath>..\packages\Thinktecture.IdentityModel.Owin.ScopeValidation.2.0.0\lib\net45\Thinktecture.IdentityModel.Owin.ScopeValidation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\Controllers\PageController.cs" />
