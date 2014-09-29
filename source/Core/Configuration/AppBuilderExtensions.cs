@@ -65,11 +65,6 @@ namespace Owin
                         config.OAuth2Configuration.Scope
                     }
                 });
-
-                app.Use(async (ctx, next) =>
-                {
-                    await next();
-                });
             }
 
             if (!config.DisableUserInterface)
