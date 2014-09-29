@@ -77,12 +77,12 @@ namespace Owin
                 app.UseFileServer(new FileServerOptions
                 {
                     RequestPath = new PathString("/assets"),
-                    FileSystem = new EmbeddedResourceFileSystem(typeof(AppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Assets")
+                    FileSystem = new EmbeddedResourceFileSystem(typeof(IdentityManagerAppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Assets")
                 });
                 app.UseFileServer(new FileServerOptions
                 {
                     RequestPath = new PathString("/assets/libs/fonts"),
-                    FileSystem = new EmbeddedResourceFileSystem(typeof(AppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Assets.Content.fonts")
+                    FileSystem = new EmbeddedResourceFileSystem(typeof(IdentityManagerAppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Assets.Content.fonts")
                 });
                 app.UseStageMarker(PipelineStage.MapHandler);
             }
