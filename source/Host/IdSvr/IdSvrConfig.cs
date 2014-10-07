@@ -33,9 +33,11 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                 IssuerUri = "https://idsrv3.com",
                 SiteName = "Thinktecture IdentityServer v3",
                 SigningCertificate = Cert.Load(),
-                CspReportEndpoint = EndpointSettings.Enabled,
-                //AccessTokenValidationEndpoint = EndpointSettings.Enabled,
+                CspOptions = new CspOptions{
+                    ReportEndpoint = EndpointSettings.Enabled, 
+                },
                 PublicHostName = "http://localhost:17457",
+                RequireSsl = false,
                 Factory = factory,
                 CorsPolicy = CorsPolicy.AllowAll,
             };
