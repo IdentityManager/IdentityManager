@@ -2,7 +2,7 @@ Thinktecture.IdentityManager
 ============================
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/thinktecture/Thinktecture.IdentityManager?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**current status: beta 1**
+**current status: beta 2**
 
 ## Overview ##
 
