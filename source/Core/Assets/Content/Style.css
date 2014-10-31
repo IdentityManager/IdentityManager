@@ -5866,6 +5866,9 @@ body {
   position: absolute;
   left: 155px;
 }
+.user-noroles {
+  margin-top: 20px;
+}
 .user-roles .alert {
   margin-top: 20px;
 }
