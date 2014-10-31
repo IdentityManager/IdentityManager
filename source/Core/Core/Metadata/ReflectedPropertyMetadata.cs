@@ -16,6 +16,7 @@
 
 using System;
 using System.Reflection;
+using Thinktecture.IdentityManager.Resources;
 
 namespace Thinktecture.IdentityManager
 {
@@ -45,7 +46,7 @@ namespace Thinktecture.IdentityManager
             return null;
         }
 
-        public override void Set(object instance, string value)
+        public override IdentityManagerResult Set(object instance, string value)
         {
             if (instance == null) throw new ArgumentNullException("instance");
             
@@ -56,9 +57,20 @@ namespace Thinktecture.IdentityManager
             else
             {
                 var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                var convertedValue = Convert.ChangeType(value, type);
+                object convertedValue = null;
+                try
+                {
+                    convertedValue = Convert.ChangeType(value, type);
+                }
+                catch
+                {
+                    return new IdentityManagerResult(Messages.ConversionFailed);
+                }
+                
                 property.SetValue(instance, convertedValue);
             }
+
+            return IdentityManagerResult.Success;
         }
     }
 }

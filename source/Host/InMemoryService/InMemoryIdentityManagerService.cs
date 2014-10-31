@@ -100,9 +100,10 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             return user.Claims.GetValue(Constants.ClaimTypes.Name);
         }
 
-        private void SetName(InMemoryUser user, string value)
+        private IdentityManagerResult SetName(InMemoryUser user, string value)
         {
             user.Claims.SetValue(Constants.ClaimTypes.Name, value);
+            return IdentityManagerResult.Success;
         }
 
         public System.Threading.Tasks.Task<IdentityManagerMetadata> GetMetadataAsync()
@@ -122,7 +123,11 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             var createPropsMeta = GetMetadata().UserMetadata.GetCreateProperties();
             foreach(var prop in properties)
             {
-                SetUserProperty(createPropsMeta, user, prop.Type, prop.Value);
+                var result = SetUserProperty(createPropsMeta, user, prop.Type, prop.Value);
+                if (!result.IsSuccess)
+                {
+                    return Task.FromResult(new IdentityManagerResult<CreateResult>(result.Errors.ToArray()));
+                }
             }
             
             users.Add(user);
@@ -221,9 +226,8 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
                 return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
             }
 
-            SetUserProperty(GetMetadata().UserMetadata.UpdateProperties, user, type, value);
-
-            return Task.FromResult(IdentityManagerResult.Success);
+            var result = SetUserProperty(GetMetadata().UserMetadata.UpdateProperties, user, type, value);
+            return Task.FromResult(result);
         }
 
         public System.Threading.Tasks.Task<IdentityManagerResult> AddUserClaimAsync(string subject, string type, string value)
@@ -271,11 +275,12 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             throw new Exception("Invalid property type " + property.Type);
         }
 
-        private void SetUserProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryUser user, string type, string value)
+        private IdentityManagerResult SetUserProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryUser user, string type, string value)
         {
-            if (propsMeta.TrySet(user, type, value))
+            IdentityManagerResult result;
+            if (propsMeta.TrySet(user, type, value, out result))
             {
-                return;
+                return result;
             }
 
             switch (type)
@@ -301,6 +306,8 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
                 default:
                     throw new InvalidOperationException("Invalid Property Type : " + type);
             }
+
+            return IdentityManagerResult.Success;
         }
 
         IEnumerable<string> ValidateUserProperties(IEnumerable<PropertyValue> properties)
@@ -349,7 +356,11 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             var createPropsMeta = GetMetadata().RoleMetadata.GetCreateProperties();
             foreach (var prop in properties)
             {
-                SetRoleProperty(createPropsMeta, role, prop.Type, prop.Value);
+                var result = SetRoleProperty(createPropsMeta, role, prop.Type, prop.Value);
+                if (!result.IsSuccess)
+                {
+                    return Task.FromResult(new IdentityManagerResult<CreateResult>(result.Errors.ToArray()));
+                }
             }
 
             if (roles.Any(x=>x.Name.Equals(role.Name, StringComparison.OrdinalIgnoreCase)))
@@ -464,9 +475,8 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
                 return Task.FromResult(new IdentityManagerResult(errors.ToArray()));
             }
 
-            SetRoleProperty(GetMetadata().RoleMetadata.UpdateProperties, role, type, value);
-
-            return Task.FromResult(IdentityManagerResult.Success);
+            var result = SetRoleProperty(GetMetadata().RoleMetadata.UpdateProperties, role, type, value);
+            return Task.FromResult(result);
         }
 
         private string GetRoleProperty(PropertyMetadata property, InMemoryRole role)
@@ -480,11 +490,12 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             throw new Exception("Invalid property type " + property.Type);
         }
 
-        private void SetRoleProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryRole role, string type, string value)
+        private IdentityManagerResult SetRoleProperty(IEnumerable<PropertyMetadata> propsMeta, InMemoryRole role, string type, string value)
         {
-            if (propsMeta.TrySet(role, type, value))
+            IdentityManagerResult result;
+            if (propsMeta.TrySet(role, type, value, out result))
             {
-                return;
+                return result;
             }
 
             throw new InvalidOperationException("Invalid Property Type : " + type);

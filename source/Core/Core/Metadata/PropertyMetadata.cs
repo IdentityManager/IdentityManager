@@ -37,8 +37,8 @@ namespace Thinktecture.IdentityManager
 
         public static PropertyMetadata FromFunctions<TContainer, TProperty>(
             string type,
-            Func<TContainer, TProperty> get, 
-            Action<TContainer, TProperty> set,
+            Func<TContainer, TProperty> get,
+            Func<TContainer, TProperty, IdentityManagerResult> set,
             string name = null,
             PropertyDataType? dataType = null,
             bool? required = null)

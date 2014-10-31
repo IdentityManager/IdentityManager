@@ -19,6 +19,6 @@ namespace Thinktecture.IdentityManager
     public abstract class ExecutablePropertyMetadata : PropertyMetadata
     {
         public abstract string Get(object instance);
-        public abstract void Set(object instance, string value);
+        public abstract IdentityManagerResult Set(object instance, string value);
     }
 }

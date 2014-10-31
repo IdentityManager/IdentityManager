@@ -112,27 +112,29 @@ namespace Thinktecture.IdentityManager
             return null;
         }
 
-        public static bool TrySet(this IEnumerable<PropertyMetadata> properties, object instance, string type, string value)
+        public static bool TrySet(this IEnumerable<PropertyMetadata> properties, object instance, string type, string value, out IdentityManagerResult result)
         {
             if (properties == null) throw new ArgumentNullException("properties");
+            result = null;
 
             var executableProperty = properties.Where(x => x.Type == type).SingleOrDefault() as ExecutablePropertyMetadata;
             if (executableProperty != null)
             {
-                return executableProperty.TrySet(instance, value);
+                return executableProperty.TrySet(instance, value, out result);
             }
             
             return false;
         }
 
-        public static bool TrySet(this PropertyMetadata property, object instance, string value)
+        public static bool TrySet(this PropertyMetadata property, object instance, string value, out IdentityManagerResult result)
         {
             if (property == null) throw new ArgumentNullException("property");
+            result = null;
 
             var executableProperty = property as ExecutablePropertyMetadata;
             if (executableProperty != null)
             {
-                executableProperty.Set(instance, value);
+                result = executableProperty.Set(instance, value);
                 return true;
             }
 

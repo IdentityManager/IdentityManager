@@ -16,14 +16,15 @@
 
 using System;
 using System.Reflection;
+using Thinktecture.IdentityManager.Resources;
 
 namespace Thinktecture.IdentityManager
 {
     public class ExpressionPropertyMetadata<TContainer, TProperty> : ExecutablePropertyMetadata
     {
         Func<TContainer, TProperty> get;
-        Action<TContainer, TProperty> set;
-        public ExpressionPropertyMetadata(string type, Func<TContainer, TProperty> get, Action<TContainer, TProperty> set)
+        Func<TContainer, TProperty, IdentityManagerResult> set;
+        public ExpressionPropertyMetadata(string type, Func<TContainer, TProperty> get, Func<TContainer, TProperty, IdentityManagerResult> set)
             : this(type, type, get, set)
         {
         }
@@ -31,8 +32,8 @@ namespace Thinktecture.IdentityManager
         public ExpressionPropertyMetadata(
             string type, 
             string name, 
-            Func<TContainer, TProperty> get, 
-            Action<TContainer, TProperty> set)
+            Func<TContainer, TProperty> get,
+            Func<TContainer, TProperty, IdentityManagerResult> set)
         {
             if (String.IsNullOrWhiteSpace(type)) throw new ArgumentNullException("type");
             if (String.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("name");
@@ -62,20 +63,28 @@ namespace Thinktecture.IdentityManager
             return null;
         }
 
-        public override void Set(object instance, string value)
+        public override IdentityManagerResult Set(object instance, string value)
         {
             if (instance == null) throw new ArgumentNullException("instance");
             
             if (String.IsNullOrWhiteSpace(value))
             {
-                set((TContainer)instance, default(TProperty));
+                return set((TContainer)instance, default(TProperty));
             }
             else
             {
                 var type = typeof(TProperty);
                 type = Nullable.GetUnderlyingType(type) ?? type;
-                var convertedValue = (TProperty)Convert.ChangeType(value, type);
-                set((TContainer)instance, convertedValue);
+                TProperty convertedValue = default(TProperty);
+                try
+                {
+                    convertedValue = (TProperty)Convert.ChangeType(value, type);
+                }
+                catch
+                {
+                    return new IdentityManagerResult(Messages.ConversionFailed);
+                }
+                return set((TContainer)instance, convertedValue);
             }
         }
     }

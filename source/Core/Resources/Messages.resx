@@ -129,6 +129,9 @@
   <data name="ClaimValueRequired" xml:space="preserve">
     <value>Claim value is required.</value>
   </data>
+  <data name="ConversionFailed" xml:space="preserve">
+    <value>The value failed to be converted.</value>
+  </data>
   <data name="EmailDataRequired" xml:space="preserve">
     <value>Email data required.</value>
   </data>
