@@ -10,7 +10,7 @@ Please start a discussion on the [main repo issue tracker](https://github.com/th
 ## Bugs and feature requests?
 Please log a new issue in the appropriate GitHub repo:
 
-* [Core](https://github.com/thinktecture/Thinktecture.IdentityServer.v3)
+* [IdentityManager core](https://github.com/thinktecture/Thinktecture.IdentityManager)
 * [ASP.NET Identity support](https://github.com/thinktecture/Thinktecture.IdentityManager.AspNetIdentity)
 * [MembershipReboot support](https://github.com/thinktecture/Thinktecture.IdentityManager.MembershipReboot)
 
