@@ -24,6 +24,8 @@ namespace Thinktecture.IdentityManager
         public OAuth2Configuration()
         {
             Scope = Constants.IdMgrScope;
+            NameClaimType = Constants.ClaimTypes.Name;
+            RoleClaimType = Constants.ClaimTypes.Role;
         }
 
         public string AuthorizationUrl { get; set; }
@@ -38,6 +40,9 @@ namespace Thinktecture.IdentityManager
 
         public bool PersistToken { get; set; }
         public bool AutomaticallyRenewToken { get; set; }
+
+        public string NameClaimType { get; set; }
+        public string RoleClaimType { get; set; }
 
         internal void Validate()
         {

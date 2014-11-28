@@ -60,7 +60,7 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
             var data = new Dictionary<string, object>();
             
             var cp = (ClaimsPrincipal)User;
-            var name = cp.Claims.Where(x => x.Type == Constants.ClaimTypes.Name).Select(x => x.Value).FirstOrDefault();
+            var name = cp.Identity.Name;
             data.Add("currentUser", new {
                 username = name
             });

@@ -53,7 +53,8 @@ namespace Owin
             {
                 var jwtParams = new System.IdentityModel.Tokens.TokenValidationParameters
                 {
-                    RoleClaimType = Constants.ClaimTypes.Role,
+                    NameClaimType = config.OAuth2Configuration.NameClaimType,
+                    RoleClaimType = config.OAuth2Configuration.RoleClaimType,
                     ValidAudience = config.OAuth2Configuration.Audience,
                     ValidIssuer = config.OAuth2Configuration.Issuer,
                 };
