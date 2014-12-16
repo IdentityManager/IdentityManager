@@ -62,9 +62,13 @@ namespace Thinktecture.IdentityManager
 
             //apiConfig.Services.Add(typeof(IExceptionLogger), new UserAdminExceptionLogger());
 
-#if DEBUG
-            apiConfig.Services.Add(typeof(IExceptionLogger), new TraceLogger());
-#endif
+//#if DEBUG
+//            apiConfig.Services.Add(typeof(IExceptionLogger), new TraceLogger());
+//#endif
+            if (idmConfig.Logger != null)
+            {
+                apiConfig.Services.Add(typeof(IExceptionLogger), new ExceptionLoggerAdapter(idmConfig.Logger));
+            }
         }
 
         //public class UserAdminExceptionLogger : ExceptionLogger

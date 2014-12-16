@@ -136,6 +136,9 @@
     <Compile Include="Assets\EmbeddedHtmlResult.cs" />
     <Compile Include="Configuration\AppBuilderExtensions.cs" />
     <Compile Include="Configuration\AutofacConfig.cs" />
+    <Compile Include="Configuration\Hosting\ExceptionLoggerAdapter.cs" />
+    <Compile Include="Configuration\Hosting\IdmLogContext.cs" />
+    <Compile Include="Configuration\Hosting\IIdmLogger.cs" />
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationHandler.cs" />
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationMiddleware.cs" />
     <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationOptions.cs" />

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
 using Owin;
+using Thinktecture.IdentityManager.Configuration.Hosting;
 using Thinktecture.IdentityManager.Host.IdSvr;
 using Thinktecture.IdentityManager.Host.InMemoryService;
 
@@ -44,7 +48,8 @@ namespace Thinktecture.IdentityManager.Host
                         Scope = "idmgr",
                         //PersistToken = true,
                         //AutomaticallyRenewToken = true
-                    }
+                    },
+                    Logger = new TraceLogger()
                 });
             });
 
@@ -54,13 +59,21 @@ namespace Thinktecture.IdentityManager.Host
             {
                 IdSvrConfig.Configure(ids);
             });
-            
+
             // used to redirect to the main admin page visiting the root of the host
             app.Run(ctx =>
             {
                 ctx.Response.Redirect("/idm/");
                 return System.Threading.Tasks.Task.FromResult(0);
             });
+        }
+
+        private class TraceLogger : IIdmLogger
+        {
+            public Task LogAsync(IdmLogContext ctx, CancellationToken cancellationToken)
+            {
+                return Task.Run(() => Trace.TraceError(ctx.Exception.Message), cancellationToken);
+            }
         }
     }
 }
