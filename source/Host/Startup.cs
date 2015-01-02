@@ -15,8 +15,10 @@
  */
 
 using Owin;
+using Thinktecture.IdentityManager.Core.Logging;
 using Thinktecture.IdentityManager.Host.IdSvr;
 using Thinktecture.IdentityManager.Host.InMemoryService;
+using Thinktecture.IdentityManager.Logging;
 
 namespace Thinktecture.IdentityManager.Host
 {
@@ -28,6 +30,8 @@ namespace Thinktecture.IdentityManager.Host
             // we're using a Map just to test hosting not at the root
             app.Map("/idm", idm =>
             {
+                LogProvider.SetCurrentLogProvider(new DiagnosticsTraceLogProvider());
+
                 var rand = new System.Random();
                 var svc = new InMemoryIdentityManagerService(Users.Get(rand.Next(5000, 20000)), Roles.Get(rand.Next(15)));
                 idm.UseIdentityManager(new IdentityManagerConfiguration
