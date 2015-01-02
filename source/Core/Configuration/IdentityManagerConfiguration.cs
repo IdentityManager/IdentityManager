@@ -15,7 +15,6 @@
  */
 
 using System;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Thinktecture.IdentityManager
 {
@@ -33,7 +32,7 @@ namespace Thinktecture.IdentityManager
         public OAuth2Configuration OAuth2Configuration { get; set; }
 
         public bool DisableUserInterface { get; set; }
-
+        
         internal void Validate()
         {
             if (this.IdentityManagerFactory == null)

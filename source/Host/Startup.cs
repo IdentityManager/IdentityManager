@@ -54,7 +54,7 @@ namespace Thinktecture.IdentityManager.Host
             {
                 IdSvrConfig.Configure(ids);
             });
-            
+
             // used to redirect to the main admin page visiting the root of the host
             app.Run(ctx =>
             {
