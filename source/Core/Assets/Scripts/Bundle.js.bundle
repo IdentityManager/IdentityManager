@@ -14,7 +14,7 @@
     <file>/Assets/Scripts/Libs/bootstrap.min.js</file>
     <file>/Assets/Scripts/Libs/angular.min.js</file>
     <file>/Assets/Scripts/Libs/angular-route.min.js</file>
-    <file>/Assets/Scripts/App/oauth.js</file>
+    <file>/Assets/Scripts/App/oidc.js</file>
     <file>/Assets/Scripts/App/ttIdm.js</file>
     <file>/Assets/Scripts/App/ttIdmUI.js</file>
     <file>/Assets/Scripts/App/ttIdmUsers.js</file>

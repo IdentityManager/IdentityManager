@@ -146,6 +146,7 @@
     <Compile Include="Configuration\Hosting\TraceLogger.cs" />
     <Compile Include="Configuration\OAuth2Configuration.cs" />
     <Compile Include="Configuration\IdentityManagerConfiguration.cs" />
+    <Compile Include="Configuration\SecurityConfiguration.cs" />
     <Compile Include="Configuration\SecurityMode.cs" />
     <Compile Include="Configuration\WebApiConfig.cs" />
     <Compile Include="Api\Controllers\MetaController.cs" />
@@ -218,7 +219,7 @@
     </Content>
     <EmbeddedResource Include="Assets\Templates\index.html" />
     <Content Include="Assets\Scripts\App\frame.js" />
-    <Content Include="Assets\Scripts\App\oauth.js" />
+    <Content Include="Assets\Scripts\App\oidc.js" />
     <Content Include="Assets\Scripts\App\ttIdm.js" />
     <Content Include="Assets\Scripts\App\ttIdmApp.js" />
     <Content Include="Assets\Scripts\App\ttIdmRoles.js" />

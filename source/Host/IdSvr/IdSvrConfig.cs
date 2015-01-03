@@ -58,6 +58,15 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                         new Claim(Constants.ClaimTypes.Name, "Admin"),
                         new Claim(Constants.ClaimTypes.Role, "IdentityManagerAdministrator"),
                     }
+                },
+                new InMemoryUser{
+                    Subject = Guid.Parse("851a965f-1f84-4360-90e4-3f6deac7b9bc").ToString(),
+                    Username = "alice", 
+                    Password = "alice",
+                    Claims = new Claim[]{
+                        new Claim(Constants.ClaimTypes.Name, "Alice"),
+                        new Claim(Constants.ClaimTypes.Role, "IdentityManagerAdministrator"),
+                    }
                 }
             };
         }
@@ -69,9 +78,9 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     ClientId = "idmgr",
                     ClientName = "IdentityManager",
                     Enabled = true,
-                    Flow = Flows.Implicit,                    
+                    Flow = Flows.Implicit,
                     RedirectUris = new List<string>{
-                        "http://localhost:17457/idm/#/callback",
+                        "http://localhost:17457/idm/#/callback?",
                         "http://localhost:17457/idm/frame",
                     },
                     AccessTokenType = AccessTokenType.Jwt,

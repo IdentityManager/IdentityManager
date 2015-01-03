@@ -8,16 +8,16 @@
             function intercept($q, idmTokenManager) {
                 return {
                     'request': function (config) {
-                        if (idmTokenManager.token) {
-                            config.headers['Authorization'] = 'Bearer ' + idmTokenManager.token.access_token;
+                        if (idmTokenManager.access_token) {
+                            config.headers['Authorization'] = 'Bearer ' + idmTokenManager.access_token;
                         }
                         return config;
                     },
                     'responseError': function (response) {
-                        if (response.status === 401 && idmTokenManager.token) {
+                        if (response.status === 401) {
                             idmTokenManager.removeToken();
                         }
-                        if (response.status === 403 && idmTokenManager.token) {
+                        if (response.status === 403) {
                             idmTokenManager.removeToken();
                         }
                         return $q.reject(response);
@@ -33,35 +33,28 @@
 
     function idmTokenManager(TokenManager, OAuthConfig, PathBase, $window, $rootScope) {
         if (OAuthConfig) {
-            OAuthConfig.callbackUrl = $window.location.protocol + "//" + $window.location.host + PathBase + "/#/callback";
+            OAuthConfig.redirect_uri = $window.location.protocol + "//" + $window.location.host + PathBase + "/#/callback/";
             var svc = new TokenManager(OAuthConfig);
 
             Object.defineProperty(svc, "isTokenNeeded", {
                 get: function () {
-                    return !!(OAuthConfig &&
-                             (!svc.token ||
-                              svc.token.expired));
+                    return !!(OAuthConfig && svc.expired);
                 }
             });
 
-            var callTokenObtained = svc.callTokenObtained.bind(svc);
-            svc.callTokenObtained = function () {
-                $rootScope.$applyAsync(function () {
-                    callTokenObtained();
-                });
-            }
-            var callTokenRemoved = svc.callTokenRemoved.bind(svc);
-            svc.callTokenRemoved = function () {
-                $rootScope.$applyAsync(function () {
-                    callTokenRemoved();
-                });
-            }
-            var callTokenExpired = svc.callTokenExpired.bind(svc);
-            svc.callTokenExpired = function () {
-                $rootScope.$applyAsync(function () {
-                    callTokenExpired();
-                });
-            }
+            var applyFuncs = [
+                "_callTokenRemoved", "_callTokenExpiring",
+                "_callTokenExpired", "_callTokenObtained",
+                "_callSilentTokenRenewFailed"
+            ];
+            applyFuncs.forEach(function (name) {
+                var tmp = svc[name].bind(svc);
+                svc[name] = function () {
+                    $rootScope.$applyAsync(function () {
+                        tmp();
+                    });
+                }
+            });
 
             return svc;
         }

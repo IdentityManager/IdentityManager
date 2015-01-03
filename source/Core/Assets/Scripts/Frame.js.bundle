@@ -11,7 +11,7 @@
   <!--The order of the <file> elements determines the order of the files in the bundle.-->
   <files>
     <file>/Assets/Scripts/Libs/jquery-2.1.0.min.js</file>
-    <file>/Assets/Scripts/App/oauth.js</file>
+    <file>/Assets/Scripts/App/oidc.js</file>
     <file>/Assets/Scripts/App/frame.js</file>
   </files>
 </bundle>

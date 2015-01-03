@@ -52,12 +52,13 @@ namespace Thinktecture.IdentityManager.Assets
             {
                 oauth = new
                 {
-                    authorizationUrl = oauthConfig.AuthorizationUrl,
-                    clientId = oauthConfig.ClientId,
+                    authorization_endpoint = oauthConfig.AuthorizationUrl,
+                    client_id = oauthConfig.ClientId,
+                    response_type = "token",
                     scope = oauthConfig.Scope,
-                    persistToken = oauthConfig.PersistToken,
-                    frameCallbackUrl = this.frameCallbackUrl,
-                    autoRenewToken = !String.IsNullOrWhiteSpace(this.frameCallbackUrl)
+                    persist = oauthConfig.PersistToken,
+                    silent_redirect_uri = this.frameCallbackUrl,
+                    silent_renew = !String.IsNullOrWhiteSpace(this.frameCallbackUrl)
                 };
             }
             var html = AssetManager.LoadResourceString(this.file,

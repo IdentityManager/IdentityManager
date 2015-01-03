@@ -10,7 +10,7 @@
                 controller: 'HomeCtrl',
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
-            .when("/callback", {
+            .when("/callback/:response", {
                 templateUrl: PathBase + '/assets/Templates.message.html',
                 controller: 'CallbackCtrl'
             })
@@ -34,7 +34,7 @@
         function removed() {
             $scope.layout.username = null;
             $scope.layout.links = null;
-            $scope.layout.showLogout = idmTokenManager.token && !idmTokenManager.token.expired;
+            $scope.layout.showLogout = !idmTokenManager.expired;
             $scope.layout.showLogin = idmTokenManager.isTokenNeeded;
         }
 
@@ -53,7 +53,7 @@
 
         if (idmTokenManager.isTokenNeeded &&
             $location.path() !== "/" &&
-            $location.path() !== "/callback" && 
+            $location.path().indexOf("/callback/") !== 0 && 
             $location.path() !== "/error" &&
             $location.path() !== "/logout") {
                 $location.path("/");
@@ -76,14 +76,14 @@
     HomeCtrl.$inject = [];
     app.controller("HomeCtrl", HomeCtrl);
 
-    function CallbackCtrl(idmTokenManager, $location, $rootScope) {
-        idmTokenManager.processTokenCallback(function () {
+    function CallbackCtrl(idmTokenManager, $location, $rootScope, $routeParams) {
+        idmTokenManager.processTokenCallbackAsync($routeParams.response).then(function() {
             $location.url("/");
         }, function (error) {
             $rootScope.errors = [error];
         });
     }
-    CallbackCtrl.$inject = ["idmTokenManager", "$location", "$rootScope"];
+    CallbackCtrl.$inject = ["idmTokenManager", "$location", "$rootScope", "$routeParams"];
     app.controller("CallbackCtrl", CallbackCtrl);
 
     function LogoutCtrl(idmTokenManager, $location) {
