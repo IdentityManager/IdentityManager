@@ -65,7 +65,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     Password = "alice",
                     Claims = new Claim[]{
                         new Claim(Constants.ClaimTypes.Name, "Alice"),
-                        new Claim(Constants.ClaimTypes.Role, "IdentityManagerAdministrator"),
+                        new Claim(Constants.ClaimTypes.Role, "Foo"),
                     }
                 }
             };

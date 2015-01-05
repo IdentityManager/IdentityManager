@@ -15,6 +15,7 @@
  */
 
 using Owin;
+using System.Security.Claims;
 using Thinktecture.IdentityManager.Core.Logging;
 using Thinktecture.IdentityManager.Host.IdSvr;
 using Thinktecture.IdentityManager.Host.InMemoryService;
@@ -46,6 +47,15 @@ namespace Thinktecture.IdentityManager.Host
                         ClientId = "idmgr",
                         SigningCert = Cert.Load(),
                         Scope = "idmgr",
+                        ClaimsTransformation = user =>
+                        {
+                            if (user.IsInRole("Foo"))
+                            {
+                                ((ClaimsIdentity)user.Identity).AddClaim(new Claim("role", "IdentityManagerAdministrator"));
+                            }
+                            
+                            return user;
+                        },
                         //PersistToken = true,
                         //AutomaticallyRenewToken = true
                     }
