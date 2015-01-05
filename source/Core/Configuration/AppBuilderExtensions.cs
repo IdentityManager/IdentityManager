@@ -77,6 +77,20 @@ namespace Owin
                         config.OAuth2Configuration.Scope
                     }
                 });
+                if (config.OAuth2Configuration.ClaimsTransformation != null)
+                {
+                    app.Use(async (ctx, next) =>
+                    {
+                        var user = ctx.Authentication.User;
+                        if (user != null)
+                        {
+                            user = config.OAuth2Configuration.ClaimsTransformation(user);
+                            ctx.Authentication.User = user;
+                        }
+
+                        await next();
+                    });
+                }
             }
 
             if (!config.DisableUserInterface)

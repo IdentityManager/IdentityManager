@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Thinktecture.IdentityManager
@@ -43,6 +44,8 @@ namespace Thinktecture.IdentityManager
 
         public string NameClaimType { get; set; }
         public string RoleClaimType { get; set; }
+
+        public Func<ClaimsPrincipal, ClaimsPrincipal> ClaimsTransformation { get; set; }
 
         internal void Validate()
         {
