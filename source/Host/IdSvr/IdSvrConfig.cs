@@ -80,7 +80,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
                     Enabled = true,
                     Flow = Flows.Implicit,
                     RedirectUris = new List<string>{
-                        "http://localhost:17457/idm/#/callback?",
+                        "http://localhost:17457/idm/#/callback/",
                         "http://localhost:17457/idm/frame",
                     },
                     AccessTokenType = AccessTokenType.Jwt,

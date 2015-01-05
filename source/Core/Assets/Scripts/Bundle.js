@@ -1433,7 +1433,11 @@ TokenManager.prototype.processTokenCallbackSilent = function () {
                     return !!(OAuthConfig && svc.expired);
                 }
             });
-
+            Object.defineProperty(svc, "isLogoutAllowed", {
+                get: function () {
+                    return !!(OAuthConfig && !svc.expired);
+                }
+            });
             var applyFuncs = [
                 "_callTokenRemoved", "_callTokenExpiring",
                 "_callTokenExpired", "_callTokenObtained",
@@ -2280,7 +2284,7 @@ TokenManager.prototype.processTokenCallbackSilent = function () {
         function removed() {
             $scope.layout.username = null;
             $scope.layout.links = null;
-            $scope.layout.showLogout = !idmTokenManager.expired;
+            $scope.layout.showLogout = idmTokenManager.isLogoutAllowed;
             $scope.layout.showLogin = idmTokenManager.isTokenNeeded;
         }
 

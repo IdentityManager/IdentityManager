@@ -34,7 +34,7 @@
         function removed() {
             $scope.layout.username = null;
             $scope.layout.links = null;
-            $scope.layout.showLogout = !idmTokenManager.expired;
+            $scope.layout.showLogout = idmTokenManager.isLogoutAllowed;
             $scope.layout.showLogin = idmTokenManager.isTokenNeeded;
         }
 
