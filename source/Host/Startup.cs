@@ -35,9 +35,9 @@ namespace Thinktecture.IdentityManager.Host
 
                 var rand = new System.Random();
                 var svc = new InMemoryIdentityManagerService(Users.Get(rand.Next(5000, 20000)), Roles.Get(rand.Next(15)));
-                idm.UseIdentityManager(new IdentityManagerConfiguration
+                idm.UseIdentityManager(new IdentityManagerOptions
                 {
-                    IdentityManagerFactory = () => svc,
+                    Factory = () => svc,
                     SecurityMode = SecurityMode.LocalMachine,
                     OAuth2Configuration = new OAuth2Configuration
                     {

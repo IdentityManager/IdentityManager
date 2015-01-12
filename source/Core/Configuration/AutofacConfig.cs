@@ -23,7 +23,7 @@ namespace Thinktecture.IdentityManager
 {
     class AutofacConfig
     {
-        public static IDependencyResolver Configure(IdentityManagerConfiguration config)
+        public static IDependencyResolver Configure(IdentityManagerOptions config)
         {
             if (config == null) throw new ArgumentNullException("config");
 
@@ -32,7 +32,7 @@ namespace Thinktecture.IdentityManager
             builder.RegisterInstance(config); 
             
             builder
-                .Register(ctx => config.IdentityManagerFactory())
+                .Register(ctx => config.Factory())
                 .As<IIdentityManagerService>()
                 .InstancePerRequest();
             

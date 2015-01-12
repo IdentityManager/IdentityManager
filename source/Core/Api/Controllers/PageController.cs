@@ -28,8 +28,8 @@ namespace Thinktecture.IdentityManager.Api.Controllers
     [SecurityHeaders]
     public class PageController : ApiController
     {
-        IdentityManagerConfiguration idmConfig;
-        public PageController(IdentityManagerConfiguration idmConfig)
+        IdentityManagerOptions idmConfig;
+        public PageController(IdentityManagerOptions idmConfig)
         {
             if (idmConfig == null) throw new ArgumentNullException("idmConfig");
 

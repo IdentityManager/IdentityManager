@@ -29,8 +29,8 @@ namespace Thinktecture.IdentityManager.Api.Models.Controllers
     public class MetaController : ApiController
     {
         IIdentityManagerService userManager;
-        IdentityManagerConfiguration config;
-        public MetaController(IdentityManagerConfiguration config, IIdentityManagerService userManager)
+        IdentityManagerOptions config;
+        public MetaController(IdentityManagerOptions config, IIdentityManagerService userManager)
         {
             if (config == null) throw new ArgumentNullException("config");
             if (userManager == null) throw new ArgumentNullException("userManager");

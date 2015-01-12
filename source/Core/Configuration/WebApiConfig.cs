@@ -23,7 +23,7 @@ namespace Thinktecture.IdentityManager
 {
     public class WebApiConfig
     {
-        public static void Configure(HttpConfiguration apiConfig, IdentityManagerConfiguration idmConfig)
+        public static void Configure(HttpConfiguration apiConfig, IdentityManagerOptions idmConfig)
         {
             if (apiConfig == null) throw new ArgumentNullException("apiConfig");
             if (idmConfig == null) throw new ArgumentNullException("idmConfig");

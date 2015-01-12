@@ -36,7 +36,7 @@ namespace Owin
 {
     public static class IdentityManagerAppBuilderExtensions
     {
-        public static void UseIdentityManager(this IAppBuilder app, IdentityManagerConfiguration config)
+        public static void UseIdentityManager(this IAppBuilder app, IdentityManagerOptions config)
         {
             if (app == null) throw new ArgumentNullException("app");
             if (config == null) throw new ArgumentNullException("config");

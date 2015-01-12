@@ -18,14 +18,14 @@ using System;
 
 namespace Thinktecture.IdentityManager
 {
-    public class IdentityManagerConfiguration
+    public class IdentityManagerOptions
     {
-        public IdentityManagerConfiguration()
+        public IdentityManagerOptions()
         {
             AdminRoleName = Constants.AdminRoleName;
         }
 
-        public Func<IIdentityManagerService> IdentityManagerFactory { get; set; }
+        public Func<IIdentityManagerService> Factory { get; set; }
 
         public string AdminRoleName { get; set; }
         public SecurityMode SecurityMode { get; set; }
@@ -35,9 +35,9 @@ namespace Thinktecture.IdentityManager
         
         internal void Validate()
         {
-            if (this.IdentityManagerFactory == null)
+            if (this.Factory == null)
             {
-                throw new Exception("IdentityManagerFactory is required.");
+                throw new Exception("Factory is required.");
             }
 
             if (this.SecurityMode == IdentityManager.SecurityMode.OAuth2)

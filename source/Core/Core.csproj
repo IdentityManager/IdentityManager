@@ -145,7 +145,7 @@
     <Compile Include="Configuration\Hosting\LogProviderExceptionLogger.cs" />
     <Compile Include="Configuration\Hosting\TraceLogger.cs" />
     <Compile Include="Configuration\OAuth2Configuration.cs" />
-    <Compile Include="Configuration\IdentityManagerConfiguration.cs" />
+    <Compile Include="Configuration\IdentityManagerOptions.cs" />
     <Compile Include="Configuration\SecurityConfiguration.cs" />
     <Compile Include="Configuration\SecurityMode.cs" />
     <Compile Include="Configuration\WebApiConfig.cs" />
