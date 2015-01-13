@@ -15,7 +15,10 @@
  */
 
 using Owin;
+using System.Collections;
+using System.Collections.Generic;
 using System.Security.Claims;
+using Thinktecture.IdentityManager.Configuration;
 using Thinktecture.IdentityManager.Core.Logging;
 using Thinktecture.IdentityManager.Host.IdSvr;
 using Thinktecture.IdentityManager.Host.InMemoryService;
@@ -33,11 +36,19 @@ namespace Thinktecture.IdentityManager.Host
             {
                 LogProvider.SetCurrentLogProvider(new DiagnosticsTraceLogProvider());
 
+                var factory = new IdentityManagerServiceFactory();
+
                 var rand = new System.Random();
-                var svc = new InMemoryIdentityManagerService(Users.Get(rand.Next(5000, 20000)), Roles.Get(rand.Next(15)));
+                var users = Users.Get(rand.Next(5000, 20000));
+                var roles = Roles.Get(rand.Next(15));
+
+                factory.Register(new Registration<ICollection<InMemoryUser>>(users));
+                factory.Register(new Registration<ICollection<InMemoryRole>>(roles));
+                factory.IdentityManagerService = new Registration<IIdentityManagerService, InMemoryIdentityManagerService>();
+
                 idm.UseIdentityManager(new IdentityManagerOptions
                 {
-                    Factory = () => svc,
+                    Factory = factory,
                     SecurityMode = SecurityMode.LocalMachine,
                     OAuth2Configuration = new OAuth2Configuration
                     {

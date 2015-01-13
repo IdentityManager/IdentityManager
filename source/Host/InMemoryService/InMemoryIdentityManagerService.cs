@@ -32,6 +32,7 @@ namespace Thinktecture.IdentityManager.Host.InMemoryService
             this.roles = roles;
         }
 
+
         IdentityManagerMetadata metadata;
 
         IdentityManagerMetadata GetMetadata()

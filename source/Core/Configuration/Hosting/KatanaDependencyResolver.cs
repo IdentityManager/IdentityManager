@@ -14,16 +14,25 @@
  * limitations under the License.
  */
  
-using System.Diagnostics;
-using System.Web.Http.ExceptionHandling;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Http.Hosting;
+using Thinktecture.IdentityManager.Extensions;
 
 namespace Thinktecture.IdentityManager.Configuration.Hosting
 {
-    public class TraceLogger : ExceptionLogger
+    internal class KatanaDependencyResolver : DelegatingHandler
     {
-        public override void Log(ExceptionLoggerContext context)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            Trace.WriteLine(context.Exception.ToString());
+            var scope = request.GetOwinEnvironment().GetLifetimeScope();
+            if (scope != null)
+            {
+                request.Properties[HttpPropertyKeys.DependencyScope] = new AutofacScope(scope);
+            }
+
+            return base.SendAsync(request, cancellationToken);
         }
     }
 }

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 using System;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Thinktecture.IdentityManager
+namespace Thinktecture.IdentityManager.Configuration
 {
     public class OAuth2Configuration
     {

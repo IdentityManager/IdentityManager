@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-namespace Thinktecture.IdentityManager
+namespace Thinktecture.IdentityManager.Configuration
 {
     public enum SecurityMode
     {

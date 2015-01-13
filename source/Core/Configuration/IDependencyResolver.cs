@@ -14,11 +14,19 @@
  * limitations under the License.
  */
  
-namespace Thinktecture.IdentityManager
+namespace Thinktecture.IdentityManager.Configuration
 {
-    public abstract class ExecutablePropertyMetadata : PropertyMetadata
+    /// <summary>
+    /// Allows resolving dependencies from the dependency injection system.
+    /// </summary>
+    public interface IDependencyResolver
     {
-        public abstract string Get(object instance);
-        public abstract IdentityManagerResult Set(object instance, string value);
+        /// <summary>
+        /// Resolves the dependency based upon the type. If name is provided then the dependency is also resolved by name.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name">The name.</param>
+        /// <returns>The dependency.</returns>
+        T Resolve<T>(string name = null);
     }
 }

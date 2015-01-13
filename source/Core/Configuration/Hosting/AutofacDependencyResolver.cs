@@ -14,11 +14,26 @@
  * limitations under the License.
  */
  
-namespace Thinktecture.IdentityManager
+using Autofac;
+
+namespace Thinktecture.IdentityManager.Configuration.Hosting
 {
-    public abstract class ExecutablePropertyMetadata : PropertyMetadata
+    internal class AutofacDependencyResolver : IDependencyResolver
     {
-        public abstract string Get(object instance);
-        public abstract IdentityManagerResult Set(object instance, string value);
+        readonly IComponentContext ctx;
+        public AutofacDependencyResolver(IComponentContext ctx)
+        {
+            this.ctx = ctx;
+        }
+        
+        public T Resolve<T>(string name)
+        {
+            if (name != null)
+            {
+                return ctx.ResolveNamed<T>(name);
+            }
+
+            return ctx.Resolve<T>();
+        }
     }
 }

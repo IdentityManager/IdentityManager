@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Infrastructure;
-using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.StaticFiles;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
-using System.Security.Claims;
 using System.ServiceModel.Security.Tokens;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Thinktecture.IdentityManager;
+using Thinktecture.IdentityManager.Configuration;
+using Thinktecture.IdentityManager.Configuration.Hosting;
 using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 using Thinktecture.IdentityModel.Owin.ScopeValidation;
 
@@ -36,35 +33,38 @@ namespace Owin
 {
     public static class IdentityManagerAppBuilderExtensions
     {
-        public static void UseIdentityManager(this IAppBuilder app, IdentityManagerOptions config)
+        public static void UseIdentityManager(this IAppBuilder app, IdentityManagerOptions options)
         {
             if (app == null) throw new ArgumentNullException("app");
-            if (config == null) throw new ArgumentNullException("config");
-            config.Validate();
+            if (options == null) throw new ArgumentNullException("config");
+            options.Validate();
 
             JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
 
-            if (config.SecurityMode == SecurityMode.LocalMachine)
+            var container = AutofacConfig.Configure(options);
+            app.Use<AutofacContainerMiddleware>(container);
+
+            if (options.SecurityMode == SecurityMode.LocalMachine)
             {
-                var local = new LocalAuthenticationOptions(config.AdminRoleName);
+                var local = new LocalAuthenticationOptions(options.AdminRoleName);
                 app.Use<LocalAuthenticationMiddleware>(local);
             }
-            else if (config.SecurityMode == SecurityMode.OAuth2)
+            else if (options.SecurityMode == SecurityMode.OAuth2)
             {
                 var jwtParams = new System.IdentityModel.Tokens.TokenValidationParameters
                 {
-                    NameClaimType = config.OAuth2Configuration.NameClaimType,
-                    RoleClaimType = config.OAuth2Configuration.RoleClaimType,
-                    ValidAudience = config.OAuth2Configuration.Audience,
-                    ValidIssuer = config.OAuth2Configuration.Issuer,
+                    NameClaimType = options.OAuth2Configuration.NameClaimType,
+                    RoleClaimType = options.OAuth2Configuration.RoleClaimType,
+                    ValidAudience = options.OAuth2Configuration.Audience,
+                    ValidIssuer = options.OAuth2Configuration.Issuer,
                 };
-                if (config.OAuth2Configuration.SigningCert != null)
+                if (options.OAuth2Configuration.SigningCert != null)
                 {
-                    jwtParams.IssuerSigningToken = new X509SecurityToken(config.OAuth2Configuration.SigningCert);
+                    jwtParams.IssuerSigningToken = new X509SecurityToken(options.OAuth2Configuration.SigningCert);
                 }
                 else
                 {
-                    var bytes = Convert.FromBase64String(config.OAuth2Configuration.SigningKey);
+                    var bytes = Convert.FromBase64String(options.OAuth2Configuration.SigningKey);
                     jwtParams.IssuerSigningToken = new BinarySecretSecurityToken(bytes);
                 }
 
@@ -74,17 +74,17 @@ namespace Owin
                 app.RequireScopes(new ScopeValidationOptions {
                     AllowAnonymousAccess = true,
                     Scopes = new string[] {
-                        config.OAuth2Configuration.Scope
+                        options.OAuth2Configuration.Scope
                     }
                 });
-                if (config.OAuth2Configuration.ClaimsTransformation != null)
+                if (options.OAuth2Configuration.ClaimsTransformation != null)
                 {
                     app.Use(async (ctx, next) =>
                     {
                         var user = ctx.Authentication.User;
                         if (user != null)
                         {
-                            user = config.OAuth2Configuration.ClaimsTransformation(user);
+                            user = options.OAuth2Configuration.ClaimsTransformation(user);
                             ctx.Authentication.User = user;
                         }
 
@@ -93,7 +93,7 @@ namespace Owin
                 }
             }
 
-            if (!config.DisableUserInterface)
+            if (!options.DisableUserInterface)
             {
                 app.UseFileServer(new FileServerOptions
                 {
@@ -109,10 +109,7 @@ namespace Owin
             }
 
             SignatureConversions.AddConversions(app);
-
-            var httpConfig = new HttpConfiguration();
-            WebApiConfig.Configure(httpConfig, config);
-            app.UseWebApi(httpConfig);
+            app.UseWebApi(WebApiConfig.Configure(options));
             app.UseStageMarker(PipelineStage.MapHandler);
         }
     }

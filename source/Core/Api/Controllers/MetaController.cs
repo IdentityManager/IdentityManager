@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Thinktecture.IdentityManager.Api.Filters;
+using Thinktecture.IdentityManager.Configuration;
 
 namespace Thinktecture.IdentityManager.Api.Models.Controllers
 {

@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 using System;
 
-namespace Thinktecture.IdentityManager
+namespace Thinktecture.IdentityManager.Configuration
 {
     public class IdentityManagerOptions
     {
         public IdentityManagerOptions()
         {
             AdminRoleName = Constants.AdminRoleName;
+            Factory = new IdentityManagerServiceFactory();
         }
 
-        public Func<IIdentityManagerService> Factory { get; set; }
+        public IdentityManagerServiceFactory Factory { get; set; }
 
         public string AdminRoleName { get; set; }
         public SecurityMode SecurityMode { get; set; }
@@ -40,7 +41,7 @@ namespace Thinktecture.IdentityManager
                 throw new Exception("Factory is required.");
             }
 
-            if (this.SecurityMode == IdentityManager.SecurityMode.OAuth2)
+            if (this.SecurityMode == SecurityMode.OAuth2)
             {
                 if (this.OAuth2Configuration == null)
                 {

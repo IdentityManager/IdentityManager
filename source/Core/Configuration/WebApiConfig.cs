@@ -13,51 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 using System;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using Thinktecture.IdentityManager.Configuration.Hosting;
 
-namespace Thinktecture.IdentityManager
+namespace Thinktecture.IdentityManager.Configuration
 {
     public class WebApiConfig
     {
-        public static void Configure(HttpConfiguration apiConfig, IdentityManagerOptions idmConfig)
+        public static HttpConfiguration Configure(IdentityManagerOptions options)
         {
-            if (apiConfig == null) throw new ArgumentNullException("apiConfig");
-            if (idmConfig == null) throw new ArgumentNullException("idmConfig");
+            if (options == null) throw new ArgumentNullException("idmConfig");
 
-            var resolver = AutofacConfig.Configure(idmConfig);
-            apiConfig.DependencyResolver = resolver;
+            var config = new HttpConfiguration();
+            config.MessageHandlers.Insert(0, new KatanaDependencyResolver());
 
-            apiConfig.MapHttpAttributeRoutes();
-            if (!idmConfig.DisableUserInterface)
+            config.MapHttpAttributeRoutes();
+            if (!options.DisableUserInterface)
             {
-                apiConfig.Routes.MapHttpRoute(Constants.RouteNames.Home,
+                config.Routes.MapHttpRoute(Constants.RouteNames.Home,
                     "",
                     new { controller = "Page", action = "Index" });
-                apiConfig.Routes.MapHttpRoute(Constants.RouteNames.OAuthFrameCallback,
+                config.Routes.MapHttpRoute(Constants.RouteNames.OAuthFrameCallback,
                     "frame",
                     new { controller = "Page", action = "Frame" });
             }
 
-            apiConfig.SuppressDefaultHostAuthentication();
+            config.SuppressDefaultHostAuthentication();
             
-            if (idmConfig.SecurityMode == SecurityMode.LocalMachine)
+            if (options.SecurityMode == SecurityMode.LocalMachine)
             {
-                apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.LocalAuthenticationType));
+                config.Filters.Add(new HostAuthenticationAttribute(Constants.LocalAuthenticationType));
             }
             else
             {
-                apiConfig.Filters.Add(new HostAuthenticationAttribute(Constants.BearerAuthenticationType));
+                config.Filters.Add(new HostAuthenticationAttribute(Constants.BearerAuthenticationType));
             }
 
-            apiConfig.Filters.Add(new AuthorizeAttribute() { Roles = idmConfig.AdminRoleName });
+            config.Filters.Add(new AuthorizeAttribute() { Roles = options.AdminRoleName });
 
-            apiConfig.Formatters.Remove(apiConfig.Formatters.XmlFormatter);
-            apiConfig.Formatters.Remove(apiConfig.Formatters.FormUrlEncodedFormatter);
-            apiConfig.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
+            config.Formatters.Remove(config.Formatters.XmlFormatter);
+            config.Formatters.Remove(config.Formatters.FormUrlEncodedFormatter);
+            config.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
                 new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
             //apiConfig.Services.Add(typeof(IExceptionLogger), new UserAdminExceptionLogger());
@@ -65,7 +64,9 @@ namespace Thinktecture.IdentityManager
 //#if DEBUG
 //            apiConfig.Services.Add(typeof(IExceptionLogger), new TraceLogger());
 //#endif
-            apiConfig.Services.Add(typeof(IExceptionLogger), new LogProviderExceptionLogger());
+            config.Services.Add(typeof(IExceptionLogger), new LogProviderExceptionLogger());
+
+            return config;
         }
 
         //public class UserAdminExceptionLogger : ExceptionLogger

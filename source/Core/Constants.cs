@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 namespace Thinktecture.IdentityManager
 {
     public class Constants
@@ -23,6 +23,8 @@ namespace Thinktecture.IdentityManager
 
         public const string IdMgrScope = "idmgr";
         public const string AdminRoleName = "IdentityManagerAdministrator";
+
+        internal const string AutofacScope = "idm:AutofacScope";
 
         public class ClaimTypes
         {
