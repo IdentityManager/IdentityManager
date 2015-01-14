@@ -169,6 +169,7 @@
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IIdentityManagerService.cs" />
     <Compile Include="Core\ClaimValue.cs" />
+    <Compile Include="Core\OwinEnvironmentService.cs" />
     <Compile Include="Core\RoleDetail.cs" />
     <Compile Include="Core\UserDetail.cs" />
     <Compile Include="Core\RoleSummary.cs" />

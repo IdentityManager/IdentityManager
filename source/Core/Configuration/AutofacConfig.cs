@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 using Autofac;
 using Autofac.Integration.WebApi;
+using Microsoft.Owin;
 using System;
 using Thinktecture.IdentityManager.Configuration.Hosting;
 
@@ -33,6 +34,8 @@ namespace Thinktecture.IdentityManager.Configuration
 
             builder.RegisterInstance(config); 
             builder.Register(config.Factory.IdentityManagerService);
+            builder.Register(c => new OwinEnvironmentService(c.Resolve<IOwinContext>()));
+
             builder.RegisterApiControllers(typeof(AutofacConfig).Assembly);
 
             foreach (var registration in config.Factory.Registrations)
