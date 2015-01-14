@@ -159,7 +159,6 @@
     <Compile Include="Api\Controllers\MetaController.cs" />
     <Compile Include="Api\Controllers\UserController.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Core\DisposableIdentityManagerService.cs" />
     <Compile Include="Core\Metadata\ExpressionPropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ExecutablePropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ReflectedPropertyMetadata.cs" />
