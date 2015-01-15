@@ -13,4 +13,7 @@
     <copyright>Copyright 2014</copyright>
     <tags>Thinktecture IdentityManager Identity</tags>
   </metadata>
+  <dependencies>
+    <dependency id="Owin" version="1.0"/>
+  </dependencies>
 </package>
