@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-namespace Thinktecture.IdentityManager.Api.Models
+namespace IdentityManager.Api.Models
 {
     public class ErrorModel
     {

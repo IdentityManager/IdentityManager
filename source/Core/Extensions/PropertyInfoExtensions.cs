@@ -17,7 +17,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Thinktecture.IdentityManager;
+using IdentityManager;
 
 namespace System.Reflection
 {

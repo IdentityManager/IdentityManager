@@ -16,7 +16,7 @@
  
 using System;
 
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     public class IdentityManagerOptions
     {

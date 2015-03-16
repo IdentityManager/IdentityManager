@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
-namespace Thinktecture.IdentityManager.Assets
+namespace IdentityManager.Assets
 {
     class AssetManager
     {

@@ -17,7 +17,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Thinktecture.IdentityManager.Logging
+namespace IdentityManager.Logging
 {
     /// <summary>
     /// Helper to JSON serialize object data for logging.

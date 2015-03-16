@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Dependencies;
 
-namespace Thinktecture.IdentityManager.Configuration.Hosting
+namespace IdentityManager.Configuration.Hosting
 {
     internal class AutofacScope : IDependencyScope
     {

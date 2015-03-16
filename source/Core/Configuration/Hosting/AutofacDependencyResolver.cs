@@ -16,7 +16,7 @@
  
 using Autofac;
 
-namespace Thinktecture.IdentityManager.Configuration.Hosting
+namespace IdentityManager.Configuration.Hosting
 {
     internal class AutofacDependencyResolver : IDependencyResolver
     {

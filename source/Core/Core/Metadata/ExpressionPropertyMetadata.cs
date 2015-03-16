@@ -16,9 +16,9 @@
  
 using System;
 using System.Reflection;
-using Thinktecture.IdentityManager.Resources;
+using IdentityManager.Resources;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     public class ExpressionPropertyMetadata<TContainer, TProperty> : ExecutablePropertyMetadata
     {

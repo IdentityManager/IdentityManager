@@ -14,22 +14,35 @@
  * limitations under the License.
  */
  
-using System;
-using System.Linq;
-using IdentityManager.Api.Models;
+using Microsoft.Owin;
+using System.Collections.Generic;
 
 namespace IdentityManager
 {
-    static class IdentityManagerResultExtensions
+    /// <summary>
+    /// Container for the OWIN environment.
+    /// </summary>
+    public class OwinEnvironmentService
     {
-        public static ErrorModel ToError(this IdentityManagerResult result)
-        {
-            if (result == null) throw new ArgumentNullException("result");
+        readonly IOwinContext _context;
 
-            return new ErrorModel
+        internal OwinEnvironmentService(IOwinContext context)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Gets the OWIN environment.
+        /// </summary>
+        /// <value>
+        /// The environment.
+        /// </value>
+        public IDictionary<string, object> Environment 
+        { 
+            get
             {
-                Errors = result.Errors.ToArray()
-            };
+                return _context.Environment;
+            }
         }
     }
 }

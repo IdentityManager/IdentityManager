@@ -17,7 +17,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     public interface IIdentityManagerService
     {

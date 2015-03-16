@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     /// <summary>
     /// Allows resolving dependencies from the dependency injection system.

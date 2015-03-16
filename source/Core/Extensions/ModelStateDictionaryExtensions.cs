@@ -16,8 +16,8 @@
  
 using System.Linq;
 using System.Web.Http.ModelBinding;
-using Thinktecture.IdentityManager;
-using Thinktecture.IdentityManager.Api.Models;
+using IdentityManager;
+using IdentityManager.Api.Models;
 
 namespace System.Web.Http
 {

@@ -24,9 +24,9 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens;
 using System.ServiceModel.Security.Tokens;
-using Thinktecture.IdentityManager.Configuration;
-using Thinktecture.IdentityManager.Configuration.Hosting;
-using Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
+using IdentityManager.Configuration;
+using IdentityManager.Configuration.Hosting;
+using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 using Thinktecture.IdentityModel.Owin.ScopeValidation;
 
 namespace Owin
@@ -98,12 +98,12 @@ namespace Owin
                 app.UseFileServer(new FileServerOptions
                 {
                     RequestPath = new PathString("/assets"),
-                    FileSystem = new EmbeddedResourceFileSystem(typeof(IdentityManagerAppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Assets")
+                    FileSystem = new EmbeddedResourceFileSystem(typeof(IdentityManagerAppBuilderExtensions).Assembly, "IdentityManager.Assets")
                 });
                 app.UseFileServer(new FileServerOptions
                 {
                     RequestPath = new PathString("/assets/libs/fonts"),
-                    FileSystem = new EmbeddedResourceFileSystem(typeof(IdentityManagerAppBuilderExtensions).Assembly, "Thinktecture.IdentityManager.Assets.Content.fonts")
+                    FileSystem = new EmbeddedResourceFileSystem(typeof(IdentityManagerAppBuilderExtensions).Assembly, "IdentityManager.Assets.Content.fonts")
                 });
                 app.UseStageMarker(PipelineStage.MapHandler);
             }

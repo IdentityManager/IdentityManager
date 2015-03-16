@@ -19,9 +19,9 @@ using Microsoft.Owin.Security.Infrastructure;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Thinktecture.IdentityManager.Resources;
+using IdentityManager.Resources;
 
-namespace Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
+namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
 {
     public class LocalAuthenticationHandler : AuthenticationHandler<LocalAuthenticationOptions>
     {

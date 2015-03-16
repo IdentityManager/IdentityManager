@@ -16,11 +16,11 @@
  
 using System;
 using System.Web.Http;
-using Thinktecture.IdentityManager.Api.Filters;
-using Thinktecture.IdentityManager.Assets;
-using Thinktecture.IdentityManager.Configuration;
+using IdentityManager.Api.Filters;
+using IdentityManager.Assets;
+using IdentityManager.Configuration;
 
-namespace Thinktecture.IdentityManager.Api.Controllers
+namespace IdentityManager.Api.Controllers
 {
     [NoCache]
     [SecurityHeaders]
@@ -41,10 +41,10 @@ namespace Thinktecture.IdentityManager.Api.Controllers
             if (idmConfig.SecurityMode == SecurityMode.LocalMachine &&
                 (User == null || User.Identity == null || User.Identity.IsAuthenticated == false))
             {
-                return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.accessdenied.html");
+                return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.accessdenied.html");
             }
 
-            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.index.html", idmConfig.OAuth2Configuration);
+            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html", idmConfig.OAuth2Configuration);
         }
         
         [HttpGet]
@@ -56,7 +56,7 @@ namespace Thinktecture.IdentityManager.Api.Controllers
                 return NotFound();
             }
 
-            return new EmbeddedHtmlResult(Request, "Thinktecture.IdentityManager.Assets.Templates.frame.html");
+            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.frame.html");
         }
     }
 }

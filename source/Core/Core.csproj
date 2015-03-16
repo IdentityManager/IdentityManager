@@ -7,8 +7,8 @@
     <ProjectGuid>{319E13DD-C16A-4936-B179-BBFBA52C693B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Thinktecture.IdentityManager</RootNamespace>
-    <AssemblyName>Thinktecture.IdentityManager</AssemblyName>
+    <RootNamespace>IdentityManager</RootNamespace>
+    <AssemblyName>IdentityManager</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -77,7 +77,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -159,7 +159,6 @@
     <Compile Include="Api\Controllers\MetaController.cs" />
     <Compile Include="Api\Controllers\UserController.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Core\DisposableIdentityManagerService.cs" />
     <Compile Include="Core\Metadata\ExpressionPropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ExecutablePropertyMetadata.cs" />
     <Compile Include="Core\Metadata\ReflectedPropertyMetadata.cs" />
@@ -170,6 +169,7 @@
     <Compile Include="Core\CreateResult.cs" />
     <Compile Include="Core\IIdentityManagerService.cs" />
     <Compile Include="Core\ClaimValue.cs" />
+    <Compile Include="Core\OwinEnvironmentService.cs" />
     <Compile Include="Core\RoleDetail.cs" />
     <Compile Include="Core\UserDetail.cs" />
     <Compile Include="Core\RoleSummary.cs" />
@@ -310,7 +310,7 @@
     <EmbeddedResource Include="Assets\Content\fonts\glyphicons-halflings-regular.woff" />
     <None Include="Assets\Content\Style.less" />
     <None Include="Assets\Scripts\Bundle.js.bundle" />
-    <None Include="Thinktecture.IdentityManager.nuspec" />
+    <None Include="IdentityManager.nuspec" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

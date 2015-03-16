@@ -19,10 +19,10 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Thinktecture.IdentityManager.Api.Filters;
-using Thinktecture.IdentityManager.Configuration;
+using IdentityManager.Api.Filters;
+using IdentityManager.Configuration;
 
-namespace Thinktecture.IdentityManager.Api.Models.Controllers
+namespace IdentityManager.Api.Models.Controllers
 {
     [NoCache]
     [RoutePrefix(Constants.MetadataRoutePrefix)]

@@ -15,7 +15,7 @@
  */
  
 using System.Collections.Generic;
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     public class IdentityManagerServiceFactory
     {

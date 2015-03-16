@@ -18,9 +18,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Hosting;
-using Thinktecture.IdentityManager.Extensions;
+using IdentityManager.Extensions;
 
-namespace Thinktecture.IdentityManager.Configuration.Hosting
+namespace IdentityManager.Configuration.Hosting
 {
     internal class KatanaDependencyResolver : DelegatingHandler
     {

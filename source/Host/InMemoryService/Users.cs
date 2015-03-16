@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Thinktecture.IdentityManager.Host.InMemoryService
+namespace IdentityManager.Host.InMemoryService
 {
     public class Users
     {

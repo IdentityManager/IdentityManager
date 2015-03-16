@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
-namespace Thinktecture.IdentityManager.Host.InMemoryService
+namespace IdentityManager.Host.InMemoryService
 {
     public class InMemoryUserBase
     {

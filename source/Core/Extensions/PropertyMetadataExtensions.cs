@@ -17,9 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Thinktecture.IdentityManager.Resources;
+using IdentityManager.Resources;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     public static class PropertyMetadataExtensions
     {

@@ -20,7 +20,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Thinktecture.IdentityManager.Host.InMemoryService
+namespace IdentityManager.Host.InMemoryService
 {
     class InMemoryIdentityManagerService : IIdentityManagerService
     {

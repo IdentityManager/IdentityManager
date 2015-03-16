@@ -3,7 +3,7 @@ properties {
 	$src_directory = "$base_directory\source"
 	$output_directory = "$base_directory\build"
 	$dist_directory = "$base_directory\distribution"
-	$sln_file = "$src_directory\Thinktecture.IdentityManager.sln"
+	$sln_file = "$src_directory\IdentityManager.sln"
 	$target_config = "Release"
 	$framework_version = "v4.5"
 	$xunit_path = "$src_directory\packages\xunit.runners.1.9.2\tools\xunit.console.clr4.exe"
@@ -49,19 +49,19 @@ task UpdateVersion {
 }
 
 task ILMerge -depends Compile {
-	$input_dlls = "$output_directory\Thinktecture.IdentityManager.dll"
+	$input_dlls = "$output_directory\IdentityManager.dll"
 
 	Get-ChildItem -Path $output_directory -Filter *.dll |
 		foreach-object {
-			# Exclude Thinktecture.IdentityManager.dll as that will be the primary assembly
-			if ("$_" -ne "Thinktecture.IdentityManager.dll" -and 
+			# Exclude IdentityManager.dll as that will be the primary assembly
+			if ("$_" -ne "IdentityManager.dll" -and 
 			    "$_" -ne "Owin.dll") {
 				$input_dlls = "$input_dlls $output_directory\$_"
 			}
 	}
 
 	New-Item $dist_directory\lib\net45 -Type Directory
-	Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /out:$dist_directory\lib\net45\Thinktecture.IdentityManager.dll $input_dlls"
+	Invoke-Expression "$ilmerge_path /targetplatform:v4 /internalize /allowDup /target:library /out:$dist_directory\lib\net45\IdentityManager.dll $input_dlls"
 }
 
 task CreateNuGetPackage -depends ILMerge {
@@ -78,6 +78,6 @@ task CreateNuGetPackage -depends ILMerge {
 		$packageVersion = "$packageVersion-$preRelease" 
 	}
 
-	copy-item $src_directory\Core\Thinktecture.IdentityManager.nuspec $dist_directory
-	exec { . $nuget_path pack $dist_directory\Thinktecture.IdentityManager.nuspec -BasePath $dist_directory -o $dist_directory -version $packageVersion }
+	copy-item $src_directory\Core\IdentityManager.nuspec $dist_directory
+	exec { . $nuget_path pack $dist_directory\IdentityManager.nuspec -BasePath $dist_directory -o $dist_directory -version $packageVersion }
 }
