@@ -1,28 +1,31 @@
+
+
+----------
 # How to contribute
 
 One of the easiest ways to contribute is to participate in discussions and discuss issues. You can also contribute by submitting pull requests with code changes.
 
 
 ## General feedback and discussions?
-Please start a discussion on the [main repo issue tracker](https://github.com/thinktecture/Thinktecture.IdentityManager/issues).
+Please start a discussion on the [main repo issue tracker](https://github.com/IdentityManager/IdentityManager/issues).
 
 
 ## Bugs and feature requests?
 Please log a new issue in the appropriate GitHub repo:
 
-* [IdentityManager core](https://github.com/thinktecture/Thinktecture.IdentityManager)
-* [ASP.NET Identity support](https://github.com/thinktecture/Thinktecture.IdentityManager.AspNetIdentity)
-* [MembershipReboot support](https://github.com/thinktecture/Thinktecture.IdentityManager.MembershipReboot)
+* [IdentityManager core](https://github.com/IdentityManager/IdentityManager)
+* [ASP.NET Identity support](https://github.com/IdentityManager/IdentityManager.AspNetIdentity)
+* [MembershipReboot support](https://github.com/IdentityManager/IdentityManager.MembershipReboot)
 
 ## Other discussions
-https://gitter.im/thinktecture/Thinktecture.IdentityManager
+https://gitter.im/IdentityManager/IdentityManager
 
 ## Filing issues
 The best way to get your bug fixed is to be as detailed as you can be about the problem.
 Providing a minimal project with steps to reproduce the problem is ideal.
 Here are questions you can answer before you file a bug to make sure you're not missing any important information.
 
-1. Did you read the [documentation](https://github.com/thinktecture/Thinktecture.IdentityManager/wiki)?
+1. Did you read the [documentation](https://github.com/IdentityManager/IdentityManager/wiki)?
 2. Did you include the snippet of broken code in the issue?
 3. What are the *EXACT* steps to reproduce this problem?
 
