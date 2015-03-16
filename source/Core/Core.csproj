@@ -310,7 +310,7 @@
     <EmbeddedResource Include="Assets\Content\fonts\glyphicons-halflings-regular.woff" />
     <None Include="Assets\Content\Style.less" />
     <None Include="Assets\Scripts\Bundle.js.bundle" />
-    <None Include="Thinktecture.IdentityManager.nuspec" />
+    <None Include="IdentityManager.nuspec" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
