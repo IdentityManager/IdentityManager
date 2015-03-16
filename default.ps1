@@ -79,5 +79,5 @@ task CreateNuGetPackage -depends ILMerge {
 	}
 
 	copy-item $src_directory\Core\IdentityManager.nuspec $dist_directory
-	exec { . $nuget_path pack $dist_directory\Thinktecture.IdentityManager.nuspec -BasePath $dist_directory -o $dist_directory -version $packageVersion }
+	exec { . $nuget_path pack $dist_directory\IdentityManager.nuspec -BasePath $dist_directory -o $dist_directory -version $packageVersion }
 }
