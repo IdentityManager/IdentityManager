@@ -15,8 +15,8 @@
  */
  
 using System.ComponentModel.DataAnnotations;
-using Thinktecture.IdentityManager.Resources;
-namespace Thinktecture.IdentityManager
+using IdentityManager.Resources;
+namespace IdentityManager
 {
     public class PropertyValue
     {

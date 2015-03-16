@@ -17,7 +17,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     public class IdentityManagerResult
     {

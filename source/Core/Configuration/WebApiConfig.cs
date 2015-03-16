@@ -17,9 +17,9 @@
 using System;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
-using Thinktecture.IdentityManager.Configuration.Hosting;
+using IdentityManager.Configuration.Hosting;
 
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     public class WebApiConfig
     {

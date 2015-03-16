@@ -15,9 +15,9 @@
  */
  
 using System.Diagnostics;
-using Thinktecture.IdentityManager.Core.Logging;
+using IdentityManager.Core.Logging;
 
-namespace Thinktecture.IdentityManager.Logging
+namespace IdentityManager.Logging
 {
     internal class LibLogTraceListener : TraceListener
     {

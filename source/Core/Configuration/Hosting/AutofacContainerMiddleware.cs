@@ -19,9 +19,9 @@ using Microsoft.Owin;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Thinktecture.IdentityManager.Extensions;
+using IdentityManager.Extensions;
 
-namespace Thinktecture.IdentityManager.Configuration.Hosting
+namespace IdentityManager.Configuration.Hosting
 {
     class AutofacContainerMiddleware
     {

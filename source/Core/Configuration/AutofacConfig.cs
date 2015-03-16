@@ -18,9 +18,9 @@ using Autofac;
 using Autofac.Integration.WebApi;
 using Microsoft.Owin;
 using System;
-using Thinktecture.IdentityManager.Configuration.Hosting;
+using IdentityManager.Configuration.Hosting;
 
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     static class AutofacConfig
     {

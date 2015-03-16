@@ -21,10 +21,10 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Thinktecture.IdentityManager.Api.Filters;
-using Thinktecture.IdentityManager.Resources;
+using IdentityManager.Api.Filters;
+using IdentityManager.Resources;
 
-namespace Thinktecture.IdentityManager.Api.Models.Controllers
+namespace IdentityManager.Api.Models.Controllers
 {
     [RoutePrefix(Constants.UserRoutePrefix)]
     [NoCache]

@@ -17,9 +17,9 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Thinktecture.IdentityManager.Core.Logging;
+using IdentityManager.Core.Logging;
 
-namespace Thinktecture.IdentityManager.Logging
+namespace IdentityManager.Logging
 {
     internal class RequestResponseLogger : DelegatingHandler
     {

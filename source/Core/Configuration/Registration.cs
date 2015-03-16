@@ -16,7 +16,7 @@
  
 using System;
 
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     /// <summary>
     /// Models the registration of a dependency within the IdentityServer dependency injection system.
@@ -63,7 +63,7 @@ namespace Thinktecture.IdentityManager.Configuration
         /// A factory function to obtain the dependency. The function will be invoked each time the dependency is 
         /// resolved. If the returned object impelments <see cref="System.IDisposable"/>
         /// then <c>Dispose</c> will be called after each request.
-        /// The <see cref="Thinktecture.IdentityServer.Core.Services.IDependencyResolver"/> parameter can be 
+        /// The <see cref="IDependencyResolver"/> parameter can be 
         /// used to resolve other dependencies.
         /// </summary>
         /// <value>

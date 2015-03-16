@@ -16,9 +16,9 @@
  
 using System;
 using System.Linq;
-using Thinktecture.IdentityManager.Api.Models;
+using IdentityManager.Api.Models;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     static class IdentityManagerResultExtensions
     {

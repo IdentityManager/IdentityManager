@@ -18,13 +18,13 @@ using Owin;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Thinktecture.IdentityManager.Configuration;
-using Thinktecture.IdentityManager.Core.Logging;
-using Thinktecture.IdentityManager.Host.IdSvr;
-using Thinktecture.IdentityManager.Host.InMemoryService;
-using Thinktecture.IdentityManager.Logging;
+using IdentityManager.Configuration;
+using IdentityManager.Core.Logging;
+using IdentityManager.Host.IdSvr;
+using IdentityManager.Host.InMemoryService;
+using IdentityManager.Logging;
 
-namespace Thinktecture.IdentityManager.Host
+namespace IdentityManager.Host
 {
     public class Startup
     {

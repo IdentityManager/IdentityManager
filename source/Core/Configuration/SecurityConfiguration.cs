@@ -16,7 +16,7 @@
  
 using Owin;
 
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     public abstract class SecurityConfiguration
     {

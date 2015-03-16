@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Thinktecture.IdentityManager.Host.InMemoryService
+namespace IdentityManager.Host.InMemoryService
 {
     public class Roles
     {

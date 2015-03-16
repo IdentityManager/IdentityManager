@@ -16,7 +16,7 @@
  
 using System.Collections.Generic;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     public class RoleDetail : RoleSummary
     {

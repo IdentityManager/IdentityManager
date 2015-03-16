@@ -16,7 +16,7 @@
  
 using Microsoft.Owin.Security;
 
-namespace Thinktecture.IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
+namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
 {
     public class LocalAuthenticationOptions : AuthenticationOptions
     {

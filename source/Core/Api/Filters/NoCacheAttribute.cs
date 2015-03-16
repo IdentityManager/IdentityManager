@@ -17,7 +17,7 @@
 using System;
 using System.Web.Http.Filters;
 
-namespace Thinktecture.IdentityManager.Api.Filters
+namespace IdentityManager.Api.Filters
 {
     class NoCacheAttribute : ActionFilterAttribute
     {

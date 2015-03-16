@@ -18,7 +18,7 @@ using System;
 using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Thinktecture.IdentityManager.Configuration
+namespace IdentityManager.Configuration
 {
     public class OAuth2Configuration
     {

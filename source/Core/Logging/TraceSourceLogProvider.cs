@@ -16,9 +16,9 @@
  
 using System;
 using System.Diagnostics;
-using Thinktecture.IdentityManager.Core.Logging;
+using IdentityManager.Core.Logging;
 
-namespace Thinktecture.IdentityManager.Logging
+namespace IdentityManager.Logging
 {
     /// <summary>
     /// Implementation of <see cref="ILogProvider"/> that uses <see cref="TraceSourceLogger"/>.
@@ -41,7 +41,7 @@ namespace Thinktecture.IdentityManager.Logging
 
         static TraceSourceLogger()
         {
-            _source = new TraceSource("Thinktecture.IdentityManager");
+            _source = new TraceSource("IdentityManager");
         }
 
         /// <summary>

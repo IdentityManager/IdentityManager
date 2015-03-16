@@ -18,7 +18,7 @@ using Autofac;
 using Microsoft.Owin;
 using System.Collections.Generic;
 
-namespace Thinktecture.IdentityManager.Extensions
+namespace IdentityManager.Extensions
 {
     static class OwinExtensions
     {

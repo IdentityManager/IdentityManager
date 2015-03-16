@@ -7,8 +7,8 @@
     <ProjectGuid>{319E13DD-C16A-4936-B179-BBFBA52C693B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Thinktecture.IdentityManager</RootNamespace>
-    <AssemblyName>Thinktecture.IdentityManager</AssemblyName>
+    <RootNamespace>IdentityManager</RootNamespace>
+    <AssemblyName>IdentityManager</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

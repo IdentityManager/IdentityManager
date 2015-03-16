@@ -16,7 +16,7 @@
  
 using System;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     public class IdentityManagerMetadata
     {

@@ -17,7 +17,7 @@
 using System.Diagnostics;
 using System.Web.Http.ExceptionHandling;
 
-namespace Thinktecture.IdentityManager.Configuration.Hosting
+namespace IdentityManager.Configuration.Hosting
 {
     public class TraceLogger : ExceptionLogger
     {

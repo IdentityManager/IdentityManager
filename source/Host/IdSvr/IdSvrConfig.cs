@@ -22,7 +22,7 @@ using Thinktecture.IdentityServer.Core.Logging;
 using Thinktecture.IdentityServer.Core.Models;
 using Thinktecture.IdentityServer.Core.Services.InMemory;
 
-namespace Thinktecture.IdentityManager.Host.IdSvr
+namespace IdentityManager.Host.IdSvr
 {
     public class IdSvrConfig
     {
@@ -34,7 +34,7 @@ namespace Thinktecture.IdentityManager.Host.IdSvr
             var idsrvOptions = new IdentityServerOptions
             {
                 IssuerUri = "https://idsrv3.com",
-                SiteName = "Thinktecture IdentityServer v3",
+                SiteName = "IdentityServer v3",
                 SigningCertificate = Cert.Load(),
                 Endpoints = new EndpointOptions {
                     EnableCspReportEndpoint = true

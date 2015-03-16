@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Web.Http.Routing;
 
-namespace Thinktecture.IdentityManager.Api.Models
+namespace IdentityManager.Api.Models
 {
     public class UserQueryResultResource
     {

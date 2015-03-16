@@ -17,7 +17,7 @@
 using Microsoft.Owin;
 using System.Collections.Generic;
 
-namespace Thinktecture.IdentityManager
+namespace IdentityManager
 {
     /// <summary>
     /// Container for the OWIN environment.

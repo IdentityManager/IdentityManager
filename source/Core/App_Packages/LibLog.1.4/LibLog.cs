@@ -24,9 +24,9 @@
 // SOFTWARE.
 //===============================================================================
 
-using Thinktecture.IdentityManager.Core.Logging.LogProviders;
+using IdentityManager.Core.Logging.LogProviders;
 
-namespace Thinktecture.IdentityManager.Core.Logging
+namespace IdentityManager.Core.Logging
 {
     using System.Collections.Generic;
     using System;
@@ -489,7 +489,7 @@ namespace Thinktecture.IdentityManager.Core.Logging
     }
 }
 
-namespace Thinktecture.IdentityManager.Core.Logging.LogProviders
+namespace IdentityManager.Core.Logging.LogProviders
 {
     using System;
     using System.Collections.Generic;
