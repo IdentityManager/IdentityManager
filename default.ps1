@@ -16,6 +16,7 @@ properties {
 }
 
 task default -depends Clean, CreateNuGetPackage
+task appVeyor -depends Clean, CreateNuGetPackage
 
 task Clean {
 	rmdir $output_directory -ea SilentlyContinue -recurse
@@ -25,9 +26,6 @@ task Clean {
 
 task Compile -depends UpdateVersion {
 	exec { msbuild /nologo /verbosity:q $sln_file /p:Configuration=$target_config /p:TargetFrameworkVersion=v4.5 }
-	
-	$versionAssemblyInfoFile = "$src_directory/VersionAssemblyInfo.cs"
-	rm $versionAssemblyInfoFile
 }
 
 task UpdateVersion {
@@ -76,6 +74,10 @@ task CreateNuGetPackage -depends ILMerge {
 	$packageVersion =  "$major.$minor.$patch"
 	if($preRelease){
 		$packageVersion = "$packageVersion-$preRelease" 
+	}
+
+	if ($buildNumber -ne 0){
+		$packageVersion = $packageVersion + "-build-" + $buildNumber.ToString().PadLeft(5,'0')
 	}
 
 	copy-item $src_directory\Core\IdentityManager.nuspec $dist_directory
