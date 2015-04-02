@@ -1,8 +1,8 @@
-Thinktecture.IdentityManager
+IdentityManager
 ============================
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/IdentityManager/IdentityManager?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**current status: beta 2**
+**current status: beta**
 
 ## Overview ##
 
