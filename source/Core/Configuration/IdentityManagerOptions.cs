@@ -22,16 +22,12 @@ namespace IdentityManager.Configuration
     {
         public IdentityManagerOptions()
         {
-            AdminRoleName = Constants.AdminRoleName;
             Factory = new IdentityManagerServiceFactory();
+            SecurityConfiguration = new LocalSecurityConfiguration();
         }
 
         public IdentityManagerServiceFactory Factory { get; set; }
-
-        public string AdminRoleName { get; set; }
-        public SecurityMode SecurityMode { get; set; }
-        public OAuth2Configuration OAuth2Configuration { get; set; }
-
+        public SecurityConfiguration SecurityConfiguration { get; set; }
         public bool DisableUserInterface { get; set; }
         
         internal void Validate()
@@ -40,24 +36,12 @@ namespace IdentityManager.Configuration
             {
                 throw new Exception("Factory is required.");
             }
-
-            if (this.SecurityMode == SecurityMode.OAuth2)
+            if (this.SecurityConfiguration == null)
             {
-                if (this.OAuth2Configuration == null)
-                {
-                    throw new InvalidOperationException("OidcConfiguration is required.");
-                }
-                this.OAuth2Configuration.Validate();
-            }
-            else
-            {
-                this.OAuth2Configuration = null;
+                throw new Exception("SecurityConfiguration is required.");
             }
 
-            if (String.IsNullOrWhiteSpace(AdminRoleName))
-            {
-                throw new InvalidOperationException("AdminRoleName not configured");
-            }
+            SecurityConfiguration.Validate();
         }
     }
 }

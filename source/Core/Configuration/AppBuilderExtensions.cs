@@ -44,54 +44,7 @@ namespace Owin
             var container = AutofacConfig.Configure(options);
             app.Use<AutofacContainerMiddleware>(container);
 
-            if (options.SecurityMode == SecurityMode.LocalMachine)
-            {
-                var local = new LocalAuthenticationOptions(options.AdminRoleName);
-                app.Use<LocalAuthenticationMiddleware>(local);
-            }
-            else if (options.SecurityMode == SecurityMode.OAuth2)
-            {
-                var jwtParams = new System.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    NameClaimType = options.OAuth2Configuration.NameClaimType,
-                    RoleClaimType = options.OAuth2Configuration.RoleClaimType,
-                    ValidAudience = options.OAuth2Configuration.Audience,
-                    ValidIssuer = options.OAuth2Configuration.Issuer,
-                };
-                if (options.OAuth2Configuration.SigningCert != null)
-                {
-                    jwtParams.IssuerSigningToken = new X509SecurityToken(options.OAuth2Configuration.SigningCert);
-                }
-                else
-                {
-                    var bytes = Convert.FromBase64String(options.OAuth2Configuration.SigningKey);
-                    jwtParams.IssuerSigningToken = new BinarySecretSecurityToken(bytes);
-                }
-
-                app.UseJwtBearerAuthentication(new JwtBearerAuthenticationOptions {
-                    TokenValidationParameters = jwtParams
-                });
-                app.RequireScopes(new ScopeValidationOptions {
-                    AllowAnonymousAccess = true,
-                    Scopes = new string[] {
-                        options.OAuth2Configuration.Scope
-                    }
-                });
-                if (options.OAuth2Configuration.ClaimsTransformation != null)
-                {
-                    app.Use(async (ctx, next) =>
-                    {
-                        var user = ctx.Authentication.User;
-                        if (user != null)
-                        {
-                            user = options.OAuth2Configuration.ClaimsTransformation(user);
-                            ctx.Authentication.User = user;
-                        }
-
-                        await next();
-                    });
-                }
-            }
+            options.SecurityConfiguration.Configure(app);
 
             if (!options.DisableUserInterface)
             {

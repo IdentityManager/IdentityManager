@@ -49,27 +49,26 @@ namespace IdentityManager.Host
                 idm.UseIdentityManager(new IdentityManagerOptions
                 {
                     Factory = factory,
-                    SecurityMode = SecurityMode.LocalMachine,
-                    OAuth2Configuration = new OAuth2Configuration
-                    {
-                        AuthorizationUrl = "http://localhost:17457/ids/connect/authorize",
-                        Issuer = "https://idsrv3.com",
-                        Audience = "https://idsrv3.com/resources",
-                        ClientId = "idmgr",
-                        SigningCert = Cert.Load(),
-                        Scope = "idmgr",
-                        ClaimsTransformation = user =>
-                        {
-                            if (user.IsInRole("Foo"))
-                            {
-                                ((ClaimsIdentity)user.Identity).AddClaim(new Claim("role", "IdentityManagerAdministrator"));
-                            }
+                    //SecurityConfiguration = new OAuth2Configuration
+                    //{
+                    //    AuthorizationUrl = "http://localhost:17457/ids/connect/authorize",
+                    //    Issuer = "https://idsrv3.com",
+                    //    Audience = "https://idsrv3.com/resources",
+                    //    ClientId = "idmgr",
+                    //    SigningCert = Cert.Load(),
+                    //    Scope = "idmgr",
+                    //    ClaimsTransformation = user =>
+                    //    {
+                    //        if (user.IsInRole("Foo"))
+                    //        {
+                    //            ((ClaimsIdentity)user.Identity).AddClaim(new Claim("role", "IdentityManagerAdministrator"));
+                    //        }
                             
-                            return user;
-                        },
-                        //PersistToken = true,
-                        //AutomaticallyRenewToken = true
-                    }
+                    //        return user;
+                    //    },
+                    //    //PersistToken = true,
+                    //    //AutomaticallyRenewToken = true
+                    //}
                 });
             });
 

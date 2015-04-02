@@ -150,6 +150,7 @@
     <Compile Include="Configuration\Hosting\TraceLogger.cs" />
     <Compile Include="Configuration\IdentityManagerServiceFactory.cs" />
     <Compile Include="Configuration\IDependencyResolver.cs" />
+    <Compile Include="Configuration\LocalSecurityConfiguration.cs" />
     <Compile Include="Configuration\OAuth2Configuration.cs" />
     <Compile Include="Configuration\IdentityManagerOptions.cs" />
     <Compile Include="Configuration\Registration.cs" />

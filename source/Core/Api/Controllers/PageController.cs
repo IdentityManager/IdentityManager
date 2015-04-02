@@ -38,23 +38,18 @@ namespace IdentityManager.Api.Controllers
         [AllowAnonymous]
         public IHttpActionResult Index()
         {
-            if (idmConfig.SecurityMode == SecurityMode.LocalMachine &&
-                (User == null || User.Identity == null || User.Identity.IsAuthenticated == false))
-            {
-                return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.accessdenied.html");
-            }
-
-            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html", idmConfig.OAuth2Configuration);
+            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html");
         }
         
         [HttpGet]
         [AllowAnonymous]
         public IHttpActionResult Frame()
         {
-            if (idmConfig.SecurityMode != SecurityMode.OAuth2)
-            {
-                return NotFound();
-            }
+            return NotFound();
+            //if (idmConfig.SecurityMode != SecurityMode.OAuth2)
+            //{
+                
+            //}
 
             return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.frame.html");
         }

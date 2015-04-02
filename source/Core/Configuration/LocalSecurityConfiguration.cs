@@ -14,37 +14,27 @@
  * limitations under the License.
  */
 
+using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 using Owin;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Web.Http;
 
 namespace IdentityManager.Configuration
 {
-    public abstract class SecurityConfiguration
+    public class LocalSecurityConfiguration : SecurityConfiguration
     {
-        public string AdminRoleName { get; set; }
-        public string HostAuthenticationType { get; set; }
-
-        internal SecurityConfiguration()
+        public LocalSecurityConfiguration()
         {
-            AdminRoleName = Constants.AdminRoleName;
+            HostAuthenticationType = Constants.LocalAuthenticationType;
         }
 
-        internal virtual void Validate()
+        public override void Configure(IAppBuilder app)
         {
-            if (String.IsNullOrWhiteSpace(AdminRoleName))
-            {
-                throw new Exception("AdminRoleName is required.");
-            }
-            if (String.IsNullOrWhiteSpace(HostAuthenticationType))
-            {
-                throw new Exception("HostAuthenticationType is required.");
-            }
-        }
-
-        public abstract void Configure(IAppBuilder app);
-        public virtual void Configure(HttpConfiguration config)
-        {
+            var local = new LocalAuthenticationOptions(AdminRoleName);
+            app.Use<LocalAuthenticationMiddleware>(local);
         }
     }
 }
