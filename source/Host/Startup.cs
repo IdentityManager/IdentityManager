@@ -24,10 +24,17 @@ using IdentityManager.Host.IdSvr;
 using IdentityManager.Host.InMemoryService;
 using IdentityManager.Logging;
 using Microsoft.Owin.Logging;
+using Microsoft.Owin;
+using IdentityManager.Host;
+using System.Threading.Tasks;
+using System.IdentityModel.Tokens;
+
+[assembly: OwinStartup(typeof(StartupWithLocalhostSecurity))]
+//[assembly: OwinStartup(typeof(StartupWithHostCookiesSecurity))]
 
 namespace IdentityManager.Host
 {
-    public class Startup
+    public class StartupWithLocalhostSecurity
     {
         public void Configuration(IAppBuilder app)
         {
@@ -52,6 +59,60 @@ namespace IdentityManager.Host
                     Factory = factory,
                 });
             });
+          
+            // used to redirect to the main admin page visiting the root of the host
+            app.Run(ctx =>
+            {
+                ctx.Response.Redirect("/idm/");
+                return Task.FromResult(0);
+            });
+        }
+    }
+
+    public class StartupWithHostCookiesSecurity
+    {
+        public void Configuration(IAppBuilder app)
+        {
+            LogProvider.SetCurrentLogProvider(new TraceSourceLogProvider());
+            
+            JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+            app.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
+            {
+                AuthenticationType = "Cookies"
+            });
+            
+            app.UseOpenIdConnectAuthentication(new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions
+            {
+                Authority = "https://localhost:44337/ids",
+                ClientId = "idmgr_client",
+                RedirectUri = "https://localhost:44337",
+                ResponseType = "id_token",
+                UseTokenLifetime = false,
+                Scope = "openid idmgr",
+                SignInAsAuthenticationType = "Cookies"
+            });
+
+            app.Map("/idm", idm =>
+            {
+                var factory = new IdentityManagerServiceFactory();
+
+                var rand = new System.Random();
+                var users = Users.Get(rand.Next(5000, 20000));
+                var roles = Roles.Get(rand.Next(15));
+
+                factory.Register(new Registration<ICollection<InMemoryUser>>(users));
+                factory.Register(new Registration<ICollection<InMemoryRole>>(roles));
+                factory.IdentityManagerService = new Registration<IIdentityManagerService, InMemoryIdentityManagerService>();
+
+                idm.UseIdentityManager(new IdentityManagerOptions
+                {
+                    Factory = factory,
+                    SecurityConfiguration = new HostSecurityConfiguration
+                    {
+                        HostAuthenticationType = "Cookies"
+                    }
+                });
+            });
 
             // this configures an embedded IdentityServer to act as an external authentication provider
             // when using IdentityManager in Token security mode. normally you'd configure this elsewhere.
@@ -64,8 +125,9 @@ namespace IdentityManager.Host
             app.Run(ctx =>
             {
                 ctx.Response.Redirect("/idm/");
-                return System.Threading.Tasks.Task.FromResult(0);
+                return Task.FromResult(0);
             });
         }
     }
+
 }

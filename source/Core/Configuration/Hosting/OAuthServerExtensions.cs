@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using IdentityManager.Core.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
@@ -26,6 +27,8 @@ namespace IdentityManager.Configuration.Hosting
 {
     static class OAuthServerExtensions
     {
+        private readonly static ILog Logger = LogProvider.GetCurrentClassLogger();
+
         public static void UseOAuthAuthorizationServer(this IAppBuilder app, HostSecurityConfiguration config)
         {
             app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions
@@ -58,6 +61,8 @@ namespace IdentityManager.Configuration.Hosting
                         var result = owin.Authentication.AuthenticateAsync(config.HostAuthenticationType).Result;
                         if (result != null)
                         {
+                            Logger.InfoFormat("User is authenticated from {0}", config.HostAuthenticationType);
+
                             // we only want name and role claims
                             var expected = new[]{config.NameClaimType, config.RoleClaimType};
                             var claims = result.Identity.Claims.Where(x => expected.Contains(x.Type));
@@ -66,7 +71,8 @@ namespace IdentityManager.Configuration.Hosting
                         }
                         else
                         {
-                            owin.Authentication.Challenge(config.HostAuthenticationType);
+                            Logger.InfoFormat("User is authenticated from {0}; issuing challenge", config.HostAuthenticationType);
+                            owin.Authentication.Challenge();
                         };
 
                         ctx.RequestCompleted();
