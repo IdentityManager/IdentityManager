@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
 {
-    public class LocalAuthenticationHandler : AuthenticationHandler<LocalAuthenticationOptions>
+    public class LocalhostAuthenticationHandler : AuthenticationHandler<LocalhostAuthenticationOptions>
     {
         protected override Task<Microsoft.Owin.Security.AuthenticationTicket> AuthenticateCoreAsync()
         {

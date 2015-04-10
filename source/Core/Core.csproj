@@ -144,11 +144,12 @@
     <Compile Include="Configuration\Hosting\AutofacDependencyResolver.cs" />
     <Compile Include="Configuration\Hosting\AutofacScope.cs" />
     <Compile Include="Configuration\Hosting\KatanaDependencyResolver.cs" />
-    <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationHandler.cs" />
-    <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationMiddleware.cs" />
-    <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalAuthenticationOptions.cs" />
+    <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalhostAuthenticationHandler.cs" />
+    <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalhostAuthenticationMiddleware.cs" />
+    <Compile Include="Configuration\Hosting\LocalAuthenticationMiddleware\LocalhostAuthenticationOptions.cs" />
     <Compile Include="Configuration\Hosting\LogProviderExceptionLogger.cs" />
     <Compile Include="Configuration\Hosting\TraceLogger.cs" />
+    <Compile Include="Configuration\LocalhostSecurityConfiguration.cs" />
     <Compile Include="Configuration\IdentityManagerServiceFactory.cs" />
     <Compile Include="Configuration\IDependencyResolver.cs" />
     <Compile Include="Configuration\HostSecurityConfiguration.cs" />

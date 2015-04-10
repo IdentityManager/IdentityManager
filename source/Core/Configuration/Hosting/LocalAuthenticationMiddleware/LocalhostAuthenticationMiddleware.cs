@@ -19,16 +19,16 @@ using Microsoft.Owin.Security.Infrastructure;
 
 namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
 {
-    public class LocalAuthenticationMiddleware : AuthenticationMiddleware<LocalAuthenticationOptions>
+    public class LocalhostAuthenticationMiddleware : AuthenticationMiddleware<LocalhostAuthenticationOptions>
     {
-        public LocalAuthenticationMiddleware(OwinMiddleware next, LocalAuthenticationOptions options)
+        public LocalhostAuthenticationMiddleware(OwinMiddleware next, LocalhostAuthenticationOptions options)
             : base(next, options)
         {
         }
 
-        protected override AuthenticationHandler<LocalAuthenticationOptions> CreateHandler()
+        protected override AuthenticationHandler<LocalhostAuthenticationOptions> CreateHandler()
         {
-            return new LocalAuthenticationHandler();
+            return new LocalhostAuthenticationHandler();
         }
     }
 }

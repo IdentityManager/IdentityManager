@@ -23,7 +23,7 @@ namespace IdentityManager.Configuration
         public IdentityManagerOptions()
         {
             Factory = new IdentityManagerServiceFactory();
-            SecurityConfiguration = new HostSecurityConfiguration();
+            SecurityConfiguration = new LocalhostSecurityConfiguration();
         }
 
         public IdentityManagerServiceFactory Factory { get; set; }

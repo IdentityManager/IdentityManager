@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 using IdentityManager.Configuration.Hosting;
 using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
 using Owin;
@@ -21,26 +21,22 @@ using System;
 
 namespace IdentityManager.Configuration
 {
-    public class HostSecurityConfiguration : SecurityConfiguration
+    public class LocalhostSecurityConfiguration : HostSecurityConfiguration
     {
-        public string HostAuthenticationType { get; set; }
-        public TimeSpan TokenExpiration { get; set; }
-
-        public HostSecurityConfiguration()
+        public LocalhostSecurityConfiguration()
         {
-            TokenExpiration = Constants.DefaultTokenExpiration;
-        }
-
-        internal override void Validate()
-        {
-            base.Validate();
-
-            if (String.IsNullOrWhiteSpace(HostAuthenticationType)) throw new Exception("HostAuthenticationType is required.");
+            HostAuthenticationType = Constants.LocalAuthenticationType;
         }
 
         public override void Configure(IAppBuilder app)
         {
-            app.UseOAuthAuthorizationServer(this);
+            if (this.ShowLoginButton == null)
+            {
+                this.ShowLoginButton = false;
+            }
+            app.Use<LocalhostAuthenticationMiddleware>(new LocalhostAuthenticationOptions(this));
+
+            base.Configure(app);
         }
     }
 }

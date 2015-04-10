@@ -18,11 +18,11 @@ using Microsoft.Owin.Security;
 
 namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
 {
-    public class LocalAuthenticationOptions : AuthenticationOptions
+    public class LocalhostAuthenticationOptions : AuthenticationOptions
     {
         public HostSecurityConfiguration Configuration { get; set; }
         
-        public LocalAuthenticationOptions(HostSecurityConfiguration securityConfiguration)
+        public LocalhostAuthenticationOptions(HostSecurityConfiguration securityConfiguration)
             : base(securityConfiguration.HostAuthenticationType)
         {
             this.Configuration = securityConfiguration;
