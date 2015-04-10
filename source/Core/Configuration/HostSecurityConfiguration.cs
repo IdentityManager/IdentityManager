@@ -36,6 +36,10 @@ namespace IdentityManager.Configuration
         {
             if (String.IsNullOrWhiteSpace(HostAuthenticationType))
             {
+                if (this.ShowLoginButton == null)
+                {
+                    this.ShowLoginButton = false;
+                }
                 this.HostAuthenticationType = Constants.LocalAuthenticationType;
                 app.Use<LocalAuthenticationMiddleware>(new LocalAuthenticationOptions(this));
             }

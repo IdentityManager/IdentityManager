@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using IdentityManager.Configuration;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,13 +27,15 @@ namespace IdentityManager.Assets
         string path;
         string file;
         string authorization_endpoint;
+        SecurityConfiguration securityConfiguration;
 
-        public EmbeddedHtmlResult(HttpRequestMessage request, string file)
+        public EmbeddedHtmlResult(HttpRequestMessage request, string file, SecurityConfiguration securityConfiguration)
         {
             var pathbase = request.GetOwinContext().Request.PathBase;
             this.path = pathbase.Value;
             this.file = file;
             this.authorization_endpoint = pathbase + Constants.AuthorizePath;
+            this.securityConfiguration = securityConfiguration;
         }
 
         public Task<System.Net.Http.HttpResponseMessage> ExecuteAsync(System.Threading.CancellationToken cancellationToken)
@@ -48,6 +51,7 @@ namespace IdentityManager.Assets
                     model = Newtonsoft.Json.JsonConvert.SerializeObject(new
                     {
                         PathBase = this.path,
+                        ShowLoginButton = this.securityConfiguration.ShowLoginButton,
                         oauthSettings = new
                         {
                             authorization_endpoint = this.authorization_endpoint,

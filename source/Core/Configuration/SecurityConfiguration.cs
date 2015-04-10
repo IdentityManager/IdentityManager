@@ -29,6 +29,8 @@ namespace IdentityManager.Configuration
 
         public string AdminRoleName { get; set; }
 
+        public virtual bool? ShowLoginButton { get; set; }
+
         internal SecurityConfiguration()
         {
             RequireSsl = true;

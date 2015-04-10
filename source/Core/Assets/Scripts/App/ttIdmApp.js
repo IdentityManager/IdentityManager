@@ -78,9 +78,12 @@
     LayoutCtrl.$inject = ["$rootScope", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
-    function HomeCtrl() {
+    function HomeCtrl(ShowLoginButton, idmTokenManager) {
+        if (ShowLoginButton === false && idmTokenManager.expired) {
+            idmTokenManager.redirectForToken();
+        }
     }
-    HomeCtrl.$inject = [];
+    HomeCtrl.$inject = ["ShowLoginButton", "idmTokenManager"];
     app.controller("HomeCtrl", HomeCtrl);
 
     function CallbackCtrl(idmTokenManager, $location, $rootScope, $routeParams, idmErrorService) {

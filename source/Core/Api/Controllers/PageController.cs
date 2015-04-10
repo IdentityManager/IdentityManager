@@ -38,7 +38,7 @@ namespace IdentityManager.Api.Controllers
         [AllowAnonymous]
         public IHttpActionResult Index()
         {
-            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html");
+            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html", idmConfig.SecurityConfiguration);
         }
     }
 }
