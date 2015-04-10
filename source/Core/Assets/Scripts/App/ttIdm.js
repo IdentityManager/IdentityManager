@@ -103,7 +103,7 @@
                         throw 'You are not authorized to use this service.';
                     }
                     else {
-                        throw 'Failed to load API.';
+                        throw (resp.data && (resp.data.exceptionMessage || resp.data.message)) || 'Failed to access IdentityManager API.';
                     }
                 });
             }
