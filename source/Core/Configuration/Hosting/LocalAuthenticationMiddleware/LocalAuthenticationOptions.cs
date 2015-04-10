@@ -20,12 +20,12 @@ namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
 {
     public class LocalAuthenticationOptions : AuthenticationOptions
     {
-        public LocalAuthenticationOptions(string roleToAssign)
-            : base(Constants.LocalAuthenticationType)
+        public HostSecurityConfiguration Configuration { get; set; }
+        
+        public LocalAuthenticationOptions(HostSecurityConfiguration securityConfiguration)
+            : base(securityConfiguration.HostAuthenticationType)
         {
-            this.RoleToAssign = roleToAssign;
+            this.Configuration = securityConfiguration;
         }
-
-        public string RoleToAssign { get; private set; }
     }
 }

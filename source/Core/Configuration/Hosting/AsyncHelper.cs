@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
-using Owin;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace IdentityManager.Configuration
+namespace IdentityManager.Configuration.Hosting
 {
-    public class LocalSecurityConfiguration : SecurityConfiguration
+    internal static class AsyncHelper
     {
-        public LocalSecurityConfiguration()
+        private static readonly TaskFactory _myTaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
+        public static void RunSync(Func<Task> func)
         {
-            HostAuthenticationType = Constants.LocalAuthenticationType;
+            _myTaskFactory.StartNew(func).Unwrap().GetAwaiter().GetResult();
         }
 
-        public override void Configure(IAppBuilder app)
+        public static TResult RunSync<TResult>(Func<Task<TResult>> func)
         {
-            var local = new LocalAuthenticationOptions(AdminRoleName);
-            app.Use<LocalAuthenticationMiddleware>(local);
+            return _myTaskFactory.StartNew(func).Unwrap().GetAwaiter().GetResult();
         }
     }
+
 }

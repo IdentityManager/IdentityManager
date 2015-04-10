@@ -13,33 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Configuration;
+using IdentityManager.Configuration.Hosting;
+using IdentityManager.Core.Logging;
+using IdentityManager.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Infrastructure;
-using Microsoft.Owin.Security.Jwt;
+using Microsoft.Owin.Logging;
 using Microsoft.Owin.StaticFiles;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens;
-using System.ServiceModel.Security.Tokens;
-using IdentityManager.Configuration;
-using IdentityManager.Configuration.Hosting;
-using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
-using Thinktecture.IdentityModel.Owin.ScopeValidation;
 
 namespace Owin
 {
     public static class IdentityManagerAppBuilderExtensions
     {
+        private readonly static ILog Logger = LogProvider.GetCurrentClassLogger();
+
         public static void UseIdentityManager(this IAppBuilder app, IdentityManagerOptions options)
         {
             if (app == null) throw new ArgumentNullException("app");
             if (options == null) throw new ArgumentNullException("config");
-            options.Validate();
 
-            JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+            app.SetLoggerFactory(new LibLogLoggerFactory());
+            
+            Logger.Info("Starting IdentityManager configuration");
+
+            options.Validate();
 
             var container = AutofacConfig.Configure(options);
             app.Use<AutofacContainerMiddleware>(container);
@@ -64,6 +66,9 @@ namespace Owin
             SignatureConversions.AddConversions(app);
             app.UseWebApi(WebApiConfig.Configure(options));
             app.UseStageMarker(PipelineStage.MapHandler);
+
+            // clears out the OWIN logger factory so we don't recieve other hosting related logs
+            app.Properties["server.LoggerFactory"] = null;
         }
     }
 }

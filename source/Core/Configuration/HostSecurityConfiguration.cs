@@ -13,35 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Configuration.Hosting;
+using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
+using Owin;
 using System;
 
 namespace IdentityManager.Configuration
 {
-    public class IdentityManagerOptions
+    public class HostSecurityConfiguration : SecurityConfiguration
     {
-        public IdentityManagerOptions()
+        public string HostAuthenticationType { get; set; }
+
+        public HostSecurityConfiguration()
         {
-            Factory = new IdentityManagerServiceFactory();
-            SecurityConfiguration = new HostSecurityConfiguration();
+            HostAuthenticationType = null;
         }
 
-        public IdentityManagerServiceFactory Factory { get; set; }
-        public SecurityConfiguration SecurityConfiguration { get; set; }
-        public bool DisableUserInterface { get; set; }
-        
-        internal void Validate()
+        public override void Configure(IAppBuilder app)
         {
-            if (this.Factory == null)
+            if (String.IsNullOrWhiteSpace(HostAuthenticationType))
             {
-                throw new Exception("Factory is required.");
-            }
-            if (this.SecurityConfiguration == null)
-            {
-                throw new Exception("SecurityConfiguration is required.");
+                this.HostAuthenticationType = Constants.LocalAuthenticationType;
+                app.Use<LocalAuthenticationMiddleware>(new LocalAuthenticationOptions(this));
             }
 
-            SecurityConfiguration.Validate();
+            app.UseOAuthAuthorizationServer(this);
         }
     }
 }

@@ -23,6 +23,7 @@ using IdentityManager.Core.Logging;
 using IdentityManager.Host.IdSvr;
 using IdentityManager.Host.InMemoryService;
 using IdentityManager.Logging;
+using Microsoft.Owin.Logging;
 
 namespace IdentityManager.Host
 {
@@ -30,12 +31,12 @@ namespace IdentityManager.Host
     {
         public void Configuration(IAppBuilder app)
         {
+            LogProvider.SetCurrentLogProvider(new TraceSourceLogProvider());
+
             // this configures IdentityManager
             // we're using a Map just to test hosting not at the root
             app.Map("/idm", idm =>
             {
-                LogProvider.SetCurrentLogProvider(new DiagnosticsTraceLogProvider());
-
                 var factory = new IdentityManagerServiceFactory();
 
                 var rand = new System.Random();
@@ -63,7 +64,6 @@ namespace IdentityManager.Host
                     //        {
                     //            ((ClaimsIdentity)user.Identity).AddClaim(new Claim("role", "IdentityManagerAdministrator"));
                     //        }
-                            
                     //        return user;
                     //    },
                     //    //PersistToken = true,

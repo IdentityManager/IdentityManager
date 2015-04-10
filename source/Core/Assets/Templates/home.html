@@ -5,4 +5,7 @@
     <div ng-show="layout.showLogin">
         <button class="btn btn-primary btn-lg" ng-click="login()">Login</button>
     </div>
+    <div ng-show="errors" class="alert alert-danger">
+        <strong>Error:</strong> {{errors[0]}}
+    </div>
 </div>

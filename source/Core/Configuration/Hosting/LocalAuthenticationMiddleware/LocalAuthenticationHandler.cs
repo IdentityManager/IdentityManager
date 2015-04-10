@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Resources;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Infrastructure;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityManager.Resources;
 
 namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
 {
@@ -31,9 +31,9 @@ namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
             var localAddresses = new string[] { "127.0.0.1", "::1", ctx.Request.LocalIpAddress };
             if (localAddresses.Contains(ctx.Request.RemoteIpAddress))
             {
-                var id = new ClaimsIdentity(Constants.LocalAuthenticationType, Constants.ClaimTypes.Name, Constants.ClaimTypes.Role);
-                id.AddClaim(new Claim(Constants.ClaimTypes.Name, Messages.LocalUsername));
-                id.AddClaim(new Claim(Constants.ClaimTypes.Role, this.Options.RoleToAssign));
+                var id = new ClaimsIdentity(this.Options.Configuration.HostAuthenticationType, this.Options.Configuration.NameClaimType, this.Options.Configuration.RoleClaimType);
+                id.AddClaim(new Claim(this.Options.Configuration.NameClaimType, Messages.LocalUsername));
+                id.AddClaim(new Claim(this.Options.Configuration.RoleClaimType, this.Options.Configuration.AdminRoleName));
 
                 var ticket = new AuthenticationTicket(id, new AuthenticationProperties());
                 return Task.FromResult(ticket);

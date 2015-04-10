@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Configuration.Hosting;
 using System;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
-using IdentityManager.Configuration.Hosting;
 
 namespace IdentityManager.Configuration
 {
@@ -42,7 +42,7 @@ namespace IdentityManager.Configuration
             }
 
             config.SuppressDefaultHostAuthentication();
-            config.Filters.Add(new HostAuthenticationAttribute(options.SecurityConfiguration.HostAuthenticationType));
+            config.Filters.Add(new HostAuthenticationAttribute(options.SecurityConfiguration.BearerAuthenticationType));
             config.Filters.Add(new AuthorizeAttribute() { Roles = options.SecurityConfiguration.AdminRoleName });
 
             config.Formatters.Remove(config.Formatters.XmlFormatter);

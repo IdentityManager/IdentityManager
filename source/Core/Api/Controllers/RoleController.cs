@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Api.Filters;
+using IdentityManager.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +23,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using IdentityManager.Api.Filters;
-using IdentityManager.Resources;
 
 namespace IdentityManager.Api.Models.Controllers
 {

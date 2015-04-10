@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-using System;
-using System.Web.Http;
+
 using IdentityManager.Api.Filters;
 using IdentityManager.Assets;
 using IdentityManager.Configuration;
+using System;
+using System.Web.Http;
 
 namespace IdentityManager.Api.Controllers
 {
@@ -39,19 +39,6 @@ namespace IdentityManager.Api.Controllers
         public IHttpActionResult Index()
         {
             return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html");
-        }
-        
-        [HttpGet]
-        [AllowAnonymous]
-        public IHttpActionResult Frame()
-        {
-            return NotFound();
-            //if (idmConfig.SecurityMode != SecurityMode.OAuth2)
-            //{
-                
-            //}
-
-            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.frame.html");
         }
     }
 }
