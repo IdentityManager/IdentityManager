@@ -24,10 +24,12 @@ namespace IdentityManager.Configuration
     public class HostSecurityConfiguration : SecurityConfiguration
     {
         public string HostAuthenticationType { get; set; }
+        public TimeSpan TokenExpiration { get; set; }
 
         public HostSecurityConfiguration()
         {
             HostAuthenticationType = null;
+            TokenExpiration = Constants.DefaultTokenExpiration;
         }
 
         public override void Configure(IAppBuilder app)

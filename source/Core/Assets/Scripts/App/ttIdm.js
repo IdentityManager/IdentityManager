@@ -5,9 +5,10 @@
     var app = angular.module("ttIdm", []);
 
     function config($httpProvider) {
-        function intercept($q, idmTokenManager) {
+        function intercept($q, idmTokenManager, idmErrorService) {
             return {
                 'request': function (config) {
+                    idmErrorService.clear();
                     var token = idmTokenManager.access_token;
                     if (token) {
                         config.headers['Authorization'] = 'Bearer ' + token;
@@ -16,47 +17,66 @@
                 },
                 'responseError': function (response) {
                     if (response.status === 401) {
-                        idmTokenManager.removeToken();
+                        //idmTokenManager.removeToken();
                     }
                     if (response.status === 403) {
-                        idmTokenManager.removeToken();
+                        //idmTokenManager.removeToken();
                     }
                     return $q.reject(response);
                 }
             };
         };
-        intercept.$inject = ["$q", "idmTokenManager"];
+        intercept.$inject = ["$q", "idmTokenManager", "idmErrorService"];
         $httpProvider.interceptors.push(intercept);
     };
     config.$inject = ["$httpProvider"];
     app.config(config);
 
-    function idmErrorService($rootScope, $location) {
+    function idmErrorService($rootScope, $timeout) {
         var svc = {
-            show: function(err){
-                if (err instanceof Array) {
-                    $rootScope.errors = err;
-                }
-                else {
-                    $rootScope.errors = [err];
-                }
+            show: function (err) {
+                $timeout(function () {
+                    if (err instanceof Array) {
+                        $rootScope.errors = err;
+                    }
+                    else {
+                        $rootScope.errors = [err];
+                    }
+                }, 100);
             },
-            error: function (err) {
-                svc.show(err);
-                $location.url("/error");
+            clear: function () {
+                $rootScope.errors = null;
             }
         };
+
         return svc;
     }
-    idmErrorService.$inject = ["$rootScope", "$location"];
+    idmErrorService.$inject = ["$rootScope", "$timeout"];
     app.factory("idmErrorService", idmErrorService);
 
-    function idmTokenManager(OidcTokenManager, oauthSettings, PathBase, $window) {
+    function idmTokenManager(OidcTokenManager, oauthSettings, PathBase, $window, $rootScope) {
+
         oauthSettings.response_type = "token";
+
         var mgr = new OidcTokenManager(oauthSettings);
+
+        var applyFuncs = [
+                "_callTokenRemoved", "_callTokenExpiring",
+                "_callTokenExpired", "_callTokenObtained",
+                "_callSilentTokenRenewFailed"
+        ];
+        applyFuncs.forEach(function (name) {
+            var tmp = mgr[name].bind(mgr);
+            mgr[name] = function () {
+                $rootScope.$applyAsync(function () {
+                    tmp();
+                });
+            }
+        });
+
         return mgr;
     }
-    idmTokenManager.$inject = ["OidcTokenManager", "oauthSettings", "PathBase", "$window"];
+    idmTokenManager.$inject = ["OidcTokenManager", "oauthSettings", "PathBase", "$window", "$rootScope"];
     app.factory("idmTokenManager", idmTokenManager);
 
     function idmApi(idmTokenManager, $http, $q, PathBase) {

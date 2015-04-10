@@ -14,6 +14,7 @@
  * limitations under the License.
  */
  
+using System;
 namespace IdentityManager
 {
     public class Constants
@@ -29,6 +30,8 @@ namespace IdentityManager
         public const string AdminRoleName = "IdentityManagerAdministrator";
 
         internal const string AutofacScope = "idm:AutofacScope";
+
+        public static readonly TimeSpan DefaultTokenExpiration = TimeSpan.FromHours(10);
 
         public class ClaimTypes
         {

@@ -275,9 +275,10 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
     var app = angular.module("ttIdm", []);
 
     function config($httpProvider) {
-        function intercept($q, idmTokenManager) {
+        function intercept($q, idmTokenManager, idmErrorService) {
             return {
                 'request': function (config) {
+                    idmErrorService.clear();
                     var token = idmTokenManager.access_token;
                     if (token) {
                         config.headers['Authorization'] = 'Bearer ' + token;
@@ -286,47 +287,66 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
                 },
                 'responseError': function (response) {
                     if (response.status === 401) {
-                        idmTokenManager.removeToken();
+                        //idmTokenManager.removeToken();
                     }
                     if (response.status === 403) {
-                        idmTokenManager.removeToken();
+                        //idmTokenManager.removeToken();
                     }
                     return $q.reject(response);
                 }
             };
         };
-        intercept.$inject = ["$q", "idmTokenManager"];
+        intercept.$inject = ["$q", "idmTokenManager", "idmErrorService"];
         $httpProvider.interceptors.push(intercept);
     };
     config.$inject = ["$httpProvider"];
     app.config(config);
 
-    function idmErrorService($rootScope, $location) {
+    function idmErrorService($rootScope, $timeout) {
         var svc = {
-            show: function(err){
-                if (err instanceof Array) {
-                    $rootScope.errors = err;
-                }
-                else {
-                    $rootScope.errors = [err];
-                }
+            show: function (err) {
+                $timeout(function () {
+                    if (err instanceof Array) {
+                        $rootScope.errors = err;
+                    }
+                    else {
+                        $rootScope.errors = [err];
+                    }
+                }, 100);
             },
-            error: function (err) {
-                svc.show(err);
-                $location.url("/error");
+            clear: function () {
+                $rootScope.errors = null;
             }
         };
+
         return svc;
     }
-    idmErrorService.$inject = ["$rootScope", "$location"];
+    idmErrorService.$inject = ["$rootScope", "$timeout"];
     app.factory("idmErrorService", idmErrorService);
 
-    function idmTokenManager(OidcTokenManager, oauthSettings, PathBase, $window) {
+    function idmTokenManager(OidcTokenManager, oauthSettings, PathBase, $window, $rootScope) {
+
         oauthSettings.response_type = "token";
+
         var mgr = new OidcTokenManager(oauthSettings);
+
+        var applyFuncs = [
+                "_callTokenRemoved", "_callTokenExpiring",
+                "_callTokenExpired", "_callTokenObtained",
+                "_callSilentTokenRenewFailed"
+        ];
+        applyFuncs.forEach(function (name) {
+            var tmp = mgr[name].bind(mgr);
+            mgr[name] = function () {
+                $rootScope.$applyAsync(function () {
+                    tmp();
+                });
+            }
+        });
+
         return mgr;
     }
-    idmTokenManager.$inject = ["OidcTokenManager", "oauthSettings", "PathBase", "$window"];
+    idmTokenManager.$inject = ["OidcTokenManager", "oauthSettings", "PathBase", "$window", "$rootScope"];
     app.factory("idmTokenManager", idmTokenManager);
 
     function idmApi(idmTokenManager, $http, $q, PathBase) {
@@ -1128,10 +1148,6 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
                 templateUrl: PathBase + '/assets/Templates.message.html',
                 controller: 'CallbackCtrl'
             })
-            .when("/logout", {
-                template: "<h2>Logging out...</h2>",
-                controller: "LogoutCtrl"
-            })
             .when("/error", {
                 templateUrl: PathBase + '/assets/Templates.message.html'
             })
@@ -1142,14 +1158,15 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, $scope, idmApi, $location, idmTokenManager) {
-        $scope.layout = {};
+    function LayoutCtrl($rootScope, idmApi, $location, idmTokenManager, idmErrorService) {
+        $rootScope.layout = {};
 
         function removed() {
-            $scope.layout.username = null;
-            $scope.layout.links = null;
-            $scope.layout.showLogout = !idmTokenManager.expired;
-            $scope.layout.showLogin = idmTokenManager.expired;
+            idmErrorService.clear();
+            $rootScope.layout.username = null;
+            $rootScope.layout.links = null;
+            $rootScope.layout.showLogout = !idmTokenManager.expired;
+            $rootScope.layout.showLogin = idmTokenManager.expired;
         }
 
         function load() {
@@ -1157,14 +1174,16 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
 
             if (!idmTokenManager.expired) {
                 idmApi.get().then(function (api) {
-                    $scope.layout.username = api.data.currentUser.username;
-                    $scope.layout.links = api.links;
+                    $rootScope.layout.username = api.data.currentUser.username;
+                    $rootScope.layout.links = api.links;
+                }, function (err) {
+                    idmErrorService.show(err);
                 });
             }
         }
 
-        //idmTokenManager.addOnTokenObtained(load);
-        //idmTokenManager.addOnTokenRemoved(removed);
+        idmTokenManager.addOnTokenObtained(load);
+        idmTokenManager.addOnTokenRemoved(removed);
         load();
 
         if (idmTokenManager.expired &&
@@ -1175,16 +1194,22 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
                 $location.path("/");
         }
 
-        //idmTokenManager.addOnTokenExpired(function () {
-        //    $location.url("/error");
-        //    $rootScope.errors = ["Your session has expired."];
-        //});
+        idmTokenManager.addOnTokenExpired(function () {
+            $location.path("/");
+            idmErrorService.show("Your session has expired.");
+        });
 
-        $scope.login = function () {
+        $rootScope.login = function () {
+            idmErrorService.clear();
             idmTokenManager.redirectForToken();
         }
+        $rootScope.logout = function () {
+            idmErrorService.clear();
+            idmTokenManager.removeToken();
+            $location.path("/");
+        }
     }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmTokenManager"];
+    LayoutCtrl.$inject = ["$rootScope", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl() {
@@ -1200,18 +1225,10 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
         idmTokenManager.processTokenCallbackAsync(hash).then(function() {
             $location.url("/");
         }, function (error) {
-            idmErrorService.error(error && error.message);
+            idmErrorService.error(error && error.message || error);
         });
     }
     CallbackCtrl.$inject = ["idmTokenManager", "$location", "$rootScope", "$routeParams", "idmErrorService"];
     app.controller("CallbackCtrl", CallbackCtrl);
-
-    function LogoutCtrl(idmTokenManager, $location) {
-        idmTokenManager.removeToken();
-        $location.url("/");
-    }
-    LogoutCtrl.$inject = ["idmTokenManager", "$location"];
-    app.controller("LogoutCtrl", LogoutCtrl);
-
 })(angular);
 

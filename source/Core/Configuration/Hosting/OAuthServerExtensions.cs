@@ -31,7 +31,7 @@ namespace IdentityManager.Configuration.Hosting
             app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions
             {
                 AllowInsecureHttp = !config.RequireSsl,
-                AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
+                AccessTokenExpireTimeSpan = config.TokenExpiration,
                 AuthorizeEndpointPath = new PathString(Constants.AuthorizePath),
                 Provider = new OAuthAuthorizationServerProvider
                 {
@@ -61,7 +61,7 @@ namespace IdentityManager.Configuration.Hosting
                             // we only want name and role claims
                             var expected = new[]{config.NameClaimType, config.RoleClaimType};
                             var claims = result.Identity.Claims.Where(x => expected.Contains(x.Type));
-                            var id = new ClaimsIdentity(claims, Constants.BearerAuthenticationType);
+                            var id = new ClaimsIdentity(claims, Constants.BearerAuthenticationType, config.NameClaimType, config.RoleClaimType);
                             owin.Authentication.SignIn(id);
                         }
                         else
@@ -78,6 +78,7 @@ namespace IdentityManager.Configuration.Hosting
             app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions
             {
                 AuthenticationType = config.BearerAuthenticationType,
+                AuthenticationMode = Microsoft.Owin.Security.AuthenticationMode.Passive
             });
         }
     }
