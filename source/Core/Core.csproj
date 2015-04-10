@@ -208,6 +208,8 @@
     <Content Include="Assets\Content\Bundle.css">
       <DependentUpon>Bundle.css.bundle</DependentUpon>
     </Content>
+    <EmbeddedResource Include="Assets\Content\logo.jpg" />
+    <EmbeddedResource Include="Assets\Content\logo.png" />
     <Content Include="Assets\Scripts\Libs\oidc-token-manager.min.js" />
     <EmbeddedResource Include="Assets\Templates\users\accessdenied.html" />
     <EmbeddedResource Include="Assets\Templates\roles\new.html" />
