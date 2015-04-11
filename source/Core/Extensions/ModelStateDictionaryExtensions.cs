@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-using System.Linq;
-using System.Web.Http.ModelBinding;
+
 using IdentityManager;
 using IdentityManager.Api.Models;
+using System.Linq;
+using System.Web.Http.ModelBinding;
 
 namespace System.Web.Http
 {

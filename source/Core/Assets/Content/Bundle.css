@@ -5776,6 +5776,15 @@ body {
   margin-top: 60px;
   margin-bottom: 60px;
 }
+img.logo {
+  position: relative;
+  top: -10px;
+}
+img.logo-banner {
+  width: 25px;
+  position: relative;
+  top: -3px;
+}
 .section {
   padding: 10px 0;
 }

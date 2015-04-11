@@ -13,85 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Configuration;
+using IdentityManager.Configuration.Hosting;
+using IdentityManager.Core.Logging;
+using IdentityManager.Logging;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Infrastructure;
-using Microsoft.Owin.Security.Jwt;
+using Microsoft.Owin.Logging;
 using Microsoft.Owin.StaticFiles;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens;
-using System.ServiceModel.Security.Tokens;
-using IdentityManager.Configuration;
-using IdentityManager.Configuration.Hosting;
-using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
-using Thinktecture.IdentityModel.Owin.ScopeValidation;
 
 namespace Owin
 {
     public static class IdentityManagerAppBuilderExtensions
     {
+        private readonly static ILog Logger = LogProvider.GetCurrentClassLogger();
+
         public static void UseIdentityManager(this IAppBuilder app, IdentityManagerOptions options)
         {
             if (app == null) throw new ArgumentNullException("app");
             if (options == null) throw new ArgumentNullException("config");
-            options.Validate();
 
-            JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+            app.SetLoggerFactory(new LibLogLoggerFactory());
+            
+            Logger.Info("Starting IdentityManager configuration");
+
+            options.Validate();
 
             var container = AutofacConfig.Configure(options);
             app.Use<AutofacContainerMiddleware>(container);
 
-            if (options.SecurityMode == SecurityMode.LocalMachine)
-            {
-                var local = new LocalAuthenticationOptions(options.AdminRoleName);
-                app.Use<LocalAuthenticationMiddleware>(local);
-            }
-            else if (options.SecurityMode == SecurityMode.OAuth2)
-            {
-                var jwtParams = new System.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    NameClaimType = options.OAuth2Configuration.NameClaimType,
-                    RoleClaimType = options.OAuth2Configuration.RoleClaimType,
-                    ValidAudience = options.OAuth2Configuration.Audience,
-                    ValidIssuer = options.OAuth2Configuration.Issuer,
-                };
-                if (options.OAuth2Configuration.SigningCert != null)
-                {
-                    jwtParams.IssuerSigningToken = new X509SecurityToken(options.OAuth2Configuration.SigningCert);
-                }
-                else
-                {
-                    var bytes = Convert.FromBase64String(options.OAuth2Configuration.SigningKey);
-                    jwtParams.IssuerSigningToken = new BinarySecretSecurityToken(bytes);
-                }
-
-                app.UseJwtBearerAuthentication(new JwtBearerAuthenticationOptions {
-                    TokenValidationParameters = jwtParams
-                });
-                app.RequireScopes(new ScopeValidationOptions {
-                    AllowAnonymousAccess = true,
-                    Scopes = new string[] {
-                        options.OAuth2Configuration.Scope
-                    }
-                });
-                if (options.OAuth2Configuration.ClaimsTransformation != null)
-                {
-                    app.Use(async (ctx, next) =>
-                    {
-                        var user = ctx.Authentication.User;
-                        if (user != null)
-                        {
-                            user = options.OAuth2Configuration.ClaimsTransformation(user);
-                            ctx.Authentication.User = user;
-                        }
-
-                        await next();
-                    });
-                }
-            }
+            options.SecurityConfiguration.Configure(app);
 
             if (!options.DisableUserInterface)
             {
@@ -111,6 +66,9 @@ namespace Owin
             SignatureConversions.AddConversions(app);
             app.UseWebApi(WebApiConfig.Configure(options));
             app.UseStageMarker(PipelineStage.MapHandler);
+
+            // clears out the OWIN logger factory so we don't recieve other hosting related logs
+            app.Properties["server.LoggerFactory"] = null;
         }
     }
 }

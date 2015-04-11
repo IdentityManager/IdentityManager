@@ -4,6 +4,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>IdentityManager</title>
     <link href="{pathBase}/assets/Content.Bundle.min.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="{pathBase}/assets/Content.favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="{pathBase}/assets/Content.favicon.ico" />
 </head>
 <body lang="en" ng-app="ttIdmApp" ng-csp ng-controller="LayoutCtrl" ng-cloak>
 
@@ -13,7 +15,9 @@
         <ng-view tt-focus></ng-view>
     </div>
 
-    <script id="model" type="application/json">{model}</script>
+    <script id="model" type="application/json">
+        {model}
+    </script>
     <script src="{pathBase}/assets/Scripts.Bundle.js"></script>
 </body>
 </html>

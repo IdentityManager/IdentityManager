@@ -33,14 +33,11 @@ namespace IdentityManager.Host.IdSvr
             var factory = InMemoryFactory.Create(users:GetUsers(), scopes:GetScopes(), clients:GetClients());
             var idsrvOptions = new IdentityServerOptions
             {
-                IssuerUri = "https://idsrv3.com",
                 SiteName = "IdentityServer v3",
                 SigningCertificate = Cert.Load(),
                 Endpoints = new EndpointOptions {
                     EnableCspReportEndpoint = true
                 },
-                PublicOrigin = "http://localhost:17457",
-                RequireSsl = false,
                 Factory = factory,
                 CorsPolicy = CorsPolicy.AllowAll,
             };
@@ -75,16 +72,14 @@ namespace IdentityManager.Host.IdSvr
         {
             return new Client[]{
                 new Client{
-                    ClientId = "idmgr",
+                    ClientId = "idmgr_client",
                     ClientName = "IdentityManager",
                     Enabled = true,
                     Flow = Flows.Implicit,
+                    RequireConsent = false,
                     RedirectUris = new List<string>{
-                        "http://localhost:17457/idm/#/callback/",
-                        "http://localhost:17457/idm/frame",
+                        "https://localhost:44337",
                     },
-                    AccessTokenType = AccessTokenType.Jwt,
-                    //AccessTokenLifetime = 50
                 },
             };
         }
@@ -92,11 +87,12 @@ namespace IdentityManager.Host.IdSvr
         static Scope[] GetScopes()
         {
             return new Scope[] {
+                StandardScopes.OpenId,
                  new Scope{
                     Name = "idmgr",
                     DisplayName = "IdentityManager",
                     Description = "Authorization for IdentityManager",
-                    Type = ScopeType.Resource,
+                    Type = ScopeType.Identity,
                     Claims = new List<ScopeClaim>{
                         new ScopeClaim(Constants.ClaimTypes.Name),
                         new ScopeClaim(Constants.ClaimTypes.Role)

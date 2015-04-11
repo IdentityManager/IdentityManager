@@ -14,17 +14,24 @@
  * limitations under the License.
  */
  
+using System;
 namespace IdentityManager
 {
     public class Constants
     {
-        public const string LocalAuthenticationType = "idmgr.local";
+        public const string LocalAuthenticationType = "idmgr.Local";
+        public const string CookieAuthenticationType = "Cookies";
         public const string BearerAuthenticationType = "Bearer";
 
+        public const string AuthorizePath = "/authorize";
+        public const string CallbackFragment = "/#/callback/";
+        public const string IdMgrClientId = "idmgr";
         public const string IdMgrScope = "idmgr";
         public const string AdminRoleName = "IdentityManagerAdministrator";
 
         internal const string AutofacScope = "idm:AutofacScope";
+
+        public static readonly TimeSpan DefaultTokenExpiration = TimeSpan.FromHours(10);
 
         public class ClaimTypes
         {

@@ -1,75 +1,82 @@
 ﻿/// <reference path="../Libs/angular.min.js" />
+/// <reference path="../Libs/oidc-token-manager.min.js" />
 
 (function (angular) {
     var app = angular.module("ttIdm", []);
 
-    function config($httpProvider, OAuthConfig) {
-        if (OAuthConfig) {
-            function intercept($q, idmTokenManager) {
-                return {
-                    'request': function (config) {
-                        if (idmTokenManager.access_token) {
-                            config.headers['Authorization'] = 'Bearer ' + idmTokenManager.access_token;
-                        }
-                        return config;
-                    },
-                    'responseError': function (response) {
-                        if (response.status === 401) {
-                            idmTokenManager.removeToken();
-                        }
-                        if (response.status === 403) {
-                            idmTokenManager.removeToken();
-                        }
-                        return $q.reject(response);
+    function config($httpProvider) {
+        function intercept($q, idmTokenManager, idmErrorService) {
+            return {
+                'request': function (config) {
+                    idmErrorService.clear();
+                    var token = idmTokenManager.access_token;
+                    if (token) {
+                        config.headers['Authorization'] = 'Bearer ' + token;
                     }
-                };
+                    return config;
+                },
+                'responseError': function (response) {
+                    if (response.status === 401) {
+                        //idmTokenManager.removeToken();
+                    }
+                    if (response.status === 403) {
+                        //idmTokenManager.removeToken();
+                    }
+                    return $q.reject(response);
+                }
             };
-            intercept.$inject = ["$q", "idmTokenManager"];
-            $httpProvider.interceptors.push(intercept);
-        }
+        };
+        intercept.$inject = ["$q", "idmTokenManager", "idmErrorService"];
+        $httpProvider.interceptors.push(intercept);
     };
-    config.$inject = ["$httpProvider", "OAuthConfig"];
+    config.$inject = ["$httpProvider"];
     app.config(config);
 
-    function idmTokenManager(TokenManager, OAuthConfig, PathBase, $window, $rootScope) {
-        if (OAuthConfig) {
-            OAuthConfig.redirect_uri = $window.location.protocol + "//" + $window.location.host + PathBase + "/#/callback/";
-            var svc = new TokenManager(OAuthConfig);
+    function idmErrorService($rootScope, $timeout) {
+        var svc = {
+            show: function (err) {
+                $timeout(function () {
+                    if (err instanceof Array) {
+                        $rootScope.errors = err;
+                    }
+                    else {
+                        $rootScope.errors = [err];
+                    }
+                }, 100);
+            },
+            clear: function () {
+                $rootScope.errors = null;
+            }
+        };
 
-            Object.defineProperty(svc, "isTokenNeeded", {
-                get: function () {
-                    return !!(OAuthConfig && svc.expired);
-                }
-            });
-            Object.defineProperty(svc, "isLogoutAllowed", {
-                get: function () {
-                    return !!(OAuthConfig && !svc.expired);
-                }
-            });
-            var applyFuncs = [
+        return svc;
+    }
+    idmErrorService.$inject = ["$rootScope", "$timeout"];
+    app.factory("idmErrorService", idmErrorService);
+
+    function idmTokenManager(OidcTokenManager, oauthSettings, PathBase, $window, $rootScope) {
+
+        oauthSettings.response_type = "token";
+
+        var mgr = new OidcTokenManager(oauthSettings);
+
+        var applyFuncs = [
                 "_callTokenRemoved", "_callTokenExpiring",
                 "_callTokenExpired", "_callTokenObtained",
                 "_callSilentTokenRenewFailed"
-            ];
-            applyFuncs.forEach(function (name) {
-                var tmp = svc[name].bind(svc);
-                svc[name] = function () {
-                    $rootScope.$applyAsync(function () {
-                        tmp();
-                    });
-                }
-            });
+        ];
+        applyFuncs.forEach(function (name) {
+            var tmp = mgr[name].bind(mgr);
+            mgr[name] = function () {
+                $rootScope.$applyAsync(function () {
+                    tmp();
+                });
+            }
+        });
 
-            return svc;
-        }
-
-        var nopSvc = {};
-        for (var key in TokenManager.prototype) {
-            nopSvc[key] = function () { };
-        }
-        return nopSvc;
+        return mgr;
     }
-    idmTokenManager.$inject = ["TokenManager", "OAuthConfig", "PathBase", "$window", "$rootScope"];
+    idmTokenManager.$inject = ["OidcTokenManager", "oauthSettings", "PathBase", "$window", "$rootScope"];
     app.factory("idmTokenManager", idmTokenManager);
 
     function idmApi(idmTokenManager, $http, $q, PathBase) {
@@ -81,7 +88,6 @@
 
         return {
             get: function () {
-
                 if (cache) {
                     var d = $q.defer();
                     d.resolve(cache);
@@ -97,7 +103,7 @@
                         throw 'You are not authorized to use this service.';
                     }
                     else {
-                        throw 'Failed to load API.';
+                        throw (resp.data && (resp.data.exceptionMessage || resp.data.message)) || 'Failed to access IdentityManager API.';
                     }
                 });
             }
@@ -244,5 +250,5 @@
     for (var key in model) {
         angular.module("ttIdm").constant(key, model[key]);
     }
-    angular.module("ttIdm").constant("TokenManager", TokenManager);
+    angular.module("ttIdm").constant("OidcTokenManager", OidcTokenManager);
 })(angular);

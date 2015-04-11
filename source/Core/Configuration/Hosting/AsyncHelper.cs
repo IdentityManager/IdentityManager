@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-using Microsoft.Owin.Security;
 
-namespace IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace IdentityManager.Configuration.Hosting
 {
-    public class LocalAuthenticationOptions : AuthenticationOptions
+    internal static class AsyncHelper
     {
-        public LocalAuthenticationOptions(string roleToAssign)
-            : base(Constants.LocalAuthenticationType)
+        private static readonly TaskFactory _myTaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
+
+        public static void RunSync(Func<Task> func)
         {
-            this.RoleToAssign = roleToAssign;
+            _myTaskFactory.StartNew(func).Unwrap().GetAwaiter().GetResult();
         }
 
-        public string RoleToAssign { get; private set; }
+        public static TResult RunSync<TResult>(Func<Task<TResult>> func)
+        {
+            return _myTaskFactory.StartNew(func).Unwrap().GetAwaiter().GetResult();
+        }
     }
+
 }

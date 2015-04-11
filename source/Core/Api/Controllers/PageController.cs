@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-using System;
-using System.Web.Http;
+
 using IdentityManager.Api.Filters;
 using IdentityManager.Assets;
 using IdentityManager.Configuration;
+using System;
+using System.Web.Http;
 
 namespace IdentityManager.Api.Controllers
 {
@@ -38,25 +38,7 @@ namespace IdentityManager.Api.Controllers
         [AllowAnonymous]
         public IHttpActionResult Index()
         {
-            if (idmConfig.SecurityMode == SecurityMode.LocalMachine &&
-                (User == null || User.Identity == null || User.Identity.IsAuthenticated == false))
-            {
-                return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.accessdenied.html");
-            }
-
-            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html", idmConfig.OAuth2Configuration);
-        }
-        
-        [HttpGet]
-        [AllowAnonymous]
-        public IHttpActionResult Frame()
-        {
-            if (idmConfig.SecurityMode != SecurityMode.OAuth2)
-            {
-                return NotFound();
-            }
-
-            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.frame.html");
+            return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html", idmConfig.SecurityConfiguration);
         }
     }
 }

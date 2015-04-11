@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Api.Filters;
+using IdentityManager.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
-using IdentityManager.Api.Filters;
-using IdentityManager.Configuration;
 
 namespace IdentityManager.Api.Models.Controllers
 {

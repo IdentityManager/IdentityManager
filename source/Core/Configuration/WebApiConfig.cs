@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Configuration.Hosting;
 using System;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
-using IdentityManager.Configuration.Hosting;
 
 namespace IdentityManager.Configuration
 {
@@ -42,43 +42,17 @@ namespace IdentityManager.Configuration
             }
 
             config.SuppressDefaultHostAuthentication();
-            
-            if (options.SecurityMode == SecurityMode.LocalMachine)
-            {
-                config.Filters.Add(new HostAuthenticationAttribute(Constants.LocalAuthenticationType));
-            }
-            else
-            {
-                config.Filters.Add(new HostAuthenticationAttribute(Constants.BearerAuthenticationType));
-            }
-
-            config.Filters.Add(new AuthorizeAttribute() { Roles = options.AdminRoleName });
+            config.Filters.Add(new HostAuthenticationAttribute(options.SecurityConfiguration.BearerAuthenticationType));
+            config.Filters.Add(new AuthorizeAttribute() { Roles = options.SecurityConfiguration.AdminRoleName });
 
             config.Formatters.Remove(config.Formatters.XmlFormatter);
             config.Formatters.Remove(config.Formatters.FormUrlEncodedFormatter);
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver =
                 new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
-            //apiConfig.Services.Add(typeof(IExceptionLogger), new UserAdminExceptionLogger());
-
-//#if DEBUG
-//            apiConfig.Services.Add(typeof(IExceptionLogger), new TraceLogger());
-//#endif
             config.Services.Add(typeof(IExceptionLogger), new LogProviderExceptionLogger());
 
             return config;
         }
-
-        //public class UserAdminExceptionLogger : ExceptionLogger
-        //{
-        //    public override void Log(ExceptionLoggerContext context)
-        //    {
-        //        var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data");
-        //        path = Path.Combine(path, "UserAdminException.txt");
-        //        Directory.CreateDirectory(path);
-        //        var msg = DateTime.Now.ToString() + Environment.NewLine + context.Exception.ToString() + Environment.NewLine + Environment.NewLine;
-        //        File.AppendAllText(path, msg);
-        //    }
-        //}
     }
 }

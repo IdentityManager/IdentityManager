@@ -16,9 +16,9 @@
 
 using Autofac;
 using Autofac.Integration.WebApi;
+using IdentityManager.Configuration.Hosting;
 using Microsoft.Owin;
 using System;
-using IdentityManager.Configuration.Hosting;
 
 namespace IdentityManager.Configuration
 {

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Core.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.ExceptionHandling;
-using IdentityManager.Core.Logging;
 
 namespace IdentityManager.Configuration.Hosting
 {

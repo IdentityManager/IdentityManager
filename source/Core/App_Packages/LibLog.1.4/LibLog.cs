@@ -28,8 +28,8 @@ using IdentityManager.Core.Logging.LogProviders;
 
 namespace IdentityManager.Core.Logging
 {
-    using System.Collections.Generic;
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
 
@@ -498,7 +498,6 @@ namespace IdentityManager.Core.Logging.LogProviders
     using System.Linq.Expressions;
     using System.Reflection;
     using System.Text;
-    using System.Threading;
 
     public class NLogLogProvider : ILogProvider
     {

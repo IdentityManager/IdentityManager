@@ -14,34 +14,29 @@
  * limitations under the License.
  */
  
+using IdentityManager.Configuration.Hosting;
+using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
+using Owin;
 using System;
 
 namespace IdentityManager.Configuration
 {
-    public class IdentityManagerOptions
+    public class LocalhostSecurityConfiguration : HostSecurityConfiguration
     {
-        public IdentityManagerOptions()
+        public LocalhostSecurityConfiguration()
         {
-            Factory = new IdentityManagerServiceFactory();
-            SecurityConfiguration = new LocalhostSecurityConfiguration();
+            HostAuthenticationType = Constants.LocalAuthenticationType;
         }
 
-        public IdentityManagerServiceFactory Factory { get; set; }
-        public SecurityConfiguration SecurityConfiguration { get; set; }
-        public bool DisableUserInterface { get; set; }
-        
-        internal void Validate()
+        public override void Configure(IAppBuilder app)
         {
-            if (this.Factory == null)
+            if (this.ShowLoginButton == null)
             {
-                throw new Exception("Factory is required.");
+                this.ShowLoginButton = false;
             }
-            if (this.SecurityConfiguration == null)
-            {
-                throw new Exception("SecurityConfiguration is required.");
-            }
+            app.Use<LocalhostAuthenticationMiddleware>(new LocalhostAuthenticationOptions(this));
 
-            SecurityConfiguration.Validate();
+            base.Configure(app);
         }
     }
 }

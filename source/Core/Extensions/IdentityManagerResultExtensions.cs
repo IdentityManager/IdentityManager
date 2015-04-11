@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
+using IdentityManager.Api.Models;
 using System;
 using System.Linq;
-using IdentityManager.Api.Models;
 
 namespace IdentityManager
 {

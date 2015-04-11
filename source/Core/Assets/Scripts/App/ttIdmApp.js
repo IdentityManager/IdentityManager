@@ -14,10 +14,6 @@
                 templateUrl: PathBase + '/assets/Templates.message.html',
                 controller: 'CallbackCtrl'
             })
-            .when("/logout", {
-                template: "<h2>Logging out...</h2>",
-                controller: "LogoutCtrl"
-            })
             .when("/error", {
                 templateUrl: PathBase + '/assets/Templates.message.html'
             })
@@ -28,30 +24,35 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, $scope, idmApi, $location, idmTokenManager) {
-        $scope.layout = {};
+    function LayoutCtrl($rootScope, idmApi, $location, idmTokenManager, idmErrorService) {
+        $rootScope.layout = {};
 
         function removed() {
-            $scope.layout.username = null;
-            $scope.layout.links = null;
-            $scope.layout.showLogout = idmTokenManager.isLogoutAllowed;
-            $scope.layout.showLogin = idmTokenManager.isTokenNeeded;
+            idmErrorService.clear();
+            $rootScope.layout.username = null;
+            $rootScope.layout.links = null;
+            $rootScope.layout.showLogout = !idmTokenManager.expired;
+            $rootScope.layout.showLogin = idmTokenManager.expired;
         }
 
         function load() {
             removed();
 
-            idmApi.get().then(function (api) {
-                $scope.layout.username = api.data.currentUser.username;
-                $scope.layout.links = api.links;
-            });
+            if (!idmTokenManager.expired) {
+                idmApi.get().then(function (api) {
+                    $rootScope.layout.username = api.data.currentUser.username;
+                    $rootScope.layout.links = api.links;
+                }, function (err) {
+                    idmErrorService.show(err);
+                });
+            }
         }
 
         idmTokenManager.addOnTokenObtained(load);
         idmTokenManager.addOnTokenRemoved(removed);
         load();
 
-        if (idmTokenManager.isTokenNeeded &&
+        if (idmTokenManager.expired &&
             $location.path() !== "/" &&
             $location.path().indexOf("/callback/") !== 0 && 
             $location.path() !== "/error" &&
@@ -60,37 +61,42 @@
         }
 
         idmTokenManager.addOnTokenExpired(function () {
-            $location.url("/error");
-            $rootScope.errors = ["Your session has expired."];
+            $location.path("/");
+            idmErrorService.show("Your session has expired.");
         });
 
-        $scope.login = function () {
+        $rootScope.login = function () {
+            idmErrorService.clear();
+            idmTokenManager.redirectForToken();
+        }
+        $rootScope.logout = function () {
+            idmErrorService.clear();
+            idmTokenManager.removeToken();
+            $location.path("/");
+        }
+    }
+    LayoutCtrl.$inject = ["$rootScope", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
+    app.controller("LayoutCtrl", LayoutCtrl);
+
+    function HomeCtrl(ShowLoginButton, idmTokenManager) {
+        if (ShowLoginButton === false && idmTokenManager.expired) {
             idmTokenManager.redirectForToken();
         }
     }
-    LayoutCtrl.$inject = ["$rootScope", "$scope", "idmApi", "$location", "idmTokenManager"];
-    app.controller("LayoutCtrl", LayoutCtrl);
-
-    function HomeCtrl() {
-    }
-    HomeCtrl.$inject = [];
+    HomeCtrl.$inject = ["ShowLoginButton", "idmTokenManager"];
     app.controller("HomeCtrl", HomeCtrl);
 
-    function CallbackCtrl(idmTokenManager, $location, $rootScope, $routeParams) {
-        idmTokenManager.processTokenCallbackAsync($routeParams.response).then(function() {
+    function CallbackCtrl(idmTokenManager, $location, $rootScope, $routeParams, idmErrorService) {
+        var hash = $routeParams.response;
+        if (hash.charAt(0) === "&") {
+            hash = hash.substr(1);
+        }
+        idmTokenManager.processTokenCallbackAsync(hash).then(function() {
             $location.url("/");
         }, function (error) {
-            $rootScope.errors = [error];
+            idmErrorService.error(error && error.message || error);
         });
     }
-    CallbackCtrl.$inject = ["idmTokenManager", "$location", "$rootScope", "$routeParams"];
+    CallbackCtrl.$inject = ["idmTokenManager", "$location", "$rootScope", "$routeParams", "idmErrorService"];
     app.controller("CallbackCtrl", CallbackCtrl);
-
-    function LogoutCtrl(idmTokenManager, $location) {
-        idmTokenManager.removeToken();
-        $location.url("/");
-    }
-    LogoutCtrl.$inject = ["idmTokenManager", "$location"];
-    app.controller("LogoutCtrl", LogoutCtrl);
-
 })(angular);
