@@ -42,7 +42,9 @@ namespace IdentityManager.Configuration.Hosting
                     {
                         if (ctx.ClientId == Constants.IdMgrClientId)
                         {
-                            var callbackUrl = new Uri(ctx.Request.Uri, ctx.Request.PathBase.ToString());
+                            var path = ctx.Request.PathBase.ToString();
+                            if (String.IsNullOrWhiteSpace(path)) path = "/";
+                            var callbackUrl = new Uri(ctx.Request.Uri, path);
                             var url = callbackUrl.AbsoluteUri;
                             if (url.EndsWith("/")) url = url.Substring(0, url.Length - 1);
                             url += Constants.CallbackFragment;
