@@ -43,6 +43,19 @@ namespace Owin
 
             options.Validate();
 
+            app.Use(async (ctx, next) =>
+            {
+                if (!ctx.Request.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) && 
+                    options.SecurityConfiguration.RequireSsl)
+                {
+                    ctx.Response.Write("HTTPS required");
+                }
+                else
+                {
+                    await next();
+                }
+            });
+
             var container = AutofacConfig.Configure(options);
             app.Use<AutofacContainerMiddleware>(container);
 
