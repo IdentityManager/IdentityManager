@@ -24,7 +24,8 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, idmApi, $location, idmTokenManager, idmErrorService) {
+    function LayoutCtrl($rootScope, PathBase, idmApi, $location, idmTokenManager, idmErrorService) {
+        $rootScope.PathBase = PathBase;
         $rootScope.layout = {};
 
         function removed() {
@@ -75,7 +76,7 @@
             $location.path("/");
         }
     }
-    LayoutCtrl.$inject = ["$rootScope", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
+    LayoutCtrl.$inject = ["$rootScope", "PathBase", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl(ShowLoginButton, idmTokenManager) {

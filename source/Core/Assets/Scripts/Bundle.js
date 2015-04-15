@@ -1158,7 +1158,8 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, idmApi, $location, idmTokenManager, idmErrorService) {
+    function LayoutCtrl($rootScope, PathBase, idmApi, $location, idmTokenManager, idmErrorService) {
+        $rootScope.PathBase = PathBase;
         $rootScope.layout = {};
 
         function removed() {
@@ -1209,7 +1210,7 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
             $location.path("/");
         }
     }
-    LayoutCtrl.$inject = ["$rootScope", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
+    LayoutCtrl.$inject = ["$rootScope", "PathBase", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
     function HomeCtrl(ShowLoginButton, idmTokenManager) {
