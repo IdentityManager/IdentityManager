@@ -59,13 +59,6 @@ namespace IdentityManager.Host
                     Factory = factory,
                 });
             });
-          
-            // used to redirect to the main admin page visiting the root of the host
-            app.Run(ctx =>
-            {
-                ctx.Response.Redirect("/idm/");
-                return Task.FromResult(0);
-            });
         }
     }
 
@@ -119,13 +112,6 @@ namespace IdentityManager.Host
             app.Map("/ids", ids =>
             {
                 IdSvrConfig.Configure(ids);
-            });
-
-            // used to redirect to the main admin page visiting the root of the host
-            app.Run(ctx =>
-            {
-                ctx.Response.Redirect("/idm/");
-                return Task.FromResult(0);
             });
         }
     }
