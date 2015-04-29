@@ -36,9 +36,12 @@ namespace IdentityManager.Configuration
                 config.Routes.MapHttpRoute(Constants.RouteNames.Home,
                     "",
                     new { controller = "Page", action = "Index" });
-                config.Routes.MapHttpRoute(Constants.RouteNames.OAuthFrameCallback,
-                    "frame",
-                    new { controller = "Page", action = "Frame" });
+                config.Routes.MapHttpRoute(Constants.RouteNames.Logout,
+                    "logout",
+                    new { controller = "Page", action = "Logout" });
+                //config.Routes.MapHttpRoute(Constants.RouteNames.OAuthFrameCallback,
+                //    "frame",
+                //    new { controller = "Page", action = "Frame" });
             }
 
             config.SuppressDefaultHostAuthentication();

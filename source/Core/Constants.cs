@@ -69,6 +69,7 @@ namespace IdentityManager
             public const string UpdateRoleProperty = "UpdateRoleProperty";
 
             public const string Home = "Home";
+            public const string Logout = "Logout";
             public const string OAuthFrameCallback = "FrameCallback";
         }
     }

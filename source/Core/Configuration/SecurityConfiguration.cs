@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using Microsoft.Owin;
 using Owin;
 using System;
 
@@ -62,5 +63,9 @@ namespace IdentityManager.Configuration
         }
 
         public abstract void Configure(IAppBuilder app);
+
+        internal virtual void SignOut(IOwinContext context)
+        {
+        }
     }
 }

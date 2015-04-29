@@ -10,6 +10,9 @@
                 controller: 'HomeCtrl',
                 templateUrl: PathBase + '/assets/Templates.home.html'
             })
+            .when("/logout", {
+                templateUrl: PathBase + '/assets/Templates.home.html'
+            })
             .when("/callback/:response", {
                 templateUrl: PathBase + '/assets/Templates.message.html',
                 controller: 'CallbackCtrl'
@@ -24,7 +27,7 @@
     config.$inject = ["PathBase", "$routeProvider"];
     app.config(config);
 
-    function LayoutCtrl($rootScope, PathBase, idmApi, $location, idmTokenManager, idmErrorService) {
+    function LayoutCtrl($rootScope, PathBase, idmApi, $location, $window, idmTokenManager, idmErrorService, ShowLoginButton) {
         $rootScope.PathBase = PathBase;
         $rootScope.layout = {};
 
@@ -56,7 +59,7 @@
         if (idmTokenManager.expired &&
             $location.path() !== "/" &&
             $location.path().indexOf("/callback/") !== 0 && 
-            $location.path() !== "/error" &&
+            $location.path() !== "/error" && 
             $location.path() !== "/logout") {
                 $location.path("/");
         }
@@ -73,18 +76,21 @@
         $rootScope.logout = function () {
             idmErrorService.clear();
             idmTokenManager.removeToken();
-            $location.path("/");
+            $location.path("/logout");
+            if (ShowLoginButton !== false) {
+                $window.location = PathBase + "/logout";
+            }
         }
     }
-    LayoutCtrl.$inject = ["$rootScope", "PathBase", "idmApi", "$location", "idmTokenManager", "idmErrorService"];
+    LayoutCtrl.$inject = ["$rootScope", "PathBase", "idmApi", "$location", "$window", "idmTokenManager", "idmErrorService", "ShowLoginButton"];
     app.controller("LayoutCtrl", LayoutCtrl);
 
-    function HomeCtrl(ShowLoginButton, idmTokenManager) {
+    function HomeCtrl(ShowLoginButton, idmTokenManager, $routeParams) {
         if (ShowLoginButton === false && idmTokenManager.expired) {
             idmTokenManager.redirectForToken();
         }
     }
-    HomeCtrl.$inject = ["ShowLoginButton", "idmTokenManager"];
+    HomeCtrl.$inject = ["ShowLoginButton", "idmTokenManager", "$routeParams"];
     app.controller("HomeCtrl", HomeCtrl);
 
     function CallbackCtrl(idmTokenManager, $location, $rootScope, $routeParams, idmErrorService) {

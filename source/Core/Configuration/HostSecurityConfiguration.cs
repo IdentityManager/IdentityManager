@@ -16,6 +16,7 @@
 
 using IdentityManager.Configuration.Hosting;
 using IdentityManager.Configuration.Hosting.LocalAuthenticationMiddleware;
+using Microsoft.Owin;
 using Owin;
 using System;
 
@@ -24,6 +25,7 @@ namespace IdentityManager.Configuration
     public class HostSecurityConfiguration : SecurityConfiguration
     {
         public string HostAuthenticationType { get; set; }
+        public string AdditionalSignOutType { get; set; }
         public TimeSpan TokenExpiration { get; set; }
 
         public HostSecurityConfiguration()
@@ -41,6 +43,15 @@ namespace IdentityManager.Configuration
         public override void Configure(IAppBuilder app)
         {
             app.UseOAuthAuthorizationServer(this);
+        }
+
+        internal override void SignOut(IOwinContext context)
+        {
+            context.Authentication.SignOut(this.HostAuthenticationType);
+            if (!String.IsNullOrWhiteSpace(AdditionalSignOutType))
+            {
+                context.Authentication.SignOut(AdditionalSignOutType);
+            }
         }
     }
 }
