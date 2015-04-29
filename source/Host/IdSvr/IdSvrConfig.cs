@@ -80,6 +80,7 @@ namespace IdentityManager.Host.IdSvr
                     RedirectUris = new List<string>{
                         "https://localhost:44337",
                     },
+                    IdentityProviderRestrictions = new List<string>(){"xoxo"}
                 },
             };
         }
