@@ -18,6 +18,7 @@ using IdentityManager.Api.Filters;
 using IdentityManager.Assets;
 using IdentityManager.Configuration;
 using System;
+using System.Net.Http;
 using System.Web.Http;
 
 namespace IdentityManager.Api.Controllers
@@ -39,6 +40,14 @@ namespace IdentityManager.Api.Controllers
         public IHttpActionResult Index()
         {
             return new EmbeddedHtmlResult(Request, "IdentityManager.Assets.Templates.index.html", idmConfig.SecurityConfiguration);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IHttpActionResult Logout()
+        {
+            idmConfig.SecurityConfiguration.SignOut(Request.GetOwinContext());
+            return RedirectToRoute(Constants.RouteNames.Home, null);
         }
     }
 }

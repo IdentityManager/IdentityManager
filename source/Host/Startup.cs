@@ -76,6 +76,7 @@ namespace IdentityManager.Host
             
             app.UseOpenIdConnectAuthentication(new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions
             {
+                AuthenticationType = "oidc",
                 Authority = "https://localhost:44337/ids",
                 ClientId = "idmgr_client",
                 RedirectUri = "https://localhost:44337",
@@ -102,7 +103,8 @@ namespace IdentityManager.Host
                     Factory = factory,
                     SecurityConfiguration = new HostSecurityConfiguration
                     {
-                        HostAuthenticationType = "Cookies"
+                        HostAuthenticationType = "Cookies",
+                        //AdditionalSignOutType = "oidc"
                     }
                 });
             });
