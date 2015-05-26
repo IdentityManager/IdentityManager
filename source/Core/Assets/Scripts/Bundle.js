@@ -599,7 +599,7 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
     ttFocus.$inject = [];
     app.directive("ttFocus", ttFocus);
 
-    function ttMatch() {
+    function ttMatch($timeout) {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -617,7 +617,9 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
                     }
                 }
                 elem.on("input", function () {
-                    scope.$apply(check);
+                    $timeout(function () {
+                        scope.$apply(check);
+                    });
                 });
                 scope.$watch(attrs.ttMatch, function (val) {
                     check();
@@ -625,7 +627,7 @@ return this.DIGESTINFOHEAD[e]+t},this.getPaddedDigestInfoHex=function(t,e,r){var
             }
         }
     }
-    ttMatch.$inject = [];
+    ttMatch.$inject = ["$timeout"];
     app.directive("ttMatch", ttMatch);
 
     function ttPropertyEditor(PathBase){

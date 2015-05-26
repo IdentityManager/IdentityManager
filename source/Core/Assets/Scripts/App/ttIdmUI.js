@@ -73,7 +73,7 @@
     ttFocus.$inject = [];
     app.directive("ttFocus", ttFocus);
 
-    function ttMatch() {
+    function ttMatch($timeout) {
         return {
             restrict: 'A',
             require: 'ngModel',
@@ -91,7 +91,9 @@
                     }
                 }
                 elem.on("input", function () {
-                    scope.$apply(check);
+                    $timeout(function () {
+                        scope.$apply(check);
+                    });
                 });
                 scope.$watch(attrs.ttMatch, function (val) {
                     check();
@@ -99,7 +101,7 @@
             }
         }
     }
-    ttMatch.$inject = [];
+    ttMatch.$inject = ["$timeout"];
     app.directive("ttMatch", ttMatch);
 
     function ttPropertyEditor(PathBase){
