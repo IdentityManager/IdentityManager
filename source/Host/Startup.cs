@@ -28,6 +28,7 @@ using Microsoft.Owin;
 using IdentityManager.Host;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
+using Microsoft.Owin.Security.Cookies;
 
 [assembly: OwinStartup(typeof(StartupWithLocalhostSecurity))]
 //[assembly: OwinStartup(typeof(StartupWithHostCookiesSecurity))]
@@ -67,11 +68,11 @@ namespace IdentityManager.Host
         public void Configuration(IAppBuilder app)
         {
             LogProvider.SetCurrentLogProvider(new TraceSourceLogProvider());
-            
+
             JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
             app.UseCookieAuthentication(new Microsoft.Owin.Security.Cookies.CookieAuthenticationOptions
             {
-                AuthenticationType = "Cookies"
+                AuthenticationType = "Cookies",
             });
             
             app.UseOpenIdConnectAuthentication(new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions
@@ -83,7 +84,31 @@ namespace IdentityManager.Host
                 ResponseType = "id_token",
                 UseTokenLifetime = false,
                 Scope = "openid idmgr",
-                SignInAsAuthenticationType = "Cookies"
+                SignInAsAuthenticationType = "Cookies",
+                Notifications = new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationNotifications
+                {
+                    SecurityTokenValidated = n =>
+                    {
+                        n.AuthenticationTicket.Identity.AddClaim(new Claim("id_token", n.ProtocolMessage.IdToken));
+                        return Task.FromResult(0);
+                    },
+                    RedirectToIdentityProvider = async n =>
+                    {
+                        if (n.ProtocolMessage.RequestType == Microsoft.IdentityModel.Protocols.OpenIdConnectRequestType.LogoutRequest)
+                        {
+                            var result = await n.OwinContext.Authentication.AuthenticateAsync("Cookies");
+                            if (result != null)
+                            {
+                                var id_token = result.Identity.Claims.GetValue("id_token");
+                                if (id_token != null)
+                                {
+                                    n.ProtocolMessage.IdTokenHint = id_token;
+                                    n.ProtocolMessage.PostLogoutRedirectUri = "https://localhost:44337/idm";
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
             app.Map("/idm", idm =>
