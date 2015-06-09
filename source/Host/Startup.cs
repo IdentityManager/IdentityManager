@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using IdentityManager.Configuration;
 using IdentityManager.Core.Logging;
+using IdentityManager.Extensions;
 using IdentityManager.Host.IdSvr;
 using IdentityManager.Host.InMemoryService;
 using IdentityManager.Logging;

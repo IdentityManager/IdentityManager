@@ -15,11 +15,13 @@
  */
 
 using IdentityManager;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
 
-namespace System.Reflection
+namespace IdentityManager.Extensions
 {
     public static class PropertyInfoExtensions
     {

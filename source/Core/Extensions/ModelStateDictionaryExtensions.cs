@@ -16,10 +16,11 @@
 
 using IdentityManager;
 using IdentityManager.Api.Models;
+using System;
 using System.Linq;
 using System.Web.Http.ModelBinding;
 
-namespace System.Web.Http
+namespace IdentityManager.Extensions
 {
     static class ModelStateDictionaryExtensions
     {
