@@ -120,7 +120,12 @@ namespace IdentityManager
                 Required = required ?? property.IsRequired(),
             };
         }
-        
+
+        public static IEnumerable<PropertyMetadata> FromType<T>()
+        {
+            return FromType(typeof(T), new string[0]);
+        }
+
         public static IEnumerable<PropertyMetadata> FromType<T>(params string[] propertiesToExclude)
         {
             return FromType(typeof(T), propertiesToExclude);
