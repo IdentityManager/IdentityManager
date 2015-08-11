@@ -15,6 +15,7 @@
  */
 
 using IdentityManager.Api.Filters;
+using IdentityManager.Extensions;
 using IdentityManager.Resources;
 using System;
 using System.Collections.Generic;

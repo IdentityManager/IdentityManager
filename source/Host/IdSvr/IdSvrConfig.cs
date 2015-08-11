@@ -80,6 +80,9 @@ namespace IdentityManager.Host.IdSvr
                     RedirectUris = new List<string>{
                         "https://localhost:44337",
                     },
+                    PostLogoutRedirectUris = new List<string>{
+                        "https://localhost:44337/idm"
+                    },
                     IdentityProviderRestrictions = new List<string>(){Thinktecture.IdentityServer.Core.Constants.PrimaryAuthenticationType}
                 },
             };

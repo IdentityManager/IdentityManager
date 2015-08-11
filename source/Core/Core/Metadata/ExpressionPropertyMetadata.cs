@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using IdentityManager.Extensions;
 using IdentityManager.Resources;
 using System;
 using System.Reflection;
