@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Owin;
+
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using Thinktecture.IdentityServer.Core.Configuration;
-using Thinktecture.IdentityServer.Core.Logging;
-using Thinktecture.IdentityServer.Core.Models;
-using Thinktecture.IdentityServer.Core.Services.InMemory;
+using IdentityServer3.Core.Configuration;
+using IdentityServer3.Core.Models;
+using IdentityServer3.Core.Services;
+using IdentityServer3.Core.Services.Default;
+using IdentityServer3.Core.Services.InMemory;
+using Owin;
 
 namespace IdentityManager.Host.IdSvr
 {
@@ -28,9 +30,11 @@ namespace IdentityManager.Host.IdSvr
     {
         public static void Configure(IAppBuilder app)
         {
-            LogProvider.SetCurrentLogProvider(new DiagnosticsTraceLogProvider());
-
-            var factory = InMemoryFactory.Create(users:GetUsers(), scopes:GetScopes(), clients:GetClients());
+            var factory = new IdentityServerServiceFactory();
+            factory.UseInMemoryUsers(GetUsers());
+            factory.UseInMemoryScopes(GetScopes());
+            factory.UseInMemoryClients(GetClients());
+            factory.CorsPolicyService = new Registration<ICorsPolicyService>(resolver => new DefaultCorsPolicyService() { AllowAll = true });
             var idsrvOptions = new IdentityServerOptions
             {
                 SiteName = "IdentityServer v3",
@@ -38,8 +42,7 @@ namespace IdentityManager.Host.IdSvr
                 Endpoints = new EndpointOptions {
                     EnableCspReportEndpoint = true
                 },
-                Factory = factory,
-                CorsPolicy = CorsPolicy.AllowAll,
+                Factory = factory
             };
             app.UseIdentityServer(idsrvOptions);
         }
@@ -83,7 +86,11 @@ namespace IdentityManager.Host.IdSvr
                     PostLogoutRedirectUris = new List<string>{
                         "https://localhost:44337/idm"
                     },
-                    IdentityProviderRestrictions = new List<string>(){Thinktecture.IdentityServer.Core.Constants.PrimaryAuthenticationType}
+                    IdentityProviderRestrictions = new List<string>(){IdentityServer3.Core.Constants.PrimaryAuthenticationType},
+                    AllowedScopes = {
+                        IdentityServer3.Core.Constants.StandardScopes.OpenId,
+                        IdentityManager.Constants.IdMgrScope
+                    }
                 },
             };
         }
@@ -93,7 +100,7 @@ namespace IdentityManager.Host.IdSvr
             return new Scope[] {
                 StandardScopes.OpenId,
                  new Scope{
-                    Name = "idmgr",
+                    Name = IdentityManager.Constants.IdMgrScope,
                     DisplayName = "IdentityManager",
                     Description = "Authorization for IdentityManager",
                     Type = ScopeType.Identity,
