@@ -31,8 +31,8 @@ using System.Threading.Tasks;
 using System.IdentityModel.Tokens;
 using Microsoft.Owin.Security.Cookies;
 
-[assembly: OwinStartup(typeof(StartupWithLocalhostSecurity))]
-//[assembly: OwinStartup(typeof(StartupWithHostCookiesSecurity))]
+//[assembly: OwinStartup(typeof(StartupWithLocalhostSecurity))]
+[assembly: OwinStartup(typeof(StartupWithHostCookiesSecurity))]
 
 namespace IdentityManager.Host
 {
