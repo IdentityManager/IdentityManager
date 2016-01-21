@@ -54,7 +54,7 @@ namespace IdentityManager.Api.Filters
 
                 if (EnableCsp)
                 {
-                    actionExecutedContext.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'");
+                    actionExecutedContext.Response.Headers.Add("Content-Security-Policy", "default-src 'self'; style-src 'self' 'unsafe-inline'");
                 }
             }
         }
