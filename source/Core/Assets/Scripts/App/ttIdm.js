@@ -80,25 +80,11 @@
     app.factory("idmTokenManager", idmTokenManager);
 
     function idmApi(idmTokenManager, $http, $q, PathBase) {
-        var cache = null;
-
-        idmTokenManager.addOnTokenRemoved(function () {
-            cache = null;
-        });
-
         return {
             get: function () {
-                if (cache) {
-                    var d = $q.defer();
-                    d.resolve(cache);
-                    return d.promise;
-                }
-
                 return $http.get(PathBase + "/api").then(function (resp) {
-                    cache = resp.data;
-                    return cache;
+                    return resp.data;
                 }, function (resp) {
-                    cache = null;
                     if (resp.status === 401) {
                         throw 'You are not authorized to use this service.';
                     }
