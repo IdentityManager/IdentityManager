@@ -24,25 +24,40 @@ namespace IdentityManager
     /// </summary>
     public class OwinEnvironmentService
     {
-        readonly IOwinContext _context;
-
+        private readonly IDictionary<string, object> _environment;
+        
+        /// <summary>
+        /// Gets the OWIN environment. 
+        /// </summary>
+        /// 
+        /// <value>
+        /// The environment. 
+        /// </value>
+        public IDictionary<string, object> Environment
+        {
+            get
+            {
+                return this._environment;
+            }
+        }
+        
         internal OwinEnvironmentService(IOwinContext context)
         {
-            _context = context;
+            if (context == null)
+                throw new ArgumentNullException("context");
+            this._environment = context.Environment;
         }
 
         /// <summary>
-        /// Gets the OWIN environment.
+        /// Initializes a new instance of the <see cref="T:IdentityManager.OwinEnvironmentService"/> class.
+        /// 
         /// </summary>
-        /// <value>
-        /// The environment.
-        /// </value>
-        public IDictionary<string, object> Environment 
-        { 
-            get
-            {
-                return _context.Environment;
-            }
+        /// <param name="environment">The environment.</param>
+        public OwinEnvironmentService(IDictionary<string, object> environment)
+        {
+            if (environment == null)
+                throw new ArgumentNullException("environment");
+            this._environment = environment;
         }
     }
 }
