@@ -130,7 +130,7 @@ namespace IdentityManager.Host
                     SecurityConfiguration = new HostSecurityConfiguration
                     {
                         HostAuthenticationType = "Cookies",
-                        //AdditionalSignOutType = "oidc"
+                        AdditionalSignOutType = "oidc"
                     }
                 });
             });
