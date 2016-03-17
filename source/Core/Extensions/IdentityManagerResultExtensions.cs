@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace IdentityManager
 {
-    static class IdentityManagerResultExtensions
+    public static class IdentityManagerResultExtensions
     {
         public static ErrorModel ToError(this IdentityManagerResult result)
         {

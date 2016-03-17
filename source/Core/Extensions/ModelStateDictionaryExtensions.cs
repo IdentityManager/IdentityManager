@@ -22,7 +22,7 @@ using System.Web.Http.ModelBinding;
 
 namespace IdentityManager.Extensions
 {
-    static class ModelStateDictionaryExtensions
+    public static class ModelStateDictionaryExtensions
     {
         public static void AddErrors(this ModelStateDictionary modelState, IdentityManagerResult result)
         {
