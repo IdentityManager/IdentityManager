@@ -19,7 +19,7 @@ using System.Text;
 
 namespace IdentityManager.Extensions
 {
-    static class StringExtensions
+    public static class StringExtensions
     {
         public static string ToBase64UrlEncoded(this string s)
         {
